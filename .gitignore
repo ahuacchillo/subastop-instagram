@@ -1,0 +1,8 @@
+node_modules/
+social-content/out/
+social-content/public/autos/
+
+# Fotos de cada subasta y sus renders: se regeneran con el script.
+# Los SVG sueltos de la raíz (logo, flechas) sí van al repo.
+Materiales/*/
+Posts/

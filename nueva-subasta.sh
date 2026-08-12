@@ -1,0 +1,248 @@
+#!/usr/bin/env bash
+#
+# Arma un carrusel de subasta completo: pregunta los datos, toma las fotos de
+# Materiales/ y deja los PNG listos para publicar en Posts/<slug>/.
+#
+# No edita código. Los datos van a Remotion por --props, así que este script y
+# el proyecto son independientes: se puede correr dos veces seguidas con autos
+# distintos sin que quede nada pegado.
+#
+#   ./nueva-subasta.sh 62996                # de la URL a los PNG, sin preguntar
+#   ./nueva-subasta.sh https://www.vmcsubastas.com/oferta/62996
+#   ./nueva-subasta.sh 62996 --editar       # igual, pero revisando cada dato
+#   ./nueva-subasta.sh Materiales/toyota    # fotos propias, sin scraping
+#   ./nueva-subasta.sh                      # fotos sueltas en Materiales/
+#
+# Con URL no pregunta nada: lo que sale del sitio se da por bueno y se
+# renderiza. Lo único que hay que mirar son los PNG del final.
+#
+set -euo pipefail
+cd "$(dirname "$0")"
+
+RAIZ="$PWD"
+AUTOS="$RAIZ/social-content/public/autos"
+ORIGEN="Materiales"
+EDITAR=""
+for arg in "$@"; do
+  case "$arg" in
+    --editar|-e) EDITAR=1 ;;
+    *) ORIGEN="$arg" ;;
+  esac
+done
+
+# ── Scraping de la oferta ────────────────────────────────────────────────────
+# La página de vmcsubastas viene renderizada del servidor: los datos y las
+# fotos están en el HTML, no hace falta navegador. Lo que sale de acá son solo
+# los valores por defecto de las preguntas: todo se puede corregir a mano.
+MARCA=""; MODELO=""; ANIO="25'"; TRANSMISION="Mecánica"; PRECIO=""
+FECHA=""; HORA=""; TIENDA=""; OFERTA=""
+if [[ "$ORIGEN" =~ ^https?://|^[0-9]+$ ]]; then
+  ID="${ORIGEN##*/}"
+  OFERTA="$ID"
+  # Las fotos se guardan por código: es el único nombre que no cambia si
+  # después corrijo la marca o el modelo, y así no se rebajan dos veces.
+  ORIGEN="Materiales/$ID"
+  mkdir -p "$ORIGEN"
+  SCRAPE="$(ID="$ID" DESTINO="$ORIGEN" python3 - <<'PY'
+import os, re, sys, time, urllib.request as U
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+
+ID, DESTINO = os.environ["ID"], os.environ["DESTINO"]
+bajar = lambda url: U.urlopen(
+    U.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=30).read()
+
+def uno(patron):
+    m = re.search(patron, html, re.S)
+    return m.group(1).strip() if m else ""
+
+# A veces el sitio contesta con la portada en vez de la oferta. Se nota en que
+# no hay galería; se reintenta antes de seguir con datos inventados.
+print(f"Leyendo oferta {ID}…", file=sys.stderr)
+for intento in range(3):
+    html = bajar(f"https://www.vmcsubastas.com/oferta/{ID}").decode("utf8", "replace")
+    # El carrusel es de 3 slides: de la galería solo interesan las 3 primeras.
+    fotos = list(dict.fromkeys(
+        re.findall(r'\\"image\\":\\"(https://[^\\]+?\.jpe?g)', html)))[:3]
+    if fotos:
+        break
+    time.sleep(2)
+else:
+    sys.exit(f"La oferta {ID} no trajo fotos. ¿El código es correcto?")
+
+# "Toyota Fortuner 2023" → marca / modelo / 23'
+titulo = uno(r"<h1[^>]*>([^<]+)</h1>").split()
+anio = titulo.pop() if titulo and titulo[-1].isdigit() else ""
+datos = {
+    "MARCA": titulo[0] if titulo else "",
+    "MODELO": " ".join(titulo[1:]),
+    "ANIO": anio[2:] + "'" if anio else "",
+    "TRANSMISION": uno(r"Transmisión.{0,80}?<span[^>]*>([^<]+)</span>"),
+    # Del payload y no del HTML pintado: en las ofertas que ya cerraron o que
+    # son negociables la tarjeta del precio no viene renderizada.
+    "PRECIO": uno(r'basePriceLabel\\":\\"US\$\s*([\d.,]+)'),
+    "TIENDA": uno(r"Vendedor:\s*([^<]+)<"),
+}
+cuando = uno(r'processDatetime\\":\\"([^\\]+)')
+if cuando:
+    d = datetime.strptime(cuando, "%Y-%m-%d %H:%M:%S")
+    datos["FECHA"] = d.strftime("%d/%m")
+    datos["HORA"] = d.strftime("%I:%M %p").lstrip("0").lower()
+
+# El orden de la galería importa: se numeran para que el `sort` de después no
+# lo revuelva. Las que ya están no se vuelven a bajar.
+def guardar(par):
+    i, url = par
+    ruta = f"{DESTINO}/{i:02d}.jpeg"
+    if not os.path.exists(ruta):
+        open(ruta, "wb").write(bajar(url))
+with ThreadPoolExecutor(8) as pool:
+    list(pool.map(guardar, enumerate(fotos, 1)))
+print(f"{len(fotos)} fotos en {DESTINO}/", file=sys.stderr)
+
+# Lo que no se encontró no se imprime: así el default del script sobrevive.
+for clave, valor in datos.items():
+    if valor:
+        print(f"{clave}\t{valor}")
+PY
+)"
+  while IFS=$'\t' read -r clave valor; do
+    printf -v "$clave" '%s' "$valor"
+  done <<< "$SCRAPE"
+fi
+
+[ -d "$ORIGEN" ] || { echo "No existe la carpeta '$ORIGEN'." >&2; exit 1; }
+
+# ── Datos ────────────────────────────────────────────────────────────────────
+# Enter acepta el valor entre corchetes. Si el dato ya vino del scraping no se
+# pregunta nada: el sitio es la fuente. Con --editar se revisan todos, y lo que
+# el scraping no encontró se pregunta siempre.
+preguntar() { # preguntar VARIABLE "Texto" ["default"]
+  local resp
+  if [ -z "$EDITAR" ] && [ -n "$OFERTA" ] && [ -n "${3:-}" ]; then
+    printf -v "$1" '%s' "$3"
+    printf "  %-32s %s\n" "$2:" "$3"
+    return
+  fi
+  read -r -p "  $2${3:+ [$3]}: " resp
+  resp="${resp:-${3:-}}"
+  [ -n "$resp" ] || { echo "  ↳ hace falta un valor." >&2; preguntar "$1" "$2" "${3:-}"; return; }
+  printf -v "$1" '%s' "$resp"
+}
+
+echo
+echo "── Datos del auto ─────────────────────────────────────────"
+preguntar MARCA       "Marca (título con degradado)"   "$MARCA"
+preguntar MODELO      "Modelo (va encima, en blanco)"  "$MODELO"
+preguntar ANIO        "Año corto"                      "$ANIO"
+preguntar TRANSMISION "Transmisión"                    "$TRANSMISION"
+preguntar PRECIO      "Precio base (sin US\$)"         "$PRECIO"
+echo
+echo "── Subasta ────────────────────────────────────────────────"
+preguntar FECHA       "Fecha (dd/mm)"                  "$FECHA"
+preguntar HORA        "Hora"                           "$HORA"
+preguntar TIENDA      "Tienda oficial"                 "$TIENDA"
+
+# ── Fotos ────────────────────────────────────────────────────────────────────
+mapfile -t DISPONIBLES < <(
+  find "$ORIGEN" -maxdepth 1 -type f \
+    \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' \) | sort
+)
+[ "${#DISPONIBLES[@]}" -gt 0 ] || { echo "No hay fotos en $ORIGEN/." >&2; exit 1; }
+
+echo
+echo "── Fotos en $ORIGEN/ ──────────────────────────────────────"
+for i in "${!DISPONIBLES[@]}"; do
+  printf "  %d) %s\n" "$((i + 1))" "$(basename "${DISPONIBLES[$i]}")"
+done
+echo
+echo "  El primero es la portada: es el único slide que lleva marca y modelo."
+# El carrusel es de 3: si sobran fotos en la carpeta, se ignoran las demás.
+TODAS="$(seq -s' ' 1 "$(( ${#DISPONIBLES[@]} < 3 ? ${#DISPONIBLES[@]} : 3 ))")"
+ORDEN=""
+if [ -z "$EDITAR" ] && [ -n "$OFERTA" ]; then
+  # Las del sitio ya vienen en el orden de la galería: se usan tal cual.
+  ORDEN="$TODAS"
+else
+  while [ -z "$ORDEN" ]; do
+    read -r -p "  Orden del carrusel (3 slides) [$TODAS]: " ORDEN
+    ORDEN="$(echo "${ORDEN:-$TODAS}" | cut -d' ' -f1-3)"
+    malo=""
+    for idx in $ORDEN; do
+      case "$idx" in
+        ''|*[!0-9]*) malo="$idx" ;;
+        *) [ "$idx" -ge 1 ] && [ "$idx" -le "${#DISPONIBLES[@]}" ] || malo="$idx" ;;
+      esac
+    done
+    [ -z "$malo" ] || {
+      echo "  ↳ '$malo' no está en la lista. Números del 1 al ${#DISPONIBLES[@]}, separados por espacio."
+      ORDEN=""
+    }
+  done
+fi
+
+# ── Copiar fotos con nombre estable ──────────────────────────────────────────
+# El slug prefija los archivos para que dos subastas no se pisen en public/.
+# Va el código de oferta adelante: dos Fortuner distintos se distinguen, y el
+# número es el que se busca cuando hay que volver a la publicación original.
+SLUG="$(printf '%s-%s-%s' "$OFERTA" "$MARCA" "$MODELO" \
+  | iconv -f utf8 -t ascii//TRANSLIT \
+  | tr '[:upper:]' '[:lower:]' \
+  | tr -cs 'a-z0-9' '-' \
+  | sed 's/^-//; s/-$//')"
+
+mkdir -p "$AUTOS" "$RAIZ/Posts/$SLUG"
+FOTOS=()
+n=0
+for idx in $ORDEN; do
+  origen="${DISPONIBLES[$((idx - 1))]}"
+  ext="${origen##*.}"
+  n=$((n + 1))
+  destino="$AUTOS/$SLUG-$n.${ext,,}"
+  cp "$origen" "$destino"
+  FOTOS+=("autos/$SLUG-$n.${ext,,}")
+done
+
+# ── Un JSON de props por slide ───────────────────────────────────────────────
+# Se arma con python y no con un heredoc porque los valores traen apóstrofes
+# (25') y acentos, y ahí un heredoc se rompe callado.
+PROPS="$(mktemp -d)"
+trap 'rm -rf "$PROPS"' EXIT
+MARCA="$MARCA" MODELO="$MODELO" ANIO="$ANIO" TRANSMISION="$TRANSMISION" \
+PRECIO="$PRECIO" FECHA="$FECHA" HORA="$HORA" TIENDA="$TIENDA" \
+FOTOS="${FOTOS[*]}" DESTINO="$PROPS" SALIDA="$RAIZ/Posts/$SLUG" \
+python3 - <<'PY'
+import json, os
+e = os.environ
+s = {
+    "marca": e["MARCA"], "modelo": e["MODELO"], "anio": e["ANIO"],
+    "transmision": e["TRANSMISION"], "precioBase": "US$ " + e["PRECIO"],
+    "fecha": e["FECHA"], "hora": e["HORA"], "tienda": e["TIENDA"],
+    "fotos": e["FOTOS"].split(),
+}
+for i in range(len(s["fotos"])):
+    with open(f"{e['DESTINO']}/{i}.json", "w") as f:
+        json.dump({"s": s, "indice": i}, f, ensure_ascii=False)
+# Queda junto a los renders: la pieza se puede rehacer igual dentro de un año.
+with open(f"{e['SALIDA']}/datos.json", "w") as f:
+    json.dump(s, f, ensure_ascii=False, indent=2)
+PY
+
+# ── Render ───────────────────────────────────────────────────────────────────
+# ponytail: un bundle por slide (~13s cada uno). Si molesta, se cambia a la API
+# de Node (@remotion/renderer), que bundlea una vez sola.
+echo
+echo "── Renderizando ${#FOTOS[@]} slides ───────────────────────────────"
+cd social-content
+for i in "${!FOTOS[@]}"; do
+  npx remotion still Auto \
+    --props="$PROPS/$i.json" \
+    --output="$RAIZ/Posts/$SLUG/$((i + 1)).png" \
+    --overwrite --log=error
+  echo "  ✓ Posts/$SLUG/$((i + 1)).png"
+done
+
+echo
+echo "Listo → $RAIZ/Posts/$SLUG/"
+echo "Míralos antes de publicar: que el título no se pierda contra el cielo y"
+echo "que el precio no reviente la tarjeta."
