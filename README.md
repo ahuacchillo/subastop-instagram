@@ -10,21 +10,28 @@ vmcsubastas.com y te devuelve los 4 PNG del carrusel listos para publicar.
 ```
 
 Abre una página en el navegador con todo a la vista, sin scroll: las fotos a la
-izquierda, el auto en el centro, los datos a la derecha.
+izquierda, el auto en el centro, los datos a la derecha. **La interfaz está en
+inglés** — las piezas que produce siguen en español.
 
-- **Arriba** pegás el código (`63015`) o el link y apretás *Traer*. Vienen marca,
-  modelo, año, transmisión, precio, fecha, hora, tienda y la galería entera.
-- **Izquierda** — clic en una foto para sumarla; **el orden en que las tocás es
-  el orden del carrusel** y la primera lleva el rótulo PORTADA. Las tuyas se
-  arrastran desde el explorador y se sueltan sobre ese riel.
-- **Centro** — el auto a tamaño grande. Arrastrás para moverlo, rueda para
-  acercar. Las guías punteadas marcan dónde caen el título y la tarjeta, para
-  ver qué le tapan. Las pestañas `1 2 3` cambian de slide.
-- **Derecha** — los ocho datos, editables. Los que falten se marcan.
+- **Arriba** se pega el código (`63015`) o el link y se presiona *Fetch*. Trae
+  marca, modelo, año, transmisión, precio, fecha, hora, tienda y la galería.
+- **Photos**, a la izquierda — clic en una foto para sumarla. **El orden en que
+  se tocan es el orden del carrusel** y la primera lleva el rótulo COVER. Las
+  fotos propias se arrastran desde el explorador y se sueltan sobre ese riel.
+- **Centro** — el auto a tamaño grande. Se arrastra para moverlo, rueda del
+  mouse para acercar, y las flechas del teclado para corregir de a un punto
+  (con Shift, de a cinco). Las guías punteadas marcan dónde caen el título y la
+  tarjeta. Las pestañas `1 2 3` cambian de slide.
+- **Car details**, a la derecha — los ocho datos, editables. Los que faltan
+  quedan marcados en rojo y el botón de generar se deshabilita.
 
-*Generar carrusel* deja los PNG y los muestra en el mismo lugar del auto, en
-2×2. La pestaña `✓` vuelve al resultado, las numeradas vuelven a encuadrar.
-Unos 10 a 15 segundos.
+*Generate carousel* deja los PNG y los muestra en el mismo lugar del auto, en
+2×2. La pestaña `✓` vuelve al resultado, las numeradas vuelven al encuadre.
+Entre 10 y 15 segundos.
+
+**Es una herramienta de escritorio.** El servidor escucha solo en `127.0.0.1`,
+así que no entra desde el celular ni desde otra máquina — y el render necesita
+node y Remotion instalados en esa misma computadora de todos modos.
 
 ```bash
 ./estudio.sh 63015-toyota-corolla   # reabrir uno hecho, para reencuadrar
@@ -218,7 +225,7 @@ revelar; el zoom es el que crea ese margen.
 
 Para trabajar el componente en sí —mover coordenadas, tocar el glass— sigue
 siendo el Studio (`cd social-content && npm run dev`). Esa es la herramienta del
-que diseña la pieza; la página de encuadre es la del que arma el post.
+que diseña la pieza; el estudio es la del que arma el post.
 
 ## Revisar antes de publicar
 
