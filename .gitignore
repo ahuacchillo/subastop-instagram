@@ -6,3 +6,4 @@ social-content/public/autos/
 # Los SVG sueltos de la raíz (logo, flechas) sí van al repo.
 Materiales/*/
 Posts/
+__pycache__/
