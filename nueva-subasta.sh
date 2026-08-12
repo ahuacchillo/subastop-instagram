@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 #
-# Arma un carrusel de subasta completo: pregunta los datos, toma las fotos de
-# Materiales/ y deja los PNG listos para publicar en Posts/<slug>/.
+# Builds a whole auction carousel: asks for the details, takes the photos from
+# Materiales/ and leaves publishable PNGs in Posts/<slug>/.
 #
-# No edita código. Los datos van a Remotion por --props, así que este script y
-# el proyecto son independientes: se puede correr dos veces seguidas con autos
-# distintos sin que quede nada pegado.
+# It edits no code. The details reach Remotion through --props, so this script
+# and the project stay independent: run it twice in a row with different cars
+# and nothing from the first run sticks to the second.
 #
-#   ./nueva-subasta.sh 62996                # de la URL a los PNG, sin preguntar
+#   ./nueva-subasta.sh 62996                # URL to PNGs, no questions asked
 #   ./nueva-subasta.sh https://www.vmcsubastas.com/oferta/62996
-#   ./nueva-subasta.sh 62996 --editar       # igual, pero revisando cada dato
-#   ./nueva-subasta.sh Materiales/toyota    # fotos propias, sin scraping
-#   ./nueva-subasta.sh                      # fotos sueltas en Materiales/
+#   ./nueva-subasta.sh 62996 --editar       # same, but reviewing every field
+#   ./nueva-subasta.sh Materiales/toyota    # own photos, no scraping
+#   ./nueva-subasta.sh                      # loose photos in Materiales/
 #
-# Con URL no pregunta nada: lo que sale del sitio se da por bueno y se
-# renderiza. Lo único que hay que mirar son los PNG del final.
+# Given a URL it asks nothing: whatever the site returns is taken as true and
+# rendered. The only thing left to check are the PNGs at the end.
 #
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -27,8 +27,8 @@ FOTOS_PROPIAS=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --editar|-e) EDITAR=1 ;;
-    # Datos del sitio, fotos mías: para cuando la galería de la oferta es mala
-    # o tengo fotos mejores del patio.
+    # Site details with my own photos: for when the listing's gallery is poor
+    # or better shots from the lot exist.
     --fotos|-f) FOTOS_PROPIAS="${2:?--fotos necesita una carpeta}"; shift ;;
     *) ORIGEN="$1" ;;
   esac
@@ -37,19 +37,19 @@ done
 [ -z "$FOTOS_PROPIAS" ] || [ -d "$FOTOS_PROPIAS" ] || {
   echo "No existe la carpeta de fotos '$FOTOS_PROPIAS'." >&2; exit 1; }
 
-# ── Scraping de la oferta ────────────────────────────────────────────────────
-# La página de vmcsubastas viene renderizada del servidor: los datos y las
-# fotos están en el HTML, no hace falta navegador. Lo que sale de acá son solo
-# los valores por defecto de las preguntas: todo se puede corregir a mano.
+# ── Scraping the listing ─────────────────────────────────────────────────────
+# The vmcsubastas page is server-rendered: the details and the photos are in
+# the HTML, so no browser is needed. What comes out of here is only the default
+# answer to each question; every one of them can still be corrected by hand.
 MARCA=""; MODELO=""; ANIO="25'"; TRANSMISION="Mecánica"; PRECIO=""
 FECHA=""; HORA=""; TIENDA=""; OFERTA=""
 if [[ "$ORIGEN" =~ ^https?://|^[0-9]+$ ]]; then
   ID="${ORIGEN##*/}"
   OFERTA="$ID"
-  # Las fotos se guardan por código: es el único nombre que no cambia si
-  # después corrijo la marca o el modelo, y así no se rebajan dos veces.
-  # Con --fotos no se baja ninguna: la galería solo sirve para confirmar que la
-  # página que contestó es la oferta y no la portada del sitio.
+  # Photos are stored under the listing code: it is the one name that survives
+  # a later correction to the make or the model, so nothing is downloaded twice.
+  # With --fotos nothing is downloaded at all; the gallery only confirms that
+  # the page that answered is the listing and not the site's front page.
   if [ -n "$FOTOS_PROPIAS" ]; then
     ORIGEN="$FOTOS_PROPIAS"
     DESTINO=""
@@ -58,8 +58,8 @@ if [[ "$ORIGEN" =~ ^https?://|^[0-9]+$ ]]; then
     mkdir -p "$ORIGEN"
     DESTINO="$ORIGEN"
   fi
-  # ${DESTINO:+…} desaparece entero cuando está vacío: con --fotos el scraper
-  # no recibe carpeta y por lo tanto no baja nada.
+  # ${DESTINO:+…} vanishes entirely when empty, so with --fotos the scraper
+  # receives no folder and therefore downloads nothing.
   SCRAPE="$(python3 "$RAIZ/scraper.py" "$ID" ${DESTINO:+"$DESTINO"})"
   while IFS=$'\t' read -r clave valor; do
     printf -v "$clave" '%s' "$valor"
@@ -68,10 +68,10 @@ fi
 
 [ -d "$ORIGEN" ] || { echo "No existe la carpeta '$ORIGEN'." >&2; exit 1; }
 
-# ── Datos ────────────────────────────────────────────────────────────────────
-# Enter acepta el valor entre corchetes. Si el dato ya vino del scraping no se
-# pregunta nada: el sitio es la fuente. Con --editar se revisan todos, y lo que
-# el scraping no encontró se pregunta siempre.
+# ── Details ──────────────────────────────────────────────────────────────────
+# Enter accepts the value in brackets. If the scrape already found a field it
+# is not asked about: the site is the source. --editar reviews all of them, and
+# anything the scrape missed is always asked for.
 preguntar() { # preguntar VARIABLE "Texto" ["default"]
   local resp
   if [ -z "$EDITAR" ] && [ -n "$OFERTA" ] && [ -n "${3:-}" ]; then
@@ -98,7 +98,7 @@ preguntar FECHA       "Fecha (dd/mm)"                  "$FECHA"
 preguntar HORA        "Hora"                           "$HORA"
 preguntar TIENDA      "Tienda oficial"                 "$TIENDA"
 
-# ── Fotos ────────────────────────────────────────────────────────────────────
+# ── Photos ───────────────────────────────────────────────────────────────────
 mapfile -t DISPONIBLES < <(
   find "$ORIGEN" -maxdepth 1 -type f \
     \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' \) | sort
@@ -112,12 +112,12 @@ for i in "${!DISPONIBLES[@]}"; do
 done
 echo
 echo "  El primero es la portada: es el único slide que lleva marca y modelo."
-# El carrusel es de 3: si sobran fotos en la carpeta, se ignoran las demás.
+# The carousel holds 3: any extra photos in the folder are ignored.
 TODAS="$(seq -s' ' 1 "$(( ${#DISPONIBLES[@]} < 3 ? ${#DISPONIBLES[@]} : 3 ))")"
 ORDEN=""
 if [ -z "$EDITAR" ] && [ -n "$OFERTA" ] && [ -z "$FOTOS_PROPIAS" ]; then
-  # Las del sitio ya vienen en el orden de la galería: se usan tal cual. Las
-  # mías no: si las elegí a mano, la portada es una decisión y se pregunta.
+  # The site's photos already arrive in gallery order, so they are used as-is.
+  # Hand-picked ones are different: there the cover is a decision, so we ask.
   ORDEN="$TODAS"
 else
   while [ -z "$ORDEN" ]; do
@@ -137,20 +137,20 @@ else
   done
 fi
 
-# Quien escribe "3" está eligiendo la portada, no pidiendo un carrusel de un
-# solo slide: se completa con las que falten, en el orden del listado.
-# ponytail: por lo mismo ya no se puede renderizar un subconjunto a propósito.
-# Si algún día hace falta, es una bandera --slides, no otro prompt.
+# Typing "3" means choosing the cover, not asking for a one-slide carousel, so
+# the rest is filled in from the listing order.
+# ponytail: which also means a deliberate subset can no longer be rendered.
+# If that is ever needed it is a --slides flag, not another prompt.
 for idx in $(seq 1 "${#DISPONIBLES[@]}"); do
   case " $ORDEN " in *" $idx "*) ;; *) ORDEN="$ORDEN $idx" ;; esac
 done
 ORDEN="$(echo $ORDEN | cut -d' ' -f1-3)"
 echo "  Carrusel: $ORDEN"
 
-# ── Copiar fotos con nombre estable ──────────────────────────────────────────
-# El slug prefija los archivos para que dos subastas no se pisen en public/.
-# Va el código de oferta adelante: dos Fortuner distintos se distinguen, y el
-# número es el que se busca cuando hay que volver a la publicación original.
+# ── Copy the photos under stable names ───────────────────────────────────────
+# The slug prefixes the files so two auctions cannot collide inside public/.
+# The listing code goes first: it tells two different Fortuners apart, and it
+# is the number people search for when they need the original publication.
 SLUG="$(printf '%s-%s-%s' "$OFERTA" "$MARCA" "$MODELO" \
   | iconv -f utf8 -t ascii//TRANSLIT \
   | tr '[:upper:]' '[:lower:]' \
@@ -170,9 +170,9 @@ for idx in $ORDEN; do
 done
 
 # ── datos.json ───────────────────────────────────────────────────────────────
-# Se arma con python y no con un heredoc porque los valores traen apóstrofes
-# (25') y acentos, y ahí un heredoc se rompe callado. Queda junto a los renders:
-# la pieza se puede rehacer igual dentro de un año.
+# Built with python rather than a heredoc because the values carry apostrophes
+# (25') and accents, which break a heredoc silently. It sits next to the
+# renders, so the piece can be rebuilt identically a year from now.
 MARCA="$MARCA" MODELO="$MODELO" ANIO="$ANIO" TRANSMISION="$TRANSMISION" \
 PRECIO="$PRECIO" FECHA="$FECHA" HORA="$HORA" TIENDA="$TIENDA" \
 FOTOS="${FOTOS[*]}" SALIDA="$RAIZ/Posts/$SLUG" \
@@ -190,6 +190,6 @@ with open(f"{e['SALIDA']}/datos.json", "w") as f:
 PY
 
 # ── Render ───────────────────────────────────────────────────────────────────
-# Renderiza `ajustar.sh`: un solo camino, así la placa de cierre y el soporte de
-# encuadre no viven en dos lugares que se desincronizan.
+# `ajustar.sh` does the rendering: one path only, so the closing card and the
+# framing support never live in two places that drift apart.
 exec "$RAIZ/ajustar.sh" "$SLUG" --render

@@ -4,11 +4,11 @@ import { sans, vy, vyGradient } from "../brand/vmc";
 import { Boton, CerrarX, Tarjeta, TextoModal } from "./ui";
 
 // ═════════════════════════════════════════════════════════════════════════════
-// Pantallas del producto reconstruidas para el reel.
+// The product's screens, rebuilt for the reel.
 //
-// Son las superficies que el usuario reconoce de la app: el formulario de
-// publicación, la vista previa, la tarjeta de la oferta publicada y el modal.
-// Todo lo que cambia entre escenas entra por props; el reel no dibuja cajas.
+// These are the surfaces a user recognises from the app: the listing form, the
+// preview, the published-offer card and the modal. Everything that changes
+// between scenes arrives through props; the reel never draws boxes itself.
 // ═════════════════════════════════════════════════════════════════════════════
 
 const Subrayado: React.FC<{ ancho: number }> = ({ ancho }) => (
@@ -79,8 +79,8 @@ const Corazon = (
 );
 
 /**
- * La tarjeta de la oferta publicada: cuándo cierra, cuánta gente la está
- * mirando y el botón desde el que el comprador abre la negociación.
+ * The published offer's card: when it closes, how many people are watching it,
+ * and the button a buyer opens the negotiation from.
  */
 export const TarjetaLive: React.FC<{
   dia: string;
@@ -126,7 +126,7 @@ export const TarjetaLive: React.FC<{
         </div>
       </div>
 
-      {/* El corazón vive encima de la línea divisoria, no dentro de una columna. */}
+      {/* The heart sits on the divider line, not inside either column. */}
       <div
         style={{
           position: "absolute",
@@ -202,9 +202,9 @@ export const TarjetaLive: React.FC<{
 );
 
 /**
- * Shell del modal. El icono dice de qué habla la pantalla: monedas para plata
- * (publicar, proponer), billetera para una propuesta que llega, campana para
- * una notificación del sistema.
+ * The modal shell. The icon says what the screen is about: coins for money
+ * (publishing, proposing), wallet for an incoming proposal, bell for a system
+ * notification.
  */
 const ICONOS = {
   monedas: { archivo: "brand/icono-monedas.svg", w: 36, h: 38 },
@@ -235,14 +235,14 @@ export const Modal: React.FC<{
   );
 };
 
-// ── Publicar ─────────────────────────────────────────────────────────────────
+// ── Publishing ───────────────────────────────────────────────────────────────
 
 /**
- * Campo del formulario de publicación.
+ * A field of the listing form.
  *
- * `desde` es el frame en el que se "llena": antes muestra el placeholder gris,
- * después el valor. Encadenando `desde` campo a campo se ve a alguien
- * completando la ficha sin animar un cursor.
+ * `desde` is the frame at which it "fills in": before that it shows the grey
+ * placeholder, after it the value. Chaining `desde` field by field reads as
+ * someone completing the form, with no cursor to animate.
  */
 const Campo: React.FC<{
   etiqueta: string;
@@ -300,7 +300,7 @@ const Campo: React.FC<{
   );
 };
 
-/** La ficha que llena el vendedor. Es el paso más largo de la app y el más corto del reel. */
+/** The form the seller fills in. The app's longest step and the reel's shortest. */
 export const Formulario: React.FC<{
   placa: string;
   marca: string;
@@ -374,10 +374,10 @@ export const Formulario: React.FC<{
 );
 
 /**
- * La barra de vista previa: el último paso antes de que la oferta salga en vivo.
+ * The preview bar: the last step before the offer goes out.
  *
- * Es la única superficie de la app con botón naranja. Ese naranja es el que
- * cierra la publicación, y por eso el reel lo muestra solo aquí.
+ * It is the app's only surface with an orange button. That orange is what
+ * closes the publication, which is why the reel shows it here and nowhere else.
  */
 export const BarraVistaPrevia: React.FC = () => (
   <div
@@ -453,7 +453,7 @@ export const BarraVistaPrevia: React.FC = () => (
   </div>
 );
 
-/** La foto del auto con su franja teal, tal como se ve en la vista previa. */
+/** The car photo with its teal band, exactly as the preview shows it. */
 export const PreviewAuto: React.FC<{
   foto: string;
   auto: string;

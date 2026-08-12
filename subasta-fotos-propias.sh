@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 #
-# Los datos salen de la oferta, las fotos las pongo yo.
+# Details come from the listing, the photos come from me.
 #
-# Igual que `nueva-subasta.sh <código>` pero sin bajar la galería del sitio:
-# marca, modelo, año, transmisión, precio, fecha, hora y tienda se leen de
-# vmcsubastas.com, y el carrusel se arma con las fotos de la carpeta que le
-# pases. Para cuando las fotos de la oferta son malas o tengo mejores.
+# Same as `nueva-subasta.sh <code>` but without downloading the site gallery:
+# make, model, year, transmission, price, date, time and store are read from
+# vmcsubastas.com, and the carousel is built from the folder you point at.
+# For when the listing's own photos are poor, or better ones exist.
 #
 #   ./subasta-fotos-propias.sh 62996 Materiales/toyota
 #   ./subasta-fotos-propias.sh https://www.vmcsubastas.com/oferta/62996 fotos/
 #
-# Pregunta el orden del carrusel: si elegiste las fotos a mano, cuál va de
-# portada es una decisión tuya, no del sitio. Con --editar además revisa cada
-# dato scrapeado.
+# It asks for the carousel order: when the photos were picked by hand, which
+# one leads is a human decision, not the site's. Add --editar to also review
+# every scraped field.
 #
 set -euo pipefail
 

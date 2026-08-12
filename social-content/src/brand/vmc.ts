@@ -1,9 +1,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Kit de marca VMC Subastas — VOYAGER Design System.
+// VMC Subastas brand kit — VOYAGER Design System.
 //
-// Traducción literal del spec pixel-perfect del frame 51 (nodo 7340:30564).
-// Todo número de este archivo salió de Figma. Si Figma cambia, cambia aquí:
-// los componentes no llevan constantes propias.
+// A literal transcription of the pixel-perfect spec for frame 51 (node
+// 7340:30564). Every number here came out of Figma. When Figma changes, this
+// changes: components carry no constants of their own.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { loadFont as loadJakarta } from "@remotion/google-fonts/PlusJakartaSans";
@@ -15,20 +15,20 @@ export const { fontFamily: sans } = loadJakarta("normal", {
   subsets: ["latin"],
 });
 
-/** Solo para la letra del avatar del vendedor. */
+/** Only for the letter inside the seller's avatar. */
 export const { fontFamily: avatarFont } = loadRoboto("normal", {
   weights: ["700"],
   subsets: ["latin"],
 });
 
-/** Los montos del producto van en monoespaciada: "US$ 9,000" no baila al tipear. */
+/** Product amounts are monospaced so "US$ 9,000" does not jitter as it changes. */
 export const { fontFamily: mono } = loadRobotoMono("normal", {
   weights: ["500", "700"],
   subsets: ["latin"],
 });
 
 export const color = {
-  /** text/neutral-inverse — textos sobre foto. No es blanco puro. */
+  /** text/neutral-inverse — type over photos. Not pure white. */
   inverse: "#FCFAFA",
   white: "#FFFFFF",
   naranja: "#ED8936",
@@ -39,59 +39,60 @@ export const color = {
 } as const;
 
 export const shadow = {
-  /** Elevación glass — todas las superficies la comparten. */
+  /** Glass elevation — every surface shares it. */
   glass: "0px 8px 24px rgba(0,0,0,0.1)",
-  /** Borde de luz interior del glass. */
+  /** The glass's inner light edge. */
   glassInset: "inset 0px 1px 6px rgba(255,255,255,0.45)",
-  /** TextW3C — texto dentro de tarjeta. */
+  /** TextW3C — type inside a card. */
   textCard: "0px 1px 3px rgba(0,0,0,0.25)",
   textHeader: "0px 1px 3px rgba(0,0,0,0.5)",
-  /** Nombre de versión sobre foto (Glory). */
+  /** Trim name over a photo (Glory). */
   textNombre: "0px 3px 12px rgba(0,0,0,0.8)",
-  /** Título de marca sobre foto (DFSK). */
+  /** Make title over a photo (DFSK). */
   textMarca: "0px 3px 12px rgba(0,0,0,0.4)",
 } as const;
 
 export const gradient = {
-  /** VYPrimaryDefault2 aplicado al título de marca (bg-clip-text). */
+  /** VYPrimaryDefault2 applied to the make title (bg-clip-text). */
   titulo:
     "linear-gradient(123.41deg, #FFFFFF 0%, #ED8936 22%, #8460E5 75%, #FFFFFF 100%)",
-  /** Píldora de fecha de subasta. */
+  /** The auction-date pill. */
   fecha:
     "linear-gradient(149.88deg, #ED8936 0%, #ED8936 40%, #8460E5 100%)",
   /**
-   * Borde de las superficies glass. El spec lo llama VYStrokes1 "blanco 1.5px",
-   * pero los SVG exportados (flechas) traen este degradado y es lo que se ve en
-   * el render: blanco arriba-izquierda, naranja, violeta, blanco.
+   * The border on glass surfaces. The spec calls it VYStrokes1, "white 1.5px",
+   * but the exported SVGs (the arrows) carry this gradient and that is what the
+   * render shows: white top-left, orange, violet, white.
    */
   borde:
     "linear-gradient(135deg, #FFFFFF 0%, #F4AC59 22%, #8460E5 74.5%, #FFFFFF 100%)",
-  /** Superficie del avatar del vendedor. */
+  /** The seller avatar's surface. */
   avatar: "linear-gradient(149.88deg, #ED8936 0%, #8460E5 100%)",
   /**
-   * `titulo` pero para el reel.
+   * `titulo`, but for the reel.
    *
-   * El original vive sobre la foto del auto: su tramo violeta #8460E5 se lee
-   * porque debajo hay chapa oscura. Sobre el fondo violeta del reel ese tramo
-   * desaparece. Se sube el violeta a #AE8EFF y el naranja a #FF9639, y el eje
-   * se endereza a 100° para que cada línea recorra el degradado completo.
+   * The original lives over the car photo: its #8460E5 violet stretch reads
+   * because there is dark bodywork underneath. Over the reel's violet
+   * background that stretch disappears. So the violet is lifted to #AE8EFF and
+   * the orange to #FF9639, and the axis is straightened to 100° so every line
+   * travels the whole gradient.
    */
   tituloReel:
     "linear-gradient(100deg, #FFFFFF 0%, #FF9639 28%, #AE8EFF 72%, #FFFFFF 100%)",
 } as const;
 
 /**
- * Receta glass: los dos rellenos superpuestos del spec.
+ * The glass recipe: the spec's two stacked fills.
  *
- * El borde degradado NO va aquí — un tercer `background` con `border-box` se
- * vería a través de los rellenos, que son translúcidos, y teñiría la tarjeta
- * entera de naranja y violeta. Va aparte, en `<BordeGlass>`, recortado con
- * máscara.
+ * The gradient border does NOT belong here. A third `background` with
+ * `border-box` would show through the fills, which are translucent, and tint
+ * the whole card orange and violet. It goes separately, in `<BordeGlass>`,
+ * clipped with a mask.
  *
- * `tail` es lo único que cambia entre las dos variantes del sistema:
- *   - header y flechas → transparente (blur 5)
- *   - tarjeta de datos → gris #717171 al 50% (blur 20), más opaca para leerse
- *     encima de cualquier foto.
+ * `tail` is the only thing that differs between the system's two variants:
+ *   - header and arrows → transparent (blur 5)
+ *   - data card → #717171 grey at 50% (blur 20), more opaque so it reads on
+ *     top of any photo.
  */
 export const glass = (blur: number, tail: string) =>
   ({
@@ -104,18 +105,18 @@ export const glass = (blur: number, tail: string) =>
     boxShadow: `${shadow.glass}, ${shadow.glassInset}`,
   }) as const;
 
-/** Glass ligero — header del vendedor y flechas de carrusel. */
+/** Light glass — the seller header and the carousel arrows. */
 export const glassLigero = glass(5, "rgba(255,255,255,0)");
-/** Glass denso — tarjeta de datos del auto. */
+/** Dense glass — the car's data card. */
 export const glassDenso = glass(20, "rgba(113,113,113,0.5)");
 
 /**
- * Glass de marca — el del reel.
+ * Brand glass — the reel's.
  *
- * En el carrusel el glass va sobre la foto del auto y su cola es gris neutro:
- * tiene que leerse encima de cualquier color. En el reel el fondo siempre es el
- * violeta de VMC, así que la cola se tiñe de índigo y el relleno lleva un toque
- * de violeta claro. Misma receta del sistema, nuestros colores.
+ * In the carousel the glass sits over the car photo and its tail is neutral
+ * grey, because it has to read on top of any colour. In the reel the
+ * background is always VMC violet, so the tail is tinted indigo and the fill
+ * picks up a touch of light violet. The system's recipe, in our colours.
  */
 export const glassMarca = {
   backdropFilter: "blur(14px)",
@@ -130,27 +131,28 @@ export const glassMarca = {
 export const POST = { width: 1080, height: 1080, fps: 30 } as const;
 
 // ═════════════════════════════════════════════════════════════════════════════
-// VOYAGER — paleta y degradados de la app (los SVG del producto)
+// VOYAGER — the app's palette and gradients (the product SVGs)
 //
-// El carrusel de arriba vive sobre la foto del auto: vidrio, blancos, sombras.
-// El reel vive dentro de la app: sólidos violeta/teal y botones con borde
-// degradado. Son dos familias del mismo sistema y por eso conviven en un solo
-// archivo, pero no se mezclan: `gradient` es el mundo foto, `vy` es el mundo UI.
+// The carousel above lives over the car photo: glass, whites, shadows. The
+// reel lives inside the app: violet and teal solids, buttons with gradient
+// borders. They are two families of one system, which is why they share a
+// file, but they never mix: `gradient` is the photo world, `vy` is the UI one.
 //
-// Cada valor salió de los SVG exportados de Figma. Los ángulos CSS son la
-// conversión del vector (x1,y1)→(x2,y2) de cada linearGradient: θ = atan2(dx,-dy).
+// Every value came out of the SVGs exported from Figma. The CSS angles are the
+// conversion of each linearGradient's (x1,y1)→(x2,y2) vector:
+// θ = atan2(dx,-dy).
 // ═════════════════════════════════════════════════════════════════════════════
 
 export const vy = {
-  /** Fondo del header en vivo, de claro a casi negro. */
+  /** The live header's background, light through to near-black. */
   violeta600: "#5F3ED8",
   indigo700: "#340091",
   indigo900: "#140046",
-  /** Violeta de acción — botones, iconos, chips. */
+  /** Action violet — buttons, icons, chips. */
   violeta: "#8460E5",
   violeta300: "#AE8EFF",
   violeta100: "#CFBAFF",
-  /** Todo el texto de la app sobre blanco. Nunca negro. */
+  /** All of the app's type on white. Never black. */
   tinta: "#3B1782",
   teal: "#00CCCC",
   teal300: "#4DDCDC",
@@ -160,44 +162,44 @@ export const vy = {
   naranja: "#FF9639",
   naranja600: "#EF852E",
   naranja900: "#BE3D00",
-  /** Placeholder de input. */
+  /** Input placeholder. */
   gris: "#D1D5DC",
 } as const;
 
 export const vyGradient = {
-  /** Header del auto en vivo — también es el fondo de todo el reel. */
+  /** The live car header — also the background of the whole reel. */
   header: "linear-gradient(157deg, #5F3ED8 0%, #340091 50%, #140046 100%)",
-  /** Banner de Subastin bajo el header. */
+  /** The Subastin banner under the header. */
   banner: "linear-gradient(90deg, #00DAE0 0%, #008688 100%)",
-  /** Pantalla de espera "Procesando". */
+  /** The "Procesando" waiting screen. */
   procesando: "linear-gradient(90deg, #00DAE0 0%, #008688 100%)",
-  /** Botón teal — "Negocia ahora", "Ingresa a la sala". */
+  /** Teal button — "Negocia ahora", "Ingresa a la sala". */
   botonTeal: "linear-gradient(136deg, #00AEB1 0%, #00AEB1 40%, #8460E5 100%)",
   botonTealBorde:
     "linear-gradient(138deg, #FFFFFF 0%, #4DDCDC 25%, #6445DF 75%, #FFFFFF 100%)",
-  /** Botón violeta — "Proponer", "Enviar", "Aceptar", "Contraproponer". */
+  /** Violet button — "Proponer", "Enviar", "Aceptar", "Contraproponer". */
   botonVioleta: "linear-gradient(165deg, #8460E5 0%, #3B1782 100%)",
   botonVioletaBorde:
     "linear-gradient(145deg, #CFBAFF 0%, #FFFFFF 35%, #AE8EFF 65%, #CFBAFF 100%)",
-  /** Botón naranja — el de publicar. Es el único naranja de la app, y por eso pesa. */
+  /** Orange button — the publish one. The app's only orange, which is why it carries weight. */
   botonNaranja: "linear-gradient(130deg, #ED8936 0%, #ED8936 40%, #8460E5 100%)",
   botonNaranjaBorde:
     "linear-gradient(132deg, #FFFFFF 0%, #FBC47D 25%, #AE8EFF 75%, #FFFFFF 100%)",
-  /** Chip "ÚLTIMO PASO" sobre la barra de vista previa. */
+  /** The "ÚLTIMO PASO" chip above the preview bar. */
   chipPaso: "linear-gradient(133deg, #8460E5 0%, #3B1782 100%)",
   chipPasoBorde:
     "linear-gradient(131deg, #8776FF 0%, #FFFFFF 38%, #532BC7 68%, #8776FF 100%)",
-  /** Monto: el "US$" queda violeta a la izquierda y las cifras teal a la derecha. */
+  /** Amount: the "US$" stays violet on the left, the figures teal on the right. */
   monto: "linear-gradient(217deg, #00CCCC 0%, #00CCCC 40%, #AE8EFF 100%)",
-  /** Aro de la X de cerrar. */
+  /** The close X's ring. */
   cerrar: "linear-gradient(180deg, #FF9639 0%, #EF852E 40%, #BE3D00 100%)",
 } as const;
 
 /**
- * Reel vertical.
+ * Vertical reel.
  *
- * 260×411 es el tamaño de diseño, no el de entrega: se renderiza con
- * `--scale=4` → 1040×1644, que es par y sube nítido a Instagram. Autorar en
- * unidades chicas mantiene los números iguales a los del Figma del producto.
+ * 260×411 is the authoring size, not the delivery size: it renders with
+ * `--scale=4` → 1040×1644, which is even and uploads sharp to Instagram.
+ * Authoring in small units keeps the numbers identical to the product's Figma.
  */
 export const REEL = { width: 260, height: 411, fps: 30 } as const;

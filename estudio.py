@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 """
-Estudio: de un código de oferta a los PNG listos para publicar, sin terminal.
+Studio: from a listing code to publishable PNGs, without touching a terminal.
 
-    ./estudio.sh                 # empezar un carrusel nuevo
-    ./estudio.sh 62915-dfsk-glory  # reabrir uno ya hecho, para reencuadrar
+    ./estudio.sh                   # start a new carousel
+    ./estudio.sh 62915-dfsk-glory  # reopen a finished one, to reframe it
 
-Cuatro pasos en una sola página: pegar la oferta, revisar los datos, elegir las
-fotos y su orden, encuadrar. Al final genera y muestra los cuatro slides.
+Everything on one page: paste the listing, check the details, pick the photos
+and their order, frame them. It then renders and shows the four slides.
 
-Es la misma tubería de siempre: `scraper.py` para los datos y
-`ajustar.sh --render` para los PNG. Esta página no renderiza nada por su cuenta,
-así que no puede desincronizarse de lo que sale por la terminal.
+Same pipeline as always: `scraper.py` for the details and `ajustar.sh --render`
+for the PNGs. This page renders nothing of its own, so it cannot drift away
+from what the terminal produces.
 
-Servidor de la stdlib en 127.0.0.1: no se instala nada y no sale de la máquina.
+A stdlib server on 127.0.0.1: nothing is installed and nothing leaves the
+machine, which also means no phone or other computer can reach it.
 """
 import base64
 import http.server
@@ -36,18 +37,18 @@ AUTOS = os.path.join(RAIZ, "social-content", "public", "autos")
 PUERTO = 4173
 EXTS = (".png", ".jpg", ".jpeg")
 
-# Slug de arranque, cuando se reabre un carrusel ya hecho.
+# Starting slug, set when reopening a finished carousel.
 SLUG_INICIAL = sys.argv[1].strip("/").removeprefix("Posts/") if len(sys.argv) > 1 else ""
 
 
 def seguro(nombre):
-    """Un nombre de archivo, sin rutas. Lo que llega del navegador no elige en
-    qué carpeta se escribe."""
+    """A file name with no path in it. Nothing arriving from the browser gets
+    to choose which folder is written to."""
     return os.path.basename(nombre).replace("\x00", "")
 
 
 def slugificar(*partes):
-    """Mismo slug que `nueva-subasta.sh`: código-marca-modelo."""
+    """Same slug as `nueva-subasta.sh`: code-make-model."""
     crudo = "-".join(str(p) for p in partes)
     plano = unicodedata.normalize("NFKD", crudo).encode("ascii", "ignore").decode()
     return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]", "-", plano.lower())).strip("-")
@@ -72,10 +73,10 @@ FUENTE = os.path.join(RAIZ, "social-content", "public", "brand",
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
-    # HTTP/1.1 para que el navegador reuse la conexión. Con 1.0 abre una por
-    # foto, se queda sin pool a la decena de miniaturas y las que faltan quedan
-    # colgadas para siempre. Todas las respuestas mandan Content-Length, que es
-    # lo que 1.1 exige para poder reusar.
+    # HTTP/1.1 so the browser reuses the connection. With 1.0 it opens one per
+    # photo, runs out of pool around the tenth thumbnail, and the rest hang
+    # forever. Every response sends Content-Length, which is what 1.1 needs in
+    # order to reuse a connection.
     protocol_version = "HTTP/1.1"
 
     def log_message(self, *_):
@@ -94,7 +95,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                        json.dumps(obj, ensure_ascii=False).encode())
 
     def archivo(self, ruta, base):
-        """Sirve un archivo, siempre de adentro de `base`."""
+        """Serve a file, always from inside `base`."""
         ruta = os.path.abspath(ruta)
         if not ruta.startswith(os.path.abspath(base) + os.sep) or not os.path.isfile(ruta):
             return self.responder(404, "text/plain", b"no existe")
@@ -104,12 +105,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
     # ── GET ──────────────────────────────────────────────────────────────────
     def do_GET(self):
-        # unquote: los nombres de WhatsApp traen espacios y el navegador los
-        # manda como %20. Sin esto la miniatura sale rota.
+        # unquote: WhatsApp file names carry spaces and the browser sends them
+        # as %20. Without this the thumbnail comes out broken.
         ruta = urllib.parse.unquote(self.path.split("?")[0])
         if ruta == "/":
-            # Desde disco y no desde una constante: recargar el navegador
-            # alcanza para ver un cambio de la página, sin reiniciar nada.
+            # From disk rather than a constant: reloading the browser is all
+            # it takes to see a page change, with no restart.
             with open(PAGINA, "rb") as f:
                 return self.responder(200, "text/html; charset=utf8", f.read())
         if ruta == "/fuente":
@@ -121,7 +122,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self.archivo(
                 os.path.join(MATERIALES, seguro(carpeta), seguro(archivo)), MATERIALES)
         if ruta.startswith("/auto/"):
-            # Las fotos ya copiadas de un carrusel hecho.
+            # Photos already copied into a finished carousel.
             return self.archivo(
                 os.path.join(AUTOS, seguro(ruta.split("/", 2)[2])), AUTOS)
         if ruta.startswith("/post/"):
@@ -131,7 +132,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.responder(404, "text/plain", b"no existe")
 
     def inicio(self):
-        """Estado para reabrir un carrusel ya hecho. Sin argumento, vacío."""
+        """State for reopening a finished carousel. Empty without an argument."""
         if not SLUG_INICIAL:
             return {"slug": ""}
         datos_json = os.path.join(POSTS, SLUG_INICIAL, "datos.json")
@@ -141,10 +142,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
         codigo = SLUG_INICIAL.split("-")[0]
         codigo = codigo if codigo.isdigit() else ""
 
-        # Las fotos que se usaron son las copiadas a public/autos: se ofrecen
-        # desde ahí y no desde Materiales, porque son las únicas que mapean
-        # exacto contra el encuadre guardado. Adivinar por posición pega el
-        # encuadre a la foto equivocada apenas el orden no fue 1-2-3.
+        # The photos actually used are the ones copied into public/autos, so
+        # they are offered from there and not from Materiales: they are the
+        # only ones that map exactly onto the saved framing. Guessing by
+        # position pins the framing to the wrong photo the moment the order
+        # was not 1-2-3.
         fotos, elegidas, ajustes = [], [], {}
         for f in (normalizar(x) for x in d["fotos"]):
             archivo = os.path.basename(f["src"])
@@ -153,7 +155,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             elegidas.append(url)
             ajustes[url] = {"foco": f["foco"], "escala": f["escala"]}
 
-        # Y además la carpeta original, para poder cambiar una foto por otra.
+        # Plus the original folder, so a photo can still be swapped out.
         carpeta = codigo if os.path.isdir(os.path.join(MATERIALES, codigo)) else ""
         fotos += [{"archivo": f, "carpeta": carpeta, "url": f"/foto/{carpeta}/{f}"}
                   for f in listar(os.path.join(MATERIALES, carpeta))] if carpeta else []
@@ -181,7 +183,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             r = accion(cuerpo)
             r["ok"] = True
             self.json(r)
-        except Exception as e:  # noqa: BLE001 — lo que falle se muestra en la página
+        except Exception as e:  # noqa: BLE001 - whatever fails is shown on the page
             self.json({"ok": False, "error": str(e) or type(e).__name__})
 
     def oferta(self, c):
@@ -206,8 +208,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
         }
 
     def subir(self, c):
-        # Sin código las fotos van a una carpeta propia: nunca se mezclan con
-        # las de una oferta que no les corresponde.
+        # With no code the photos get their own folder, so they never mix with
+        # a listing they do not belong to.
         carpeta = seguro(str(c.get("codigo") or "").strip()) or "subidas"
         destino = os.path.join(MATERIALES, carpeta)
         os.makedirs(destino, exist_ok=True)
@@ -232,9 +234,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         os.makedirs(AUTOS, exist_ok=True)
         os.makedirs(os.path.join(POSTS, slug), exist_ok=True)
 
-        # Se lee TODO antes de escribir nada: al reabrir un carrusel, la fuente
-        # y el destino son la misma carpeta, y reordenar las fotos escribiría
-        # encima de una que todavía falta leer.
+        # Read EVERYTHING before writing anything: when a carousel is reopened
+        # the source and the destination are the same folder, and reordering
+        # would overwrite a photo that has not been read yet.
         crudo = []
         for f in fotos:
             archivo, carpeta = seguro(f["archivo"]), seguro(f.get("carpeta") or "")
@@ -242,8 +244,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             with open(os.path.join(base, archivo), "rb") as a:
                 crudo.append((os.path.splitext(archivo)[1].lower(), a.read()))
 
-        # Nombre estable y prefijado por slug, igual que el script: así dos
-        # subastas no se pisan en public/.
+        # Stable names prefixed by the slug, same as the script, so two
+        # auctions cannot collide inside public/.
         salida = []
         for n, (f, (ext, contenido)) in enumerate(zip(fotos, crudo), 1):
             with open(os.path.join(AUTOS, f"{slug}-{n}{ext}"), "wb") as b:
@@ -270,7 +272,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         print(f"  ✓ Posts/{slug}/", flush=True)
         pngs = sorted(f for f in os.listdir(os.path.join(POSTS, slug))
                       if f.endswith(".png"))
-        # El ?v= evita que el navegador muestre el render anterior en caché.
+        # The ?v= keeps the browser from serving the previous render from cache.
         import time as _t
         v = int(_t.time())
         return {"slug": slug, "slides": [f"/post/{slug}/{p}?v={v}" for p in pngs]}

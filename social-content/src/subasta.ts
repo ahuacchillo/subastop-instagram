@@ -1,43 +1,43 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// La subasta que se está armando ahora mismo.
+// The auction being previewed right now.
 //
-// Es lo ÚNICO que se edita para publicar un carrusel nuevo: se cambian los
-// datos, se dejan las fotos en `public/autos/` y se renderiza. Ningún
-// componente tiene texto quemado.
+// This is only an example for the Studio. Real carousels never edit it: the
+// scripts and the studio feed Remotion through --props. No component carries
+// hard-coded copy.
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Una foto del carrusel.
+ * One photo of the carousel.
  *
- * String suelto = encuadre centrado sin zoom, que es lo que genera el script y
- * lo que hay en todos los `datos.json` de hoy. La forma larga es para cuando el
- * recorte al 1080×1080 se come parte del auto:
+ * A bare string means centred with no zoom, which is what the scripts emit and
+ * what every `datos.json` holds today. The long form is for when the crop to
+ * 1080×1080 eats part of the car:
  *
  *   { src: "autos/x-1.jpeg", foco: "50% 35%", escala: 1.2 }
  *
- * `foco` es un `object-position` — mueve el recorte. `escala` acerca, y lo hace
- * alrededor del foco, no del centro. Los valores se buscan a ojo en el Studio
- * (`./ajustar.sh <slug>`): a ciegas no se aciertan.
+ * `foco` is an `object-position` and moves the crop. `escala` zooms in, and it
+ * does so around the focus point rather than the centre. Both are found by eye
+ * in the studio (`./estudio.sh <slug>`); nobody guesses them blind.
  */
 export type Foto = string | { src: string; foco?: string; escala?: number };
 
 export type Subasta = {
-  /** Marca — es el título con degradado. Solo sale en la primera foto. */
+  /** Make — the gradient title. Appears on the first photo only. */
   marca: string;
-  /** Versión/modelo — sale encima de la marca, en blanco. */
+  /** Trim or model — sits above the make, in white. */
   modelo: string;
-  /** Año en formato corto de la tarjeta: 19' */
+  /** Year in the card's short form: 19' */
   anio: string;
   transmision: string;
-  /** Ya formateado, con moneda: la tarjeta no calcula nada. */
+  /** Pre-formatted, currency included: the card computes nothing. */
   precioBase: string;
   fecha: string;
   hora: string;
-  /** Tienda oficial que vende. La inicial va en el avatar. */
+  /** Official store selling it. Its initial goes in the avatar. */
   tienda: string;
   /**
-   * Rutas dentro de `public/`. El orden es el orden del carrusel.
-   * La primera es la portada: es la única que lleva marca y modelo.
+   * Paths inside `public/`. Their order is the carousel order.
+   * The first one is the cover: the only slide carrying make and model.
    */
   fotos: Foto[];
 };

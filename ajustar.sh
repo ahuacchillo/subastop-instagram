@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 #
-# Ajusta el encuadre de un carrusel, o lo rehace desde su `datos.json`.
+# Reframe a carousel, or rebuild it from its `datos.json`.
 #
-#   ./ajustar.sh 62915-dfsk-glory            # abre la página de encuadre
-#   ./ajustar.sh 62915-dfsk-glory --render   # rehace los PNG desde datos.json
+#   ./ajustar.sh 62915-dfsk-glory            # opens the studio on that post
+#   ./ajustar.sh 62915-dfsk-glory --render   # rebuilds the PNGs from datos.json
 #
-# Sin bandera abre `encuadre.py` en el navegador: arrastrás la foto, rueda para
-# acercar, y el botón guarda y renderiza. Eso escribe en el datos.json:
+# With no flag it opens the studio in the browser: drag the photo, scroll to
+# zoom, and the button saves and renders. That is what writes into datos.json:
 #
 #   "fotos": [
 #     { "src": "autos/x-1.jpeg", "foco": "50% 35%", "escala": 1.2 },
-#     "autos/x-2.jpeg"          ← string suelto = centrado, sin zoom
+#     "autos/x-2.jpeg"          <- a bare string means centred, no zoom
 #   ]
 #
-# `nueva-subasta.sh` termina llamando acá: hay un solo camino de render, y por
-# eso la placa de cierre y el soporte de encuadre viven en un solo lugar.
+# `nueva-subasta.sh` ends by calling this, so there is a single render path and
+# the closing card and the framing support live in exactly one place.
 #
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -24,7 +24,7 @@ SLUG="${1:-}"
 MODO="${2:-}"
 [ -n "$SLUG" ] || { echo "Uso: $(basename "$0") <slug-de-Posts> [--render]" >&2; exit 1; }
 
-# Se acepta tanto el slug como la ruta entera: `Posts/x` y `Posts/x/` también.
+# Either the slug or the whole path works: `Posts/x` and `Posts/x/` too.
 SLUG="${SLUG#Posts/}"; SLUG="${SLUG%/}"
 DATOS="$RAIZ/Posts/$SLUG/datos.json"
 [ -f "$DATOS" ] || { echo "No existe $DATOS." >&2; exit 1; }
@@ -34,8 +34,8 @@ if [ "$MODO" != "--render" ]; then
 fi
 
 # ── Render ───────────────────────────────────────────────────────────────────
-# Un JSON de props por slide. Se arma con python y no con un heredoc porque los
-# valores traen apóstrofes (25') y acentos, y ahí un heredoc se rompe callado.
+# One props JSON per slide. Built with python rather than a heredoc because the
+# values carry apostrophes (25') and accents, which break a heredoc silently.
 PROPS="$(mktemp -d)"
 trap 'rm -rf "$PROPS"' EXIT
 SLIDES="$(DATOS="$DATOS" DESTINO="$PROPS" python3 - <<'PY'
@@ -50,8 +50,8 @@ PY
 
 echo
 echo "── Renderizando $SLIDES slides ───────────────────────────────"
-# ponytail: un bundle por slide (~13s cada uno). Si molesta, se cambia a la API
-# de Node (@remotion/renderer), que bundlea una vez sola.
+# ponytail: one bundle per slide (~13s each). If that ever hurts, switch to the
+# Node API (@remotion/renderer), which bundles once for all of them.
 cd social-content
 for i in $(seq 0 $((SLIDES - 1))); do
   npx remotion still Auto \
@@ -61,9 +61,9 @@ for i in $(seq 0 $((SLIDES - 1))); do
   echo "  ✓ Posts/$SLUG/$((i + 1)).png"
 done
 
-# ── Placa de cierre ──────────────────────────────────────────────────────────
-# Va siempre al final y va tal cual: no pasa por Remotion, no lleva datos del
-# auto, no cambia nunca. Si falta, el carrusel ya renderizado no se pierde.
+# ── Closing card ─────────────────────────────────────────────────────────────
+# Always last and always verbatim: it never goes through Remotion, carries no
+# car data, and never changes. If it is missing, the rendered carousel survives.
 CIERRE="$RAIZ/Materiales/cierre.png"
 if [ -f "$CIERRE" ]; then
   cp "$CIERRE" "$RAIZ/Posts/$SLUG/$((SLIDES + 1)).png"

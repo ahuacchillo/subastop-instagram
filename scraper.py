@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """
-Lee una oferta de vmcsubastas.com: los datos del auto y las fotos de la galería.
+Read a vmcsubastas.com listing: the car's details and the gallery photos.
 
-La página viene renderizada del servidor, así que todo está en el HTML y no hace
-falta navegador. Lo que sale de acá son valores por defecto: todo se puede
-corregir después, ni el script ni la app dan el scraping por infalible.
+The page is server-rendered, so everything is in the HTML and no browser is
+needed. What comes out are defaults: all of it can be corrected afterwards.
+Neither the script nor the app treats the scrape as infallible.
 
-Como módulo:
+As a module:
     import scraper
-    datos, fotos = scraper.leer("62996")     # fotos = URLs, en orden de galería
-    scraper.bajar(fotos, "Materiales/62996") # las guarda numeradas
+    datos, fotos = scraper.leer("62996")     # fotos = URLs, in gallery order
+    scraper.bajar(fotos, "Materiales/62996") # saves them numbered
 
-Desde la terminal (lo que usa `nueva-subasta.sh`):
-    python3 scraper.py 62996 [carpeta-destino]
-Imprime CLAVE<tab>VALOR por línea, solo de lo que encontró: así el default de
-quien llama sobrevive.
+From the terminal (what `nueva-subasta.sh` uses):
+    python3 scraper.py 62996 [target-folder]
+Prints KEY<tab>VALUE per line, only for what it found, so the caller's own
+default survives.
 """
 import os
 import re
@@ -34,15 +34,15 @@ def _bajar(url):
 
 
 def leer(oferta, intentos=3):
-    """Devuelve (datos, fotos). `oferta` puede ser el código o la URL entera."""
+    """Returns (datos, fotos). `oferta` may be the code or the whole URL."""
     ident = str(oferta).rstrip("/").rsplit("/", 1)[-1]
 
-    # A veces el sitio contesta con la portada en vez de la oferta. Se nota en
-    # que no hay galería; se reintenta antes de seguir con datos inventados.
+    # Sometimes the site answers with its front page instead of the listing.
+    # The tell is an empty gallery; retry before proceeding on invented data.
     for intento in range(intentos):
         html = _bajar(f"https://www.vmcsubastas.com/oferta/{ident}").decode(
             "utf8", "replace")
-        # El carrusel es de 3 slides: de la galería solo interesan las primeras.
+        # The carousel is 3 slides, so only the first few matter here.
         fotos = list(dict.fromkeys(
             re.findall(r'\\"image\\":\\"(https://[^\\]+?\.jpe?g)', html)))[:8]
         if fotos:
@@ -56,7 +56,7 @@ def leer(oferta, intentos=3):
         m = re.search(patron, html, re.S)
         return m.group(1).strip() if m else ""
 
-    # "Toyota Fortuner 2023" → marca / modelo / 23'
+    # "Toyota Fortuner 2023" -> make / model / 23'
     titulo = uno(r"<h1[^>]*>([^<]+)</h1>").split()
     anio = titulo.pop() if titulo and titulo[-1].isdigit() else ""
     datos = {
@@ -64,8 +64,8 @@ def leer(oferta, intentos=3):
         "MODELO": " ".join(titulo[1:]),
         "ANIO": anio[2:] + "'" if anio else "",
         "TRANSMISION": uno(r"Transmisión.{0,80}?<span[^>]*>([^<]+)</span>"),
-        # Del payload y no del HTML pintado: en las ofertas que ya cerraron o
-        # que son negociables la tarjeta del precio no viene renderizada.
+        # From the payload, not the painted HTML: on closed or negotiable
+        # listings the price card is never rendered.
         "PRECIO": uno(r'basePriceLabel\\":\\"US\$\s*([\d.,]+)'),
         "TIENDA": uno(r"Vendedor:\s*([^<]+)<"),
     }
@@ -78,9 +78,9 @@ def leer(oferta, intentos=3):
 
 
 def bajar(fotos, destino):
-    """Guarda las fotos numeradas. El orden de la galería importa: se numeran
-    para que un `sort` posterior no lo revuelva. Las que ya están no se
-    vuelven a bajar. Devuelve las rutas."""
+    """Save the photos numbered. Gallery order matters, so the numbering keeps
+    a later `sort` from scrambling it. Photos already on disk are not
+    downloaded again. Returns the paths."""
     os.makedirs(destino, exist_ok=True)
     rutas = [os.path.join(destino, f"{i:02d}.jpeg")
              for i in range(1, len(fotos) + 1)]
@@ -108,11 +108,11 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 2:
         destino = sys.argv[2]
-        # El carrusel de la terminal es de 3; la app usa más y elige después.
+        # The terminal carousel takes 3; the app pulls more and picks later.
         bajar(fotos[:3], destino)
         print(f"{len(fotos[:3])} fotos en {destino}/", file=sys.stderr)
 
-    # Lo que no se encontró no se imprime: así el default de quien llama vive.
+    # Anything not found is not printed, so the caller's default survives.
     for clave in CLAVES:
         if datos.get(clave):
             print(f"{clave}\t{datos[clave]}")

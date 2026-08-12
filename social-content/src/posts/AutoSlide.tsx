@@ -12,24 +12,25 @@ import {
 import type { Subasta } from "../subasta";
 
 // ═════════════════════════════════════════════════════════════════════════════
-// Slide de carrusel VMC Subastas — 1080×1080
+// VMC Subastas carousel slide — 1080×1080
 //
-// Un solo componente para todas las fotos del auto. Lo único que cambia entre
-// la portada y las demás es el bloque de marca+modelo (`indice === 0`) y qué
-// flechas se dibujan. Todo lo demás se repite idéntico: es lo que hace que el
-// carrusel se lea como una sola pieza al deslizar.
+// One component for every photo of the car. The only things that change
+// between the cover and the rest are the make+model block (`indice === 0`) and
+// which arrows get drawn. Everything else repeats identically: that is what
+// makes the carousel read as a single piece as you swipe.
 //
-// Las coordenadas son absolutas contra el frame de 1080×1080, tal cual el spec
-// de Figma. Nada de flex a nivel de página: si Figma dice x 45 / y 845, aquí
-// dice left 45 / top 845, y así se compara contra el diseño sin traducir nada.
+// Coordinates are absolute against the 1080×1080 frame, exactly as the Figma
+// spec gives them. No page-level flex: if Figma says x 45 / y 845, here it says
+// left 45 / top 845, so render and design compare without translating a thing.
 // ═════════════════════════════════════════════════════════════════════════════
 
 /**
- * Borde degradado de 1.5px de cualquier superficie glass.
+ * The 1.5px gradient border on any glass surface.
  *
- * Se dibuja como capa aparte con máscara `xor`: se pinta el degradado en toda
- * la caja y se le perfora el interior. Es la única forma de tener borde
- * degradado sobre un relleno translúcido sin que el degradado se vea por dentro.
+ * Drawn as a separate layer with an `xor` mask: the gradient is painted across
+ * the whole box and then the inside is punched out. It is the only way to get
+ * a gradient border over a translucent fill without the gradient showing
+ * through the middle.
  */
 const BordeGlass: React.FC<{ radio: number | string }> = ({ radio }) => (
   <div
@@ -48,12 +49,12 @@ const BordeGlass: React.FC<{ radio: number | string }> = ({ radio }) => (
   />
 );
 
-/** El chevron de las flechas, recortado del SVG exportado (nodo 7340:30566). */
+/** The arrows' chevron, cropped from the exported SVG (node 7340:30566). */
 const Flecha: React.FC<{ hacia: "izq" | "der" }> = ({ hacia }) => (
   <div
     style={{
       position: "absolute",
-      // La derecha en x 942.42; la izquierda es su espejo contra el frame.
+      // The right one at x 942.42; the left is its mirror against the frame.
       left: hacia === "der" ? 942.42 : 1080 - 942.42 - 92.386,
       top: 515.22,
       width: 92.386,
@@ -63,7 +64,7 @@ const Flecha: React.FC<{ hacia: "izq" | "der" }> = ({ hacia }) => (
     }}
   >
     <BordeGlass radio="50%" />
-    {/* El viewBox recorta el círculo original, así el chevron cae centrado. */}
+    {/* The viewBox crops the original circle so the chevron lands centred. */}
     <svg
       viewBox="24 16 92.386 92.386"
       style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
@@ -84,7 +85,7 @@ const Flecha: React.FC<{ hacia: "izq" | "der" }> = ({ hacia }) => (
   </div>
 );
 
-/** Pin de precio de la tarjeta de datos. */
+/** The price pin on the data card. */
 const IconoPrecio: React.FC = () => (
   <svg width={46} height={66} viewBox="0 0 46 66" fill="none" style={{ flexShrink: 0 }}>
     <path
@@ -138,8 +139,8 @@ const Header: React.FC<{ tienda: string }> = ({ tienda }) => (
         justifyContent: "center",
         fontFamily: avatarFont,
         fontWeight: 700,
-        // El spec da 65.44px, pero ese es el alto de la capa del texto, no el
-        // cuerpo: con 65 la letra revienta el círculo. 42 es lo que se ve.
+        // The spec says 65.44px, but that is the text layer's height, not the
+        // body size: at 65 the letter bursts the circle. 42 is what you see.
         fontSize: 42,
         letterSpacing: "0.5235px",
         color: color.white,
@@ -161,11 +162,11 @@ const Header: React.FC<{ tienda: string }> = ({ tienda }) => (
 );
 
 /**
- * Marca + modelo, anclados a la derecha en x 1009.56.
+ * Make + model, anchored right at x 1009.56.
  *
- * Los dos bloques se solapan a propósito: el modelo arranca en y 42 y mide 94
- * de alto, y la marca arranca en y 94. Ese solape de ~42px es el diseño, no un
- * error de posición — separarlos rompe el remate visual.
+ * The two blocks overlap on purpose: the model starts at y 42 and is 94 tall,
+ * and the make starts at y 94. That ~42px overlap is the design, not a
+ * positioning mistake — pulling them apart breaks the visual close.
  */
 const Titulo: React.FC<{ marca: string; modelo: string }> = ({ marca, modelo }) => (
   <>
@@ -196,12 +197,12 @@ const Titulo: React.FC<{ marca: string; modelo: string }> = ({ marca, modelo }) 
         letterSpacing: "-3px",
         lineHeight: 1.26,
         whiteSpace: "nowrap",
-        // El degradado va sobre el texto, no detrás: bg-clip-text.
+        // The gradient goes over the type, not behind it: bg-clip-text.
         backgroundImage: gradient.titulo,
         WebkitBackgroundClip: "text",
         backgroundClip: "text",
         color: "transparent",
-        // Con text-shadow la sombra se recortaría junto con el relleno.
+        // With text-shadow the shadow would be clipped along with the fill.
         filter: "drop-shadow(0px 3px 12px rgba(0,0,0,0.4))",
       }}
     >
@@ -257,11 +258,11 @@ const TarjetaDatos: React.FC<{ s: Subasta }> = ({ s }) => (
       color: color.white,
       textShadow: shadow.textCard,
       whiteSpace: "nowrap",
-      // ponytail: line-height 1 en todo el bloque. Con el `normal` del navegador
-      // las tres líneas grandes suman ~183px de caja dentro de una tarjeta de
-      // 176: el `space-between` se queda sin aire y "Precio base" termina
-      // pegado al borde de abajo. Con la caja ceñida al cuerpo la tarjeta
-      // vuelve a tener los ~20px de respiro que pide el spec.
+      // ponytail: line-height 1 across the block. With the browser's `normal`
+      // the three large lines add up to a ~183px box inside a 176px card:
+      // `space-between` runs out of air and "Precio base" ends up glued to the
+      // bottom edge. With the box tight to the body size the card gets back the
+      // ~20px of breathing room the spec asks for.
       lineHeight: 1,
       ...glassDenso,
     }}
@@ -279,9 +280,9 @@ const TarjetaDatos: React.FC<{ s: Subasta }> = ({ s }) => (
     </div>
 
     {/*
-      `space-between`: la transmisión queda pegada a la izquierda y el bloque de
-      precio a la derecha, sin números mágicos. Así aguanta "Automática" o un
-      precio de cinco cifras sin que haya que reajustar nada.
+      `space-between`: transmission sits hard left and the price block hard
+      right, with no magic numbers. That is what lets it take "Automática" or a
+      five-figure price without anything needing a nudge.
     */}
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
       <span style={{ fontSize: 22.742, fontWeight: 600, letterSpacing: "0.1819px" }}>
@@ -306,11 +307,11 @@ const TarjetaDatos: React.FC<{ s: Subasta }> = ({ s }) => (
 
 export const AutoSlide: React.FC<{
   s: Subasta;
-  /** 0-indexado. El 0 es la portada: la única que lleva marca y modelo. */
+  /** 0-indexed. Slide 0 is the cover: the only one carrying make and model. */
   indice: number;
 }> = ({ s, indice }) => {
-  // Los defaults son el comportamiento de siempre: recorte centrado, sin zoom.
-  // Por eso una foto puede seguir siendo un string suelto.
+  // The defaults are the long-standing behaviour: centred crop, no zoom.
+  // That is why a photo may still be a bare string.
   const f = s.fotos[indice];
   const { src, foco = "50% 50%", escala = 1 } =
     typeof f === "string" ? { src: f } : f;
@@ -328,11 +329,11 @@ export const AutoSlide: React.FC<{
           height: "100%",
           objectFit: "cover",
           objectPosition: foco,
-          // Sin zoom no se emite `transform`: un `scale(1)` igual promueve la
-          // imagen a su propia capa y Chrome la rasteriza distinto. Con esto una
-          // foto sin encuadre sale byte a byte igual que antes de que esto
-          // existiera. El origen atado al foco hace que el zoom acerque el punto
-          // que elegiste, no el centro.
+          // With no zoom, no `transform` is emitted: even a `scale(1)` promotes
+          // the image to its own layer and Chrome rasterises it differently.
+          // This way an unframed photo comes out byte for byte as it did before
+          // any of this existed. Tying the origin to the focus makes the zoom
+          // close in on the point you picked, not on the centre.
           ...(escala === 1
             ? {}
             : { transform: `scale(${escala})`, transformOrigin: foco }),

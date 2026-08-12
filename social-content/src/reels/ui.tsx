@@ -10,21 +10,21 @@ import {
 import { glassMarca, gradient, mono, sans, vy, vyGradient } from "../brand/vmc";
 
 // ═════════════════════════════════════════════════════════════════════════════
-// Framework de reels VMC Subastas — piezas VOYAGER a escala 260×411.
+// VMC Subastas reel framework — VOYAGER pieces at 260×411.
 //
-// Todo reel de VMC se arma con lo mismo: un fondo de marca, escenas encadenadas
-// y las pantallas reales del producto reconstruidas en HTML. Reconstruidas, no
-// pegadas como imagen: así el texto es nítido a cualquier escala y los montos,
-// fechas y copys entran por props.
+// Every VMC reel is built from the same parts: a brand background, chained
+// scenes, and the product's real screens rebuilt in HTML. Rebuilt, not pasted
+// in as images: that keeps the type crisp at any scale and lets amounts, dates
+// and copy arrive through props.
 //
-// Regla de tamaños: se autoriza en unidades de 260 de ancho. Un número acá es
-// el mismo número que en el Figma del producto dividido entre ~1.6 (los modales
-// del sistema son de 320 y acá miden 200).
+// Sizing rule: authored in units of 260 width. A number here is the product
+// Figma's number divided by ~1.6 (the system's modals are 320 and here they
+// measure 200).
 // ═════════════════════════════════════════════════════════════════════════════
 
-// ── Tiempo ───────────────────────────────────────────────────────────────────
+// ── Time ─────────────────────────────────────────────────────────────────────
 
-/** Fundido de entrada y salida. 6 frames a cada lado: se nota el corte, no el fade. */
+/** Fade in and out. 6 frames each side: you notice the cut, not the fade. */
 const Fundido: React.FC<{ dura: number; children: React.ReactNode }> = ({
   dura,
   children,
@@ -48,10 +48,10 @@ export const Escena: React.FC<{
 );
 
 /**
- * Entrada estándar de cualquier elemento: sube 14px y aparece.
+ * The standard entrance for any element: rises 14px and appears.
  *
- * Se devuelve como estilo y no como componente para poder encadenar retrasos
- * dentro de una escena sin anidar wrappers.
+ * Returned as a style rather than a component so delays can be chained inside
+ * a scene without nesting wrappers.
  */
 export const useEntrada = (retraso = 0): React.CSSProperties => {
   const f = useCurrentFrame();
@@ -60,7 +60,7 @@ export const useEntrada = (retraso = 0): React.CSSProperties => {
   return { opacity: s, transform: `translateY(${(1 - s) * 14}px)` };
 };
 
-/** Cifra que sube contando. Devuelve el string ya formateado con comas. */
+/** A figure that counts up. Returns the string already comma-formatted. */
 export const useConteo = (
   hasta: number,
   desde = 0,
@@ -75,14 +75,14 @@ export const useConteo = (
   return Math.round(v).toLocaleString("en-US");
 };
 
-// ── Fondo ────────────────────────────────────────────────────────────────────
+// ── Background ───────────────────────────────────────────────────────────────
 
 /**
- * Fondo de marca: el degradado del header en vivo, con dos halos que respiran.
+ * Brand background: the live header's gradient, with two breathing halos.
  *
- * Los halos se mueven con un seno lento sobre el frame absoluto (no reinician
- * por escena) — es lo que hace que el reel se lea como una sola toma aunque las
- * escenas corten.
+ * The halos move on a slow sine against the absolute frame, so they never
+ * restart per scene — that is what makes the reel read as one continuous take
+ * even where the scenes cut.
  */
 export const Fondo: React.FC = () => {
   const f = useCurrentFrame();
@@ -109,11 +109,11 @@ export const Fondo: React.FC = () => {
   );
 };
 
-// ── Tipografía ───────────────────────────────────────────────────────────────
+// ── Typography ───────────────────────────────────────────────────────────────
 
 /**
- * Píldora glass con borde degradado. Es el chip del sistema: sirve de etiqueta
- * de paso, de sello de marca o de estado, según lo que se le meta dentro.
+ * A glass pill with a gradient border. This is the system's chip: it serves as
+ * a step label, a brand stamp or a status, depending on what goes inside it.
  */
 export const Chip: React.FC<{
   children: React.ReactNode;
@@ -157,7 +157,7 @@ export const Chip: React.FC<{
   );
 };
 
-/** Etiqueta de paso: "PASO 2 / 5". */
+/** Step label: "PASO 2 / 5". */
 export const Paso: React.FC<{ n: number; de: number }> = ({ n, de }) => (
   <Chip>
     PASO {n}
@@ -166,8 +166,8 @@ export const Paso: React.FC<{ n: number; de: number }> = ({ n, de }) => (
 );
 
 /**
- * Panel glass de marca. Mismo borde degradado que el carrusel: blanco arriba a
- * la izquierda, naranja, violeta, blanco.
+ * Brand glass panel. Same gradient border as the carousel: white top-left,
+ * orange, violet, white.
  */
 export const Vidrio: React.FC<{
   children: React.ReactNode;
@@ -187,7 +187,7 @@ export const Vidrio: React.FC<{
   </div>
 );
 
-/** Texto con el degradado de marca — el mismo del título del carrusel. */
+/** Type in the brand gradient — the same one as the carousel title. */
 export const TextoMarca: React.FC<{
   children: React.ReactNode;
   tam: number;
@@ -251,14 +251,14 @@ export const Bajada: React.FC<{
   </div>
 );
 
-// ── Piezas VOYAGER ───────────────────────────────────────────────────────────
+// ── VOYAGER pieces ───────────────────────────────────────────────────────────
 
 /**
- * Borde degradado de 1.5px sobre un relleno propio.
+ * A 1.5px gradient border over a fill of its own.
  *
- * Mismo truco de máscara `xor` que el carrusel: pintar el degradado en toda la
- * caja y perforarle el interior. Es la única forma de que el borde no tiña el
- * relleno del botón.
+ * The same `xor` mask trick as the carousel: paint the gradient across the
+ * whole box and punch out the inside. It is the only way to keep the border
+ * from tinting the button's fill.
  */
 const Borde: React.FC<{ radio: number | string; fondo: string; ancho?: number }> = ({
   radio,
@@ -281,7 +281,7 @@ const Borde: React.FC<{ radio: number | string; fondo: string; ancho?: number }>
   />
 );
 
-/** Superficie blanca de modal/tarjeta del producto. */
+/** The product's white modal/card surface. */
 export const Tarjeta: React.FC<{
   ancho?: number;
   children: React.ReactNode;
@@ -304,10 +304,10 @@ export const Tarjeta: React.FC<{
 );
 
 /**
- * Botón del sistema: relleno degradado, borde degradado, brillo interior y halo.
+ * The system button: gradient fill, gradient border, inner sheen and halo.
  *
- * `pulso` lo hace latir — se usa en el botón que el reel está "señalando" para
- * que el ojo sepa dónde va a pasar la acción siguiente.
+ * `pulso` makes it beat — used on whichever button the reel is pointing at, so
+ * the eye knows where the next action is going to happen.
  */
 const TONOS = {
   violeta: {
@@ -369,7 +369,7 @@ export const Boton: React.FC<{
       }}
     >
       <Borde radio={999} ancho={2} fondo={t.borde} />
-      {/* Brillo superior del spec: blanco 16% que muere al 55% de la altura. */}
+      {/* The spec's top sheen: white at 16%, dying by 55% of the height. */}
       <div
         style={{
           position: "absolute",
@@ -384,7 +384,7 @@ export const Boton: React.FC<{
   );
 };
 
-/** Botón secundario: solo contorno violeta. "Volver". */
+/** Secondary button: violet outline only. "Volver". */
 export const BotonPlano: React.FC<{
   children: React.ReactNode;
   ancho?: number;
@@ -411,7 +411,7 @@ export const BotonPlano: React.FC<{
 );
 
 /**
- * El símbolo de SubasCoins. En la app siempre va así: `>S< 25`, nunca "25 SC".
+ * The SubasCoins symbol. In the app it always reads `>S< 25`, never "25 SC".
  */
 export const Coin: React.FC<{ n: string; color?: string; tam?: number }> = ({
   n,
@@ -423,7 +423,7 @@ export const Coin: React.FC<{ n: string; color?: string; tam?: number }> = ({
   </span>
 );
 
-/** El monto del producto. Violeta a la izquierda, teal a la derecha. */
+/** The product's amount. Violet on the left, teal on the right. */
 export const Monto: React.FC<{ valor: string; tam?: number }> = ({
   valor,
   tam = 21,
@@ -445,7 +445,7 @@ export const Monto: React.FC<{ valor: string; tam?: number }> = ({
   </div>
 );
 
-/** Campo de monto: caja con borde degradado y el número en gris hasta que se tipea. */
+/** Amount field: gradient-bordered box, the figure grey until it is typed. */
 export const InputMonto: React.FC<{ valor: string; vacio?: boolean }> = ({
   valor,
   vacio = false,
@@ -484,7 +484,7 @@ export const InputMonto: React.FC<{ valor: string; vacio?: boolean }> = ({
   </div>
 );
 
-/** Título en versalitas de los modales: CONSIGNACIÓN, VENDEDOR OFRECE… */
+/** The modals' small-caps title: CONSIGNACIÓN, VENDEDOR OFRECE… */
 export const TituloModal: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => (
@@ -520,7 +520,7 @@ export const TextoModal: React.FC<{
   </div>
 );
 
-/** X naranja de cerrar, esquina superior derecha del modal. */
+/** The orange close X, top-right corner of the modal. */
 export const CerrarX: React.FC = () => (
   <svg
     width={15}
@@ -545,7 +545,7 @@ export const CerrarX: React.FC = () => (
   </svg>
 );
 
-/** Pestaña violeta que cuelga sobre el modal: "Propuesta 1/5". */
+/** The violet tab hanging over the modal: "Propuesta 1/5". */
 export const Pestania: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => (

@@ -10,15 +10,15 @@ import {
 } from "./reels/Negociable";
 
 /**
- * Una sola composición para todo el carrusel: `indice` decide qué slide es.
+ * One composition for the whole carousel: `indice` decides which slide it is.
  *
- * Los datos entran por props, no por el bundle. Eso es lo que le permite a
- * `nueva-subasta.sh` renderizar una subasta distinta sin tocar el código:
+ * The data arrives through props, not through the bundle. That is what lets
+ * `nueva-subasta.sh` render a different auction without touching any code:
  *
  *   npx remotion still Auto --props=datos.json --output=…/2.png
  *
- * En el Studio se previsualiza el slide 0 con lo que haya en `subasta.ts`; para
- * ver los otros se cambia `indice` en el panel de props.
+ * The Studio previews slide 0 with whatever `subasta.ts` holds; to see the
+ * others, change `indice` in the props panel.
  */
 export const RemotionRoot: React.FC = () => (
   <>
@@ -29,7 +29,7 @@ export const RemotionRoot: React.FC = () => (
       durationInFrames={1}
       {...POST}
     />
-    {/* Reels: 260×411 de diseño; se entregan con `npm run reel` (--scale=4). */}
+    {/* Reels: authored at 260×411, delivered by `npm run reel` (--scale=4). */}
     <Composition
       id="Negociable"
       component={ReelNegociableVideo}

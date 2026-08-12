@@ -29,18 +29,18 @@ import {
 } from "./pantallas";
 
 // ═════════════════════════════════════════════════════════════════════════════
-// Reel: el formato Negociable visto por el vendedor — 260×411, 25s.
+// Reel: the Negociable format as the seller sees it — 260×411, 25s.
 //
-// "Publica, recibe ofertas y vende al mejor postor". El reel sigue el camino
-// real de la app pantalla por pantalla: llenas la ficha, revisas la vista
-// previa, pagas 25 SubasCoins, tu oferta queda publicada, llegan las propuestas.
+// "Publica, recibe ofertas y vende al mejor postor". The reel follows the app's
+// real path screen by screen: fill the form, check the preview, pay 25
+// SubasCoins, the offer goes up, the proposals arrive.
 //
-// El comprador es el que negocia, pero el que necesita convencerse es el
-// vendedor: por eso lo que se repite en pantalla es el costo (>S< 25 una vez) y
-// la comisión (>S< 0 siempre).
+// The buyer is the one who negotiates, but the one who needs convincing is the
+// seller. That is why what repeats on screen is the cost (>S< 25, once) and the
+// commission (>S< 0, always).
 //
-// Las escenas están fijadas por frame en `GUION` y no encadenadas, para poder
-// alargar una sola sin recalcular todas las demás a mano.
+// Scenes are pinned by frame in `GUION` rather than chained, so one can be
+// lengthened without recomputing all the others by hand.
 // ═════════════════════════════════════════════════════════════════════════════
 
 export type ReelNegociable = {
@@ -49,19 +49,19 @@ export type ReelNegociable = {
   modelo: string;
   anio: string;
   kilometraje: string;
-  /** Lo que el vendedor espera recibir. Formateado con comas, sin "US$". */
+  /** What the seller hopes to get. Comma-formatted, without the "US$". */
   expectativa: string;
-  /** Ruta dentro de `public/` de la foto de portada. */
+  /** Path inside `public/` to the cover photo. */
   foto: string;
   vendedor: string;
-  /** SubasCoins que cuesta activar la publicación. */
+  /** SubasCoins it costs to activate the listing. */
   costo: string;
-  /** La propuesta que llega del comprador. */
+  /** The proposal arriving from the buyer. */
   oferta: string;
   dia: string;
   hora: string;
   expiraOferta: string;
-  /** Rondas de negociación por oferta. El sistema permite 5. */
+  /** Negotiation rounds per offer. The system allows 5. */
   rondas: number;
 };
 
@@ -97,7 +97,7 @@ export const DURACION_NEGOCIABLE = GUION.cierre[0] + GUION.cierre[1];
 
 const PASOS = 5;
 
-/** Marco de escena de paso: cabecera arriba, pantalla del producto centrada abajo. */
+/** Step-scene frame: header on top, the product screen centred below. */
 const EscenaPaso: React.FC<{
   paso: number;
   titulo: React.ReactNode;
@@ -142,9 +142,9 @@ const Logo: React.FC<{ ancho?: number }> = ({ ancho = 118 }) => (
   />
 );
 
-// ── Escenas ──────────────────────────────────────────────────────────────────
+// ── Scenes ───────────────────────────────────────────────────────────────────
 
-/** Fila de la ficha del hook: etiqueta a la izquierda, valor a la derecha. */
+/** A row of the hook's summary: label left, value right. */
 const FilaFicha: React.FC<{
   etiqueta: string;
   valor: React.ReactNode;
@@ -169,11 +169,11 @@ const FilaFicha: React.FC<{
 );
 
 /**
- * Arranque.
+ * Opening.
  *
- * La objeción del vendedor no es "¿funciona?", es "¿cuánto me cobran?". Así que
- * el hook es la cuenta completa antes de cualquier explicación: 25 SubasCoins
- * una vez, 0 de comisión, y el precio lo pone el mercado.
+ * The seller's objection is not "does it work?", it is "what will you charge
+ * me?". So the hook is the full arithmetic before any explanation: 25
+ * SubasCoins once, 0 commission, and the market sets the price.
  */
 const Hook: React.FC<{ d: ReelNegociable }> = ({ d }) => {
   const f = useCurrentFrame();
@@ -201,7 +201,7 @@ const Hook: React.FC<{ d: ReelNegociable }> = ({ d }) => {
         <br />
         Recibe ofertas.
       </Titular>
-      {/* Una sola línea: el degradado de marca recorre entero y no muere a mitad. */}
+      {/* A single line, so the brand gradient runs whole and never dies midway. */}
       <div style={{ ...useEntrada(11), marginTop: 3 }}>
         <TextoMarca tam={20}>Vende al mejor postor.</TextoMarca>
       </div>
@@ -325,7 +325,7 @@ const Confirma: React.FC<{ d: ReelNegociable }> = ({ d }) => (
   </EscenaPaso>
 );
 
-/** El acuse del sistema. Escena corta: es el respiro entre pagar y estar en vivo. */
+/** The system's acknowledgement. A short scene: the breath between paying and being up. */
 const Activada: React.FC = () => {
   const f = useCurrentFrame();
   const cuenta = Math.max(0, 59 - Math.floor(f / 3));
@@ -363,14 +363,15 @@ const Activada: React.FC = () => {
 };
 
 /**
- * Publicada.
+ * Published.
  *
- * Ojo con el copy: "en vivo" es otro formato de oferta de VMC, no este. Aquí la
- * oferta se publica y queda abierta a propuestas — decir "sale en vivo"
- * mezclaría dos productos distintos.
+ * Careful with the copy: "en vivo" is a different VMC offer format, not this
+ * one. Here the offer is published and left open to proposals — saying it
+ * "goes live" would blur two separate products together.
  *
- * Los contadores suben durante la escena. Es la única forma honesta de mostrar
- * "recibe ofertas" sin inventar un número: se ve el movimiento, no la cifra.
+ * The counters climb during the scene. It is the only honest way to show
+ * "recibe ofertas" without inventing a number: you see the movement, not the
+ * figure.
  */
 const Publicada: React.FC<{ d: ReelNegociable }> = ({ d }) => (
   <EscenaPaso
@@ -484,7 +485,7 @@ const Cierre: React.FC<{ d: ReelNegociable }> = ({ d }) => (
   </AbsoluteFill>
 );
 
-// ── Composición ──────────────────────────────────────────────────────────────
+// ── Composition ──────────────────────────────────────────────────────────────
 
 export const ReelNegociableVideo: React.FC<{ d: ReelNegociable }> = ({ d }) => (
   <AbsoluteFill>
