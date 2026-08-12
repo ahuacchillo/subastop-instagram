@@ -308,11 +308,34 @@ export const AutoSlide: React.FC<{
   s: Subasta;
   /** 0-indexado. El 0 es la portada: la única que lleva marca y modelo. */
   indice: number;
-}> = ({ s, indice }) => (
-  <AbsoluteFill style={{ background: color.white, overflow: "hidden" }}>
+}> = ({ s, indice }) => {
+  // Los defaults son el comportamiento de siempre: recorte centrado, sin zoom.
+  // Por eso una foto puede seguir siendo un string suelto.
+  const f = s.fotos[indice];
+  const { src, foco = "50% 50%", escala = 1 } =
+    typeof f === "string" ? { src: f } : f;
+
+  return (
+  <AbsoluteFill style={{
+    background: color.white,
+    overflow: "hidden"
+  }}>
     <Img
-      src={staticFile(s.fotos[indice])}
-      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+      src={staticFile(src)}
+      style={{
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        objectPosition: foco,
+        // Sin zoom no se emite `transform`: un `scale(1)` igual promueve la
+        // imagen a su propia capa y Chrome la rasteriza distinto. Con esto una
+        // foto sin encuadre sale byte a byte igual que antes de que esto
+        // existiera. El origen atado al foco hace que el zoom acerque el punto
+        // que elegiste, no el centro.
+        ...(escala === 1
+          ? {}
+          : { transform: `scale(${escala})`, transformOrigin: foco }),
+      }}
     />
 
     <Header tienda={s.tienda} />
@@ -335,4 +358,5 @@ export const AutoSlide: React.FC<{
       }}
     />
   </AbsoluteFill>
-);
+  );
+};

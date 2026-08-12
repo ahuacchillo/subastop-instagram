@@ -230,14 +230,13 @@ for idx in $ORDEN; do
   FOTOS+=("autos/$SLUG-$n.${ext,,}")
 done
 
-# ── Un JSON de props por slide ───────────────────────────────────────────────
+# ── datos.json ───────────────────────────────────────────────────────────────
 # Se arma con python y no con un heredoc porque los valores traen apóstrofes
-# (25') y acentos, y ahí un heredoc se rompe callado.
-PROPS="$(mktemp -d)"
-trap 'rm -rf "$PROPS"' EXIT
+# (25') y acentos, y ahí un heredoc se rompe callado. Queda junto a los renders:
+# la pieza se puede rehacer igual dentro de un año.
 MARCA="$MARCA" MODELO="$MODELO" ANIO="$ANIO" TRANSMISION="$TRANSMISION" \
 PRECIO="$PRECIO" FECHA="$FECHA" HORA="$HORA" TIENDA="$TIENDA" \
-FOTOS="${FOTOS[*]}" DESTINO="$PROPS" SALIDA="$RAIZ/Posts/$SLUG" \
+FOTOS="${FOTOS[*]}" SALIDA="$RAIZ/Posts/$SLUG" \
 python3 - <<'PY'
 import json, os
 e = os.environ
@@ -247,29 +246,11 @@ s = {
     "fecha": e["FECHA"], "hora": e["HORA"], "tienda": e["TIENDA"],
     "fotos": e["FOTOS"].split(),
 }
-for i in range(len(s["fotos"])):
-    with open(f"{e['DESTINO']}/{i}.json", "w") as f:
-        json.dump({"s": s, "indice": i}, f, ensure_ascii=False)
-# Queda junto a los renders: la pieza se puede rehacer igual dentro de un año.
 with open(f"{e['SALIDA']}/datos.json", "w") as f:
     json.dump(s, f, ensure_ascii=False, indent=2)
 PY
 
 # ── Render ───────────────────────────────────────────────────────────────────
-# ponytail: un bundle por slide (~13s cada uno). Si molesta, se cambia a la API
-# de Node (@remotion/renderer), que bundlea una vez sola.
-echo
-echo "── Renderizando ${#FOTOS[@]} slides ───────────────────────────────"
-cd social-content
-for i in "${!FOTOS[@]}"; do
-  npx remotion still Auto \
-    --props="$PROPS/$i.json" \
-    --output="$RAIZ/Posts/$SLUG/$((i + 1)).png" \
-    --overwrite --log=error
-  echo "  ✓ Posts/$SLUG/$((i + 1)).png"
-done
-
-echo
-echo "Listo → $RAIZ/Posts/$SLUG/"
-echo "Míralos antes de publicar: que el título no se pierda contra el cielo y"
-echo "que el precio no reviente la tarjeta."
+# Renderiza `ajustar.sh`: un solo camino, así la placa de cierre y el soporte de
+# encuadre no viven en dos lugares que se desincronizan.
+exec "$RAIZ/ajustar.sh" "$SLUG" --render

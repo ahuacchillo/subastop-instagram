@@ -5,8 +5,11 @@ vmcsubastas.com y te devuelve los 3 PNG del carrusel listos para publicar.
 
 ```bash
 ./nueva-subasta.sh 62996
-# → Posts/62996-toyota-hilux/1.png 2.png 3.png + datos.json
+# → Posts/62996-toyota-hilux/1.png 2.png 3.png 4.png + datos.json
 ```
+
+El `4.png` es la placa de cierre (`Materiales/cierre.png`): se copia tal cual al
+final de todos los carruseles, no pasa por Remotion y no cambia nunca.
 
 Sin código que editar. Los datos entran a Remotion por `--props`, así que se
 puede correr dos veces seguidas con autos distintos sin que quede nada pegado.
@@ -65,7 +68,10 @@ El slug lleva el código de oferta adelante (`62996-toyota-hilux`) porque es el
 único nombre que no cambia si después se corrige la marca, y es lo que se busca
 cuando hay que volver a la publicación original.
 
-**4. Render.** `npx remotion still Auto --props=...` una vez por slide.
+**4. Render.** Delega en `./ajustar.sh <slug> --render`, que renderiza un slide
+por vez desde el `datos.json` y copia la placa de cierre al final. Hay un solo
+camino de render en todo el proyecto: lo que se arregla ahí, se arregla para
+todos los modos de entrada.
 
 ### Modos
 
@@ -146,6 +152,39 @@ Abre el Studio con la subasta de ejemplo de `subasta.ts`. Se previsualiza el
 slide 0; para ver los otros se cambia `indice` en el panel de props.
 
 ---
+
+## Ajustar el encuadre
+
+La foto se monta con `objectFit: cover`, así que el recorte al 1080×1080 sale
+del centro. Cuando eso se come parte del auto —está bajo en la foto, corrido, o
+la foto es muy horizontal— se corrige por foto en el `datos.json`:
+
+```json
+"fotos": [
+  { "src": "autos/x-1.jpeg", "foco": "50% 35%", "escala": 1.2 },
+  "autos/x-2.jpeg"
+]
+```
+
+`foco` es un `object-position` y mueve el recorte; `escala` acerca, y lo hace
+alrededor del foco, no del centro. Un string suelto es lo mismo que
+`"50% 50%"` con `escala: 1` — o sea, el comportamiento de siempre. Todos los
+`datos.json` viejos siguen renderizando byte a byte igual.
+
+A ciegas no se aciertan esos valores, así que:
+
+```bash
+./ajustar.sh 62915-dfsk-glory            # abre el Studio con esa subasta
+./ajustar.sh 62915-dfsk-glory --render   # rehace los PNG desde datos.json
+```
+
+Sin bandera levanta el Studio con los props de esa subasta cargados. Movés
+`foco` y `escala` en el panel de props viendo el render real en vivo (para ver
+otro slide, cambiás `indice`), copiás los dos valores al `datos.json`, y volvés
+con `--render`.
+
+Es edición de JSON, no arrastrar con el mouse. Lo segundo es la app visual, y
+necesitaba que este modelo de datos existiera primero.
 
 ## Revisar antes de publicar
 
@@ -229,7 +268,15 @@ Instagram acepta 10. Tres es una decisión, no un límite técnico, pero está
 cableada en tres lugares (el `[:3]` del scraping, el `TODAS` del orden, y el
 guion visual de las flechas).
 
-### 8. Fotos y renders fuera del repo
+### 8. El render no es 100% determinista
+
+Renderizar el mismo slide dos veces puede dar PNG distintos. Medido: la
+diferencia son ~2500 píxeles (0.2% de la imagen) concentrados en el texto de la
+píldora de fecha — antialiasing, invisible a ojo. Es anterior a todo esto y no
+afecta lo publicado, pero significa que no se puede usar el md5 como prueba de
+que un cambio no rompió nada. Hay que mirar.
+
+### 9. Fotos y renders fuera del repo
 
 `Materiales/<auto>/` y `Posts/` están en `.gitignore`: son 50 MB que se
 regeneran con el código de oferta. La consecuencia es que no hay historial
