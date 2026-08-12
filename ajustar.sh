@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 #
-# Renderiza un carrusel desde su `datos.json`, o abre el Studio para ajustarlo.
+# Ajusta el encuadre de un carrusel, o lo rehace desde su `datos.json`.
 #
-#   ./ajustar.sh 62915-dfsk-glory            # abre el Studio con esa subasta
+#   ./ajustar.sh 62915-dfsk-glory            # abre la página de encuadre
 #   ./ajustar.sh 62915-dfsk-glory --render   # rehace los PNG desde datos.json
 #
-# El bucle de encuadre es: abrir el Studio, mover `foco` y `escala` en el panel
-# de props hasta que el auto quede bien, copiar esos dos valores al datos.json,
-# y volver con --render. El Studio muestra el render real, no una maqueta: lo
-# que ves ahí es lo que sale en el PNG.
+# Sin bandera abre `encuadre.py` en el navegador: arrastrás la foto, rueda para
+# acercar, y el botón guarda y renderiza. Eso escribe en el datos.json:
 #
 #   "fotos": [
 #     { "src": "autos/x-1.jpeg", "foco": "50% 35%", "escala": 1.2 },
@@ -32,19 +30,7 @@ DATOS="$RAIZ/Posts/$SLUG/datos.json"
 [ -f "$DATOS" ] || { echo "No existe $DATOS." >&2; exit 1; }
 
 if [ "$MODO" != "--render" ]; then
-  # El Studio abre en el slide 0; para ver los otros se cambia `indice` en el
-  # panel de props, igual que siempre.
-  PROPS="$(mktemp --suffix=.json)"
-  DATOS="$DATOS" SALIDA="$PROPS" python3 - <<'PY'
-import json, os
-datos = json.load(open(os.environ["DATOS"]))
-json.dump({"s": datos, "indice": 0}, open(os.environ["SALIDA"], "w"))
-PY
-  echo "Studio con $SLUG. Ctrl-C para salir."
-  echo "Ajustá 'foco' y 'escala' en el panel de props, y pasalos a:"
-  echo "  Posts/$SLUG/datos.json"
-  cd social-content
-  exec npx remotion studio --props="$PROPS"
+  exec python3 "$RAIZ/encuadre.py" "$SLUG"
 fi
 
 # ── Render ───────────────────────────────────────────────────────────────────

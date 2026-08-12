@@ -316,47 +316,43 @@ export const AutoSlide: React.FC<{
     typeof f === "string" ? { src: f } : f;
 
   return (
-  <AbsoluteFill style={{
-    background: color.white,
-    overflow: "hidden"
-  }}>
-    <Img
-      src={staticFile(src)}
+    <AbsoluteFill
       style={{
-        width: "100%",
-        height: "100%",
-        objectFit: "cover",
-        objectPosition: foco,
-        // Sin zoom no se emite `transform`: un `scale(1)` igual promueve la
-        // imagen a su propia capa y Chrome la rasteriza distinto. Con esto una
-        // foto sin encuadre sale byte a byte igual que antes de que esto
-        // existiera. El origen atado al foco hace que el zoom acerque el punto
-        // que elegiste, no el centro.
-        ...(escala === 1
-          ? {}
-          : { transform: `scale(${escala})`, transformOrigin: foco }),
-      }}
-    />
-
-    <Header tienda={s.tienda} />
-    {indice === 0 && <Titulo marca={s.marca} modelo={s.modelo} />}
-
-    {indice > 0 && <Flecha hacia="izq" />}
-    {indice < s.fotos.length - 1 && <Flecha hacia="der" />}
-
-    <Fecha fecha={s.fecha} hora={s.hora} />
-    <TarjetaDatos s={s} />
-
-    <Img
-      src={staticFile("brand/vmc-logo.svg")}
-      style={{
-        position: "absolute",
-        left: 855.29,
-        top: 952.32,
-        width: 179.51,
-        height: 66.69,
-      }}
-    />
-  </AbsoluteFill>
+        background: color.white,
+        overflow: "hidden"
+      }}>
+      <Img
+        src={staticFile(src)}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          objectPosition: foco,
+          // Sin zoom no se emite `transform`: un `scale(1)` igual promueve la
+          // imagen a su propia capa y Chrome la rasteriza distinto. Con esto una
+          // foto sin encuadre sale byte a byte igual que antes de que esto
+          // existiera. El origen atado al foco hace que el zoom acerque el punto
+          // que elegiste, no el centro.
+          ...(escala === 1
+            ? {}
+            : { transform: `scale(${escala})`, transformOrigin: foco }),
+        }} />
+      <Header tienda={s.tienda} />
+      {indice === 0 && <Titulo marca={s.marca} modelo={s.modelo} />}
+      {indice > 0 && <Flecha hacia="izq" />}
+      {indice < s.fotos.length - 1 && <Flecha hacia="der" />}
+      <Fecha fecha={s.fecha} hora={s.hora} />
+      <TarjetaDatos s={s} />
+      <Img
+        src={staticFile("brand/vmc-logo.svg")}
+        style={{
+          position: "absolute",
+          left: 855.29,
+          top: 952.32,
+          width: 179.51,
+          height: 66.69,
+        }}
+      />
+    </AbsoluteFill>
   );
 };

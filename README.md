@@ -171,20 +171,32 @@ alrededor del foco, no del centro. Un string suelto es lo mismo que
 `"50% 50%"` con `escala: 1` — o sea, el comportamiento de siempre. Todos los
 `datos.json` viejos siguen renderizando byte a byte igual.
 
-A ciegas no se aciertan esos valores, así que:
+Pero a mano no se aciertan esos números. Para eso está la página de encuadre:
 
 ```bash
-./ajustar.sh 62915-dfsk-glory            # abre el Studio con esa subasta
+./ajustar.sh 62915-dfsk-glory            # abre la página en el navegador
 ./ajustar.sh 62915-dfsk-glory --render   # rehace los PNG desde datos.json
 ```
 
-Sin bandera levanta el Studio con los props de esa subasta cargados. Movés
-`foco` y `escala` en el panel de props viendo el render real en vivo (para ver
-otro slide, cambiás `indice`), copiás los dos valores al `datos.json`, y volvés
-con `--render`.
+Sin bandera abre una página local que hace una sola cosa: **arrastrás la foto
+para moverla, rueda del mouse para acercar, y el botón guarda y renderiza.** Los
+valores del `datos.json` los escribe ella; no hace falta tocarlos.
 
-Es edición de JSON, no arrastrar con el mouse. Lo segundo es la app visual, y
-necesitaba que este modelo de datos existiera primero.
+Los botones de arriba cambian de slide. El marco dibuja dónde caen el header, el
+título, la píldora, la tarjeta y el logo: son guías para ver qué le tapan al
+auto, no el render. El render sale al guardar, del mismo `--render` de siempre.
+
+Dos cosas que confunden si no se saben:
+
+- **Una foto apaisada no se mueve en vertical** hasta que la acerques. Recortada
+  en cuadrado no sobra nada arriba ni abajo, así que no hay foto escondida para
+  revelar; el zoom es el que crea ese margen.
+- Es `python3` de la stdlib escuchando en `127.0.0.1:4173`. No instala nada y no
+  sale de la máquina. Ctrl-C la cierra.
+
+Para trabajar el componente en sí —mover coordenadas, tocar el glass— sigue
+siendo el Studio (`cd social-content && npm run dev`). Esa es la herramienta del
+que diseña la pieza; la página de encuadre es la del que arma el post.
 
 ## Revisar antes de publicar
 
