@@ -19,8 +19,8 @@ inglés** — las piezas que produce siguen en español.
   se tocan es el orden del carrusel** y la primera lleva el rótulo COVER. Las
   fotos propias se arrastran desde el explorador y se sueltan sobre ese riel.
 - **Centro** — el auto a tamaño grande. Se arrastra para moverlo, rueda del
-  mouse para acercar, y las flechas del teclado para corregir de a un punto
-  (con Shift, de a cinco). Las guías punteadas marcan dónde caen el título y la
+  mouse para acercar, y las flechas del teclado para corregir de uno en uno
+  (con Shift, de cinco en cinco). Las guías punteadas marcan dónde caen el título y la
   tarjeta. Las pestañas `1 2 3` cambian de slide.
 - **Car details**, a la derecha — los ocho datos, editables. Los que faltan
   quedan marcados en rojo y el botón de generar se deshabilita.
@@ -63,7 +63,7 @@ cd subastop-instagram/social-content && npm install && cd ..
 ./estudio.sh
 ```
 
-El primer render se demora extra: Remotion se baja su Chrome headless solo.
+El primer render se demora extra: Remotion descarga su Chrome headless solo.
 Después, un carrusel entero sale en ~10s.
 
 Si `npx remotion` falla por librerías del sistema (Linux limpio):
@@ -90,7 +90,7 @@ Cuatro etapas dentro de `nueva-subasta.sh`, en ese orden:
 **1. Scraping.** La página de vmcsubastas viene renderizada del servidor, así
 que los datos y las fotos están en el HTML — no hace falta navegador. Se sacan
 con regex marca, modelo, año, transmisión, precio base, vendedor y fecha/hora
-del proceso, y se bajan las 3 primeras fotos de la galería a `Materiales/<id>/`.
+del proceso, y se descargan las 3 primeras fotos de la galería a `Materiales/<id>/`.
 Se reintenta 3 veces: a veces el sitio contesta con la portada en vez de la
 oferta, y se nota en que no hay galería.
 
@@ -134,8 +134,8 @@ En el prompt del orden alcanza con escribir la portada: `3` se completa a
 
 Scrapea los ocho datos de la oferta pero arma el carrusel con las fotos de esa
 carpeta. Para cuando la galería del sitio es mala o hay fotos mejores del patio.
-Sí pregunta el orden: si las fotos las elegiste vos, cuál va de portada es una
-decisión tuya, no del sitio.
+Sí pregunta el orden: si las fotos las eligió una persona, cuál va de portada
+es una decisión suya, no del sitio.
 
 Es un wrapper de `nueva-subasta.sh 62996 --fotos <carpeta>` — un solo generador,
 tres formas de entrar.
@@ -253,7 +253,7 @@ Ordenados por lo que más duele.
 Es el hueco grande. Hoy el script deja los PNG y el copy se escribe a mano cada
 vez, que es donde se pierde el tiempo y donde se pierde la consistencia.
 
-Debería salir del mismo `datos.json` que ya se genera, en la misma corrida:
+Debería salir del mismo `datos.json` que ya se genera, en la misma ejecución:
 
 ```
 Posts/<slug>/
@@ -282,8 +282,8 @@ repetido en el feed.
 Cada `npx remotion still` bundlea de nuevo. Se arregla pasando a la API de Node
 (`@remotion/renderer`), que bundlea una vez y renderiza los tres. Marcado con
 `ponytail:` en `ajustar.sh`. **Menos urgente de lo que parecía:** medido desde el
-estudio, un carrusel entero sale en 9–14s. La primera corrida del día es la
-lenta, después el caché de Remotion hace el trabajo.
+estudio, un carrusel entero sale en 9–14s. La primera ejecución del día es la
+lenta; después el caché de Remotion hace el trabajo.
 
 ### 3. `RESULTADOS.md` está vacío
 
@@ -294,13 +294,13 @@ interior → 3/4 contra uno que abra en 3/4.
 ### 4. El reel no está en el pipeline
 
 `reels/Negociable.tsx` se renderiza a mano con `npm run reel` y sus datos están
-quemados en la constante `NEGOCIABLE`. Si se va a usar seguido, merece el mismo
+quemados en la constante `NEGOCIABLE`. Si se va a usar con frecuencia, merece el mismo
 tratamiento que el carrusel: props por JSON y una entrada en el script.
 
 ### 5. Solo vmcsubastas.com
 
-El scraping es específico de ese sitio. @subascars.pe no tiene scraper; ahí toca
-el modo manual con fotos propias.
+El scraping es específico de ese sitio. @subascars.pe no tiene scraper: ahí hay
+que usar el modo manual con fotos propias.
 
 ### 6. El scraping es regex contra HTML
 
