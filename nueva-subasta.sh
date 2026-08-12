@@ -198,6 +198,16 @@ else
   done
 fi
 
+# Quien escribe "3" está eligiendo la portada, no pidiendo un carrusel de un
+# solo slide: se completa con las que falten, en el orden del listado.
+# ponytail: por lo mismo ya no se puede renderizar un subconjunto a propósito.
+# Si algún día hace falta, es una bandera --slides, no otro prompt.
+for idx in $(seq 1 "${#DISPONIBLES[@]}"); do
+  case " $ORDEN " in *" $idx "*) ;; *) ORDEN="$ORDEN $idx" ;; esac
+done
+ORDEN="$(echo $ORDEN | cut -d' ' -f1-3)"
+echo "  Carrusel: $ORDEN"
+
 # ── Copiar fotos con nombre estable ──────────────────────────────────────────
 # El slug prefija los archivos para que dos subastas no se pisen en public/.
 # Va el código de oferta adelante: dos Fortuner distintos se distinguen, y el

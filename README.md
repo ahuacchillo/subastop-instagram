@@ -80,6 +80,10 @@ cuando hay que volver a la publicación original.
 Sin código de oferta el script pregunta todo y pide el orden de las fotos. La
 primera del orden es la portada.
 
+En el prompt del orden alcanza con escribir la portada: `3` se completa a
+`3 1 2` con las que falten, en el orden del listado. El carrusel siempre sale de
+3 slides (o de las que haya, si hay menos).
+
 ### Datos del sitio, fotos mías
 
 ```bash
