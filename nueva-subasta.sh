@@ -23,12 +23,19 @@ RAIZ="$PWD"
 AUTOS="$RAIZ/social-content/public/autos"
 ORIGEN="Materiales"
 EDITAR=""
-for arg in "$@"; do
-  case "$arg" in
+FOTOS_PROPIAS=""
+while [ $# -gt 0 ]; do
+  case "$1" in
     --editar|-e) EDITAR=1 ;;
-    *) ORIGEN="$arg" ;;
+    # Datos del sitio, fotos mías: para cuando la galería de la oferta es mala
+    # o tengo fotos mejores del patio.
+    --fotos|-f) FOTOS_PROPIAS="${2:?--fotos necesita una carpeta}"; shift ;;
+    *) ORIGEN="$1" ;;
   esac
+  shift
 done
+[ -z "$FOTOS_PROPIAS" ] || [ -d "$FOTOS_PROPIAS" ] || {
+  echo "No existe la carpeta de fotos '$FOTOS_PROPIAS'." >&2; exit 1; }
 
 # ── Scraping de la oferta ────────────────────────────────────────────────────
 # La página de vmcsubastas viene renderizada del servidor: los datos y las
@@ -41,9 +48,17 @@ if [[ "$ORIGEN" =~ ^https?://|^[0-9]+$ ]]; then
   OFERTA="$ID"
   # Las fotos se guardan por código: es el único nombre que no cambia si
   # después corrijo la marca o el modelo, y así no se rebajan dos veces.
-  ORIGEN="Materiales/$ID"
-  mkdir -p "$ORIGEN"
-  SCRAPE="$(ID="$ID" DESTINO="$ORIGEN" python3 - <<'PY'
+  # Con --fotos no se baja ninguna: la galería solo sirve para confirmar que la
+  # página que contestó es la oferta y no la portada del sitio.
+  if [ -n "$FOTOS_PROPIAS" ]; then
+    ORIGEN="$FOTOS_PROPIAS"
+    DESTINO=""
+  else
+    ORIGEN="Materiales/$ID"
+    mkdir -p "$ORIGEN"
+    DESTINO="$ORIGEN"
+  fi
+  SCRAPE="$(ID="$ID" DESTINO="$DESTINO" python3 - <<'PY'
 import os, re, sys, time, urllib.request as U
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -96,9 +111,10 @@ def guardar(par):
     ruta = f"{DESTINO}/{i:02d}.jpeg"
     if not os.path.exists(ruta):
         open(ruta, "wb").write(bajar(url))
-with ThreadPoolExecutor(8) as pool:
-    list(pool.map(guardar, enumerate(fotos, 1)))
-print(f"{len(fotos)} fotos en {DESTINO}/", file=sys.stderr)
+if DESTINO:
+    with ThreadPoolExecutor(8) as pool:
+        list(pool.map(guardar, enumerate(fotos, 1)))
+    print(f"{len(fotos)} fotos en {DESTINO}/", file=sys.stderr)
 
 # Lo que no se encontró no se imprime: así el default del script sobrevive.
 for clave, valor in datos.items():
@@ -160,8 +176,9 @@ echo "  El primero es la portada: es el único slide que lleva marca y modelo."
 # El carrusel es de 3: si sobran fotos en la carpeta, se ignoran las demás.
 TODAS="$(seq -s' ' 1 "$(( ${#DISPONIBLES[@]} < 3 ? ${#DISPONIBLES[@]} : 3 ))")"
 ORDEN=""
-if [ -z "$EDITAR" ] && [ -n "$OFERTA" ]; then
-  # Las del sitio ya vienen en el orden de la galería: se usan tal cual.
+if [ -z "$EDITAR" ] && [ -n "$OFERTA" ] && [ -z "$FOTOS_PROPIAS" ]; then
+  # Las del sitio ya vienen en el orden de la galería: se usan tal cual. Las
+  # mías no: si las elegí a mano, la portada es una decisión y se pregunta.
   ORDEN="$TODAS"
 else
   while [ -z "$ORDEN" ]; do

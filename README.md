@@ -80,6 +80,20 @@ cuando hay que volver a la publicación original.
 Sin código de oferta el script pregunta todo y pide el orden de las fotos. La
 primera del orden es la portada.
 
+### Datos del sitio, fotos mías
+
+```bash
+./subasta-fotos-propias.sh 62996 Materiales/toyota
+```
+
+Scrapea los ocho datos de la oferta pero arma el carrusel con las fotos de esa
+carpeta. Para cuando la galería del sitio es mala o hay fotos mejores del patio.
+Sí pregunta el orden: si las fotos las elegiste vos, cuál va de portada es una
+decisión tuya, no del sitio.
+
+Es un wrapper de `nueva-subasta.sh 62996 --fotos <carpeta>` — un solo generador,
+tres formas de entrar.
+
 ### Con Claude Code
 
 ```
