@@ -1,0 +1,738 @@
+<!doctype html>
+<meta charset="utf8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estudio · VMC Subastas</title>
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   Plus Jakarta Sans: la misma tipografía del sistema VOYAGER. La herramienta
+   habla la voz de las piezas que produce. Servida local, no del CDN.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: "Jakarta";
+  src: url("/fuente") format("woff2");
+  font-weight: 400 800;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Oscuro con tinte violeta, no gris: el fondo no contamina la lectura del
+     color de las fotos, que es lo que se está juzgando. */
+  --fondo:      #0E0B14;
+  --panel:      #151020;
+  --alto:       #1C1529;
+  --linea:      #2A2038;
+  --linea-baja: #211930;
+
+  --texto:   #EDE9F5;
+  --texto-2: #9A90B4;   /* 6:1 sobre --panel */
+
+  --violeta:  #8460E5;
+  --violeta-2:#AE8EFF;
+  --naranja:  #ED8936;  /* reservado: solo la portada */
+  --verde:    #4ADE9B;
+  --rojo:     #F87171;
+
+  --e1: 4px;  --e2: 8px;  --e3: 12px; --e4: 16px;
+  --e5: 20px; --e6: 24px; --e7: 32px;
+
+  --r2: 8px; --r3: 12px; --r4: 16px;
+  --sombra: 0 8px 24px -10px rgba(0,0,0,.75);
+  --salida: cubic-bezier(.16,1,.3,1);
+}
+
+* { box-sizing: border-box; margin: 0; }
+[hidden] { display: none !important; }
+
+html, body { height: 100%; }
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font: 400 15px/1.5 "Jakarta", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;               /* una sola vista: nada scrollea la página */
+}
+
+::selection { background: var(--violeta); color: #fff; }
+
+:focus-visible {
+  outline: 2px solid var(--violeta-2);
+  outline-offset: 2px;
+  border-radius: var(--r2);
+}
+
+/* Cada riel scrollea por su cuenta. */
+.scroll { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+          scrollbar-color: var(--linea) transparent; }
+
+/* ── Armazón ──────────────────────────────────────────────────────────────── */
+.app { height: 100%; display: grid; grid-template-rows: auto 1fr; }
+
+.topbar {
+  display: flex; align-items: center; gap: var(--e5);
+  padding: var(--e3) var(--e5);
+  border-bottom: 1px solid var(--linea);
+  background: var(--panel);
+}
+
+.marca { display: flex; align-items: baseline; gap: var(--e2); flex: none; }
+.marca b { font-weight: 800; font-size: 20px; letter-spacing: -.03em; }
+.marca span { color: var(--texto-2); font-size: 13px; }
+
+.oferta { display: flex; align-items: center; gap: var(--e2); flex: none; }
+.oferta input { width: 264px; }
+
+.estado {
+  flex: 1; min-width: 0; color: var(--texto-2); font-size: 13px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  display: flex; align-items: center; gap: var(--e2);
+}
+.estado.ok   { color: var(--verde); }
+.estado.mal  { color: var(--rojo); }
+.estado.wip  { color: var(--violeta-2); }
+
+/* El tablero: fotos · lienzo · datos. El centro manda. */
+.tablero {
+  display: grid;
+  grid-template-columns: 268px minmax(0, 1fr) 296px;
+  min-height: 0;
+}
+
+.riel {
+  display: flex; flex-direction: column; min-height: 0;
+  background: var(--panel);
+}
+.riel.izq { border-right: 1px solid var(--linea); }
+.riel.der { border-left: 1px solid var(--linea); }
+
+.riel-cabeza {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--e2);
+  padding: var(--e4) var(--e4) var(--e2);
+}
+.riel-cabeza h2 {
+  font-size: 11px; font-weight: 700; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--texto-2);
+}
+.riel-cuerpo { padding: var(--e2) var(--e4) var(--e5); }
+
+/* ── Controles ────────────────────────────────────────────────────────────── */
+input[type=text] {
+  width: 100%; padding: 9px var(--e3);
+  background: var(--alto); border: 1px solid var(--linea);
+  border-radius: var(--r2); color: var(--texto); font: inherit;
+  transition: border-color .15s;
+}
+input[type=text]:hover { border-color: #362b4a; }
+input[type=text]::placeholder { color: var(--texto-2); }
+
+button {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px; white-space: nowrap;
+  padding: 9px var(--e4); border: 1px solid transparent;
+  border-radius: var(--r2); cursor: pointer;
+  font: 600 15px "Jakarta", system-ui, sans-serif; color: var(--texto);
+  background: var(--alto);
+  transition: background .15s, border-color .15s, transform .1s var(--salida);
+}
+button:hover { background: #241b35; }
+button:active { transform: translateY(1px); }
+button:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+button.principal { background: var(--violeta); color: #fff; }
+button.principal:hover:not(:disabled) { background: #9270ef; }
+button.fantasma { background: transparent; border-color: var(--linea); color: var(--texto-2); }
+button.fantasma:hover { background: var(--alto); color: var(--texto); }
+button.chico { padding: 6px 10px; font-size: 13px; }
+
+svg.icono { width: 15px; height: 15px; flex: none; }
+
+/* ── Fotos ────────────────────────────────────────────────────────────────── */
+.galeria { display: grid; grid-template-columns: 1fr 1fr; gap: var(--e2); }
+
+.mini {
+  position: relative; aspect-ratio: 1; border-radius: var(--r3);
+  overflow: hidden; cursor: pointer; background: var(--alto);
+  border: 1px solid var(--linea-baja);
+  transition: border-color .15s, transform .15s var(--salida);
+}
+.mini:hover { transform: translateY(-2px); border-color: #3d3155; }
+.mini img { width: 100%; height: 100%; object-fit: cover; display: block;
+            transition: opacity .2s; }
+.mini:not(.elegida) img { opacity: .62; }
+.mini:hover img { opacity: 1; }
+.mini.elegida { border-color: var(--violeta); }
+.mini.activa  { box-shadow: 0 0 0 2px var(--violeta-2); }
+
+.mini .orden {
+  position: absolute; inset-block-start: 6px; inset-inline-start: 6px;
+  min-width: 22px; height: 22px; padding: 0 6px;
+  border-radius: 7px; background: var(--violeta); color: #fff;
+  display: grid; place-items: center; font: 700 13px "Jakarta", sans-serif;
+  box-shadow: 0 2px 8px -2px rgba(0,0,0,.8);
+}
+.mini .portada {
+  position: absolute; inset-block-end: 0; inset-inline: 0;
+  background: var(--naranja); color: #fff; padding: 3px;
+  font: 700 11px "Jakarta", sans-serif; letter-spacing: .08em; text-align: center;
+}
+
+.soltar {
+  border: 1px dashed var(--linea); border-radius: var(--r3);
+  padding: var(--e6) var(--e4); text-align: center;
+  color: var(--texto-2); font-size: 13px;
+}
+.riel.izq.soltando { background: #1a1330; }
+.riel.izq.soltando .soltar { border-color: var(--violeta); color: var(--texto); }
+
+/* ── Lienzo ───────────────────────────────────────────────────────────────── */
+.lienzo {
+  display: grid; grid-template-rows: auto 1fr auto; min-height: 0;
+  padding: var(--e4) var(--e6) var(--e5);
+}
+
+.lienzo-cabeza {
+  display: flex; align-items: center; gap: var(--e4);
+  padding-block-end: var(--e3);
+}
+.pestanias { display: flex; gap: 6px; }
+.pestanias button { width: 34px; height: 34px; padding: 0; font-size: 13px; }
+.pestanias button.on { background: var(--violeta); color: #fff; }
+
+.zoom { display: flex; align-items: center; gap: var(--e2); margin-inline-start: auto; }
+.zoom label { color: var(--texto-2); font-size: 13px; }
+.zoom output { font-variant-numeric: tabular-nums; font-size: 13px;
+               color: var(--texto-2); min-width: 42px; }
+input[type=range] { width: 128px; accent-color: var(--violeta); }
+input[type=range]:disabled { accent-color: var(--linea); opacity: .5; }
+.zoom:has(:disabled) label, .zoom:has(:disabled) output { opacity: .5; }
+
+/* El marco se queda cuadrado y toma la altura disponible: el auto es lo más
+   grande de la pantalla, porque es lo único que hay que juzgar. */
+.escenario { display: grid; place-items: center; min-height: 0; }
+
+#marco {
+  position: relative; height: 100%; aspect-ratio: 1; max-width: 100%;
+  overflow: hidden; border-radius: var(--r4); background: #000;
+  cursor: grab; touch-action: none; user-select: none;
+  box-shadow: var(--sombra);
+}
+#marco.arrastrando { cursor: grabbing; }
+#foto { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+/* Guías: dónde caen el título y la tarjeta. No son el render. */
+.guia {
+  position: absolute; border: 1px dashed rgba(255,255,255,.42);
+  background: rgba(8,5,16,.34); border-radius: 6px; pointer-events: none;
+  display: grid; place-items: center; text-align: center;
+  font: 600 11px "Jakarta", sans-serif; letter-spacing: .04em;
+  color: rgba(255,255,255,.82);
+}
+.guia.redonda { border-radius: 50%; }
+
+.vacio {
+  display: grid; align-content: center; justify-items: center; gap: var(--e2);
+  height: 100%; aspect-ratio: 1; max-width: 100%;
+  border: 1px dashed var(--linea); border-radius: var(--r4);
+  color: var(--texto-2); text-align: center; padding: var(--e7);
+}
+.vacio b { color: var(--texto); font-size: 15px; font-weight: 700; }
+.vacio span { font-size: 13px; }
+
+.pie { padding-block-start: var(--e3); color: var(--texto-2); font-size: 13px;
+       text-align: center; }
+
+/* ── Resultado ────────────────────────────────────────────────────────────── */
+/* Los cuatro slides ocupan la misma huella cuadrada que el marco: la mirada no
+   tiene que reacomodarse entre encuadrar y revisar. Como los slides son 1:1 y
+   las celdas también, `cover` no recorta nada. */
+.resultado {
+  height: 100%; aspect-ratio: 1; max-width: 100%; min-height: 0;
+  display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+  gap: var(--e2);
+}
+.resultado figure {
+  position: relative; min-height: 0; overflow: hidden;
+  border-radius: var(--r3); background: var(--panel);
+  box-shadow: var(--sombra);
+  animation: entrar .45s var(--salida) both;
+}
+.resultado figure:nth-child(2) { animation-delay: .06s; }
+.resultado figure:nth-child(3) { animation-delay: .12s; }
+.resultado figure:nth-child(4) { animation-delay: .18s; }
+.resultado a { display: block; height: 100%; }
+.resultado img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.resultado figcaption {
+  position: absolute; inset-inline: 0; inset-block-end: 0;
+  display: flex; justify-content: space-between; gap: var(--e2);
+  padding: var(--e5) var(--e3) 7px;
+  font-size: 11px; font-weight: 600; color: rgba(255,255,255,.9);
+  background: linear-gradient(to top, rgba(8,5,16,.92), transparent);
+}
+@keyframes entrar {
+  from { opacity: 0; transform: translateY(8px) scale(.98); filter: blur(4px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* ── Datos ────────────────────────────────────────────────────────────────── */
+/* align-content:start — si no, el riel es flex:1 y las filas se estiran hasta
+   llenar la altura, dejando los campos flotando lejos entre sí. */
+.campos { display: grid; align-content: start; gap: var(--e3); }
+/* minmax(0,…) y no 1fr: un <input> tiene ancho mínimo propio (~170px) y con
+   `1fr` la segunda columna se sale del riel en vez de encogerse. */
+.campos .par { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--e2); }
+.campo, .campo input { min-width: 0; }
+.campo label {
+  display: block; margin-block-end: 5px;
+  font-size: 11px; font-weight: 600; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--texto-2);
+}
+.campo.falta input { border-color: #4a2740; }
+
+/* Pantalla grande: el espacio de más va a los rieles, no al vacío alrededor
+   del lienzo — más fotos visibles sin scrollear es lo que ahorra tiempo. */
+@media (min-width: 1600px) {
+  .tablero { grid-template-columns: 348px minmax(0, 1fr) 340px; }
+  .galeria { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ── Angosto: los rieles se apilan bajo el lienzo ─────────────────────────── */
+@media (max-width: 1180px) {
+  body { overflow: auto; }
+  .app { height: auto; min-height: 100%; }
+  .tablero { grid-template-columns: 1fr; }
+  .riel.izq, .riel.der { border: 0; border-block-start: 1px solid var(--linea); }
+  .lienzo { padding: var(--e4); }
+  .escenario { min-height: 62vh; }
+  #marco, .vacio { height: auto; width: min(100%, 62vh); }
+  .galeria { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); }
+  .topbar { flex-wrap: wrap; }
+  .estado { order: 3; flex-basis: 100%; }
+}
+</style>
+
+<div class="app">
+  <header class="topbar">
+    <div class="marca"><b>Estudio</b><span>VMC Subastas</span></div>
+
+    <form class="oferta" id="formOferta" autocomplete="off">
+      <input type="text" id="codigo" placeholder="Código de oferta o link"
+             aria-label="Código de oferta o link">
+      <button type="submit" id="traer">Traer</button>
+      <button type="button" class="fantasma" id="sinCodigo">Sin código</button>
+    </form>
+
+    <p class="estado" id="estado" role="status" aria-live="polite"></p>
+
+    <button class="principal" id="generar" disabled>Generar carrusel</button>
+  </header>
+
+  <main class="tablero">
+    <!-- ── fotos ── -->
+    <aside class="riel izq" id="rielFotos">
+      <div class="riel-cabeza">
+        <h2>Fotos</h2>
+        <button class="fantasma chico" id="btnSubir">
+          <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"
+               aria-hidden="true">
+            <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"/>
+          </svg>
+          Subir
+        </button>
+      </div>
+      <div class="riel-cuerpo scroll" style="flex:1">
+        <div class="galeria" id="galeria"></div>
+        <p class="soltar" id="soltar">
+          Pegá un código arriba<br>o soltá tus fotos acá
+        </p>
+      </div>
+      <input type="file" id="archivos" accept="image/png,image/jpeg" multiple hidden>
+    </aside>
+
+    <!-- ── lienzo ── -->
+    <section class="lienzo">
+      <div class="lienzo-cabeza">
+        <div class="pestanias" id="pestanias"></div>
+
+        <div class="zoom">
+          <label for="zoom">Zoom</label>
+          <input type="range" id="zoom" min="1" max="3" step="0.02" value="1">
+          <output id="zoomTxt">1.00×</output>
+          <button class="fantasma chico" id="centrar" title="Volver al centro, sin zoom">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="7.5"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/>
+            </svg>
+            Centrar
+          </button>
+        </div>
+      </div>
+
+      <div class="escenario">
+        <div id="marco" hidden><img id="foto" alt=""></div>
+        <div class="vacio" id="vacio">
+          <b>Todavía no hay nada que encuadrar</b>
+          <span>Traé una oferta con su código, o subí tus fotos.</span>
+        </div>
+        <div class="resultado" id="resultado" hidden></div>
+      </div>
+
+      <p class="pie" id="pie">Arrastrá la foto para moverla · rueda del mouse para acercar</p>
+    </section>
+
+    <!-- ── datos ── -->
+    <aside class="riel der">
+      <div class="riel-cabeza"><h2>Datos del auto</h2></div>
+      <div class="riel-cuerpo scroll campos" id="campos" style="flex:1"></div>
+    </aside>
+  </main>
+</div>
+
+<script>
+// Coordenadas reales del diseño, contra el frame de 1080×1080.
+const GUIAS = [
+  { x: 45,     y: 49,     w: 372,    h: 104,    txt: "tienda" },
+  { x: 600,    y: 42,     w: 409.56, h: 188,    txt: "marca y modelo", soloPortada: true },
+  { x: 45.19,  y: 515.22, w: 92.386, h: 92.386, txt: "",  redonda: true, desde: 1 },
+  { x: 942.42, y: 515.22, w: 92.386, h: 92.386, txt: "",  redonda: true, salvoUltima: true },
+  { x: 45,     y: 778.25, w: 353,    h: 51,     txt: "fecha" },
+  { x: 45,     y: 845,    w: 466,    h: 176,    txt: "datos del auto" },
+  { x: 855.29, y: 952.32, w: 179.51, h: 66.69,  txt: "vmc" },
+];
+const CAMPOS = [
+  ["marca", "Marca"], ["modelo", "Modelo"],
+  ["anio", "Año"], ["transmision", "Transmisión"],
+  ["precio", "Precio base"], ["tienda", "Tienda oficial"],
+  ["fecha", "Fecha"], ["hora", "Hora"],
+];
+const PARES = [["marca", "modelo"], ["anio", "transmision"], ["fecha", "hora"]];
+
+const S = { codigo: "", fotos: [], elegidas: [], ajustes: {}, i: 0, slug: null };
+const $ = (id) => document.getElementById(id);
+const marco = $("marco"), foto = $("foto"), estado = $("estado");
+
+const decir = (txt, clase = "") => { estado.textContent = txt; estado.className = "estado " + clase; };
+const ajuste = (url) => (S.ajustes[url] ||= { foco: "50% 50%", escala: 1 });
+const pct = (s) => s.split(" ").map(parseFloat);
+const dato = (k) => $("c-" + k).value.trim();
+
+// ── datos ───────────────────────────────────────────────────────────────────
+{
+  const cont = $("campos");
+  const caja = (k, rotulo) => {
+    const d = document.createElement("div");
+    d.className = "campo";
+    d.innerHTML = `<label for="c-${k}">${rotulo}</label>
+                   <input type="text" id="c-${k}" autocomplete="off">`;
+    return d;
+  };
+  const enPar = new Set(PARES.flat());
+  for (const [a, b] of PARES) {
+    const fila = document.createElement("div");
+    fila.className = "par";
+    fila.append(caja(a, CAMPOS.find((c) => c[0] === a)[1]),
+                caja(b, CAMPOS.find((c) => c[0] === b)[1]));
+    cont.appendChild(fila);
+  }
+  for (const [k, rotulo] of CAMPOS) if (!enPar.has(k)) cont.appendChild(caja(k, rotulo));
+  CAMPOS.forEach(([k]) => $("c-" + k).addEventListener("input", revisar));
+}
+const ponerDatos = (d) => CAMPOS.forEach(([k]) => { if (d[k] != null) $("c-" + k).value = d[k]; });
+
+// ── 1 · la oferta ───────────────────────────────────────────────────────────
+$("formOferta").onsubmit = async (e) => {
+  e.preventDefault();
+  const codigo = $("codigo").value.trim();
+  if (!codigo) return decir("Escribí el código de la oferta o pegá el link.", "mal");
+  $("traer").disabled = true;
+  decir("Leyendo la oferta…", "wip");
+  try {
+    const j = await pedir("/oferta", { codigo });
+    S.codigo = j.codigo; S.fotos = j.fotos;
+    S.elegidas = j.fotos.slice(0, 3).map((f) => f.url);
+    S.i = 0; S.slug = null;
+    ponerDatos(j.datos);
+    pintarGaleria(); pintar();
+    decir(`${j.fotos.length} fotos del sitio. Elegí 3 — el orden es el del carrusel.`, "ok");
+  } catch (err) { decir(err.message, "mal"); }
+  $("traer").disabled = false;
+  revisar();
+};
+
+$("sinCodigo").onclick = () => {
+  S.codigo = ""; S.fotos = []; S.elegidas = []; S.slug = null;
+  CAMPOS.forEach(([k]) => ($("c-" + k).value = ""));
+  pintarGaleria(); pintar();
+  decir("Subí tus fotos y completá los datos.", "");
+  $("c-marca").focus();
+  revisar();
+};
+
+async function pedir(ruta, cuerpo) {
+  const r = await fetch(ruta, { method: "POST", body: JSON.stringify(cuerpo) });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error);
+  return j;
+}
+
+// ── 2 · las fotos ───────────────────────────────────────────────────────────
+// Las miniaturas se crean una sola vez: recrearlas en cada clic relanza la
+// descarga de cada <img> y cancela la anterior a medio camino.
+function pintarGaleria() {
+  const g = $("galeria");
+  g.innerHTML = "";
+  for (const f of S.fotos) {
+    const d = document.createElement("div");
+    d.className = "mini";
+    d.dataset.k = f.url;
+    d.tabIndex = 0;
+    d.setAttribute("role", "button");
+    d.innerHTML = `<img src="${f.url}" alt="${f.archivo}">
+                   <div class="orden" hidden></div>
+                   <div class="portada" hidden>PORTADA</div>`;
+    d.onclick = () => elegir(f.url);
+    d.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); elegir(f.url); } };
+    g.appendChild(d);
+  }
+  $("soltar").hidden = S.fotos.length > 0;
+  marcar();
+}
+
+/** Solo los distintivos: no toca los <img>. */
+function marcar() {
+  for (const d of document.querySelectorAll(".mini")) {
+    const n = S.elegidas.indexOf(d.dataset.k);
+    d.classList.toggle("elegida", n >= 0);
+    d.classList.toggle("activa", n === S.i && n >= 0);
+    d.setAttribute("aria-pressed", n >= 0);
+    const orden = d.querySelector(".orden");
+    orden.hidden = n < 0;
+    orden.textContent = n + 1;
+    d.querySelector(".portada").hidden = n !== 0;
+  }
+}
+
+// Clic = sumar al final del orden; otra vez = sacarla.
+function elegir(url) {
+  const n = S.elegidas.indexOf(url);
+  if (n >= 0) S.elegidas.splice(n, 1);
+  else if (S.elegidas.length < 3) S.elegidas.push(url);
+  else return decir("Ya hay 3 elegidas. Sacá una para cambiarla.", "mal");
+  if (S.i >= S.elegidas.length) S.i = Math.max(0, S.elegidas.length - 1);
+  pintar(); revisar();
+}
+
+$("btnSubir").onclick = () => $("archivos").click();
+$("archivos").onchange = (e) => { subir([...e.target.files]); e.target.value = ""; };
+
+// Todo el riel es zona de soltado: arrastrar del explorador es lo más rápido.
+const riel = $("rielFotos");
+["dragenter", "dragover"].forEach((ev) => riel.addEventListener(ev, (e) => {
+  e.preventDefault(); riel.classList.add("soltando");
+}));
+["dragleave", "drop"].forEach((ev) => riel.addEventListener(ev, (e) => {
+  if (ev === "dragleave" && riel.contains(e.relatedTarget)) return;
+  riel.classList.remove("soltando");
+}));
+riel.addEventListener("drop", (e) => {
+  e.preventDefault();
+  subir([...e.dataTransfer.files].filter((f) => f.type.startsWith("image/")));
+});
+
+async function subir(archivos) {
+  if (!archivos.length) return;
+  decir(`Subiendo ${archivos.length} foto${archivos.length > 1 ? "s" : ""}…`, "wip");
+  try {
+    for (const a of archivos) {
+      const datos = await new Promise((res, rej) => {
+        const fr = new FileReader();
+        fr.onload = () => res(fr.result.split(",")[1]);
+        fr.onerror = () => rej(new Error(`No se pudo leer ${a.name}`));
+        fr.readAsDataURL(a);
+      });
+      const j = await pedir("/subir", { codigo: S.codigo, nombre: a.name, datos });
+      if (!S.fotos.some((f) => f.url === j.foto.url)) S.fotos.push(j.foto);
+      if (S.elegidas.length < 3) S.elegidas.push(j.foto.url);
+    }
+    pintarGaleria(); pintar();
+    decir("Fotos subidas.", "ok");
+  } catch (err) { decir(err.message, "mal"); }
+  revisar();
+}
+
+// ── 3 · el encuadre ─────────────────────────────────────────────────────────
+function pintar() {
+  const hay = S.elegidas.length > 0;
+  const viendoResultado = !$("resultado").hidden;
+
+  $("pestanias").innerHTML = "";
+  S.elegidas.forEach((_, n) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = n + 1;
+    b.className = n === S.i && !viendoResultado ? "on" : "";
+    b.title = n === 0 ? "Portada" : `Slide ${n + 1}`;
+    b.onclick = () => { S.i = n; verEncuadre(); };
+    $("pestanias").appendChild(b);
+  });
+  if (S.slug) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = "✓";
+    b.className = viendoResultado ? "on" : "";
+    b.title = "Ver el carrusel generado";
+    b.onclick = verResultado;
+    $("pestanias").appendChild(b);
+  }
+
+  // En la vista de resultado el zoom no tiene sobre qué actuar: se va, en vez
+  // de quedarse ahí ofreciendo algo que no hace nada.
+  document.querySelector(".zoom").hidden = viendoResultado;
+  $("zoom").disabled = !hay;
+  $("centrar").disabled = !hay;
+  marco.hidden = !hay || viendoResultado;
+  $("vacio").hidden = hay || viendoResultado;
+  $("pie").hidden = viendoResultado;
+  $("pie").textContent = hay
+    ? "Arrastrá la foto para moverla · rueda del mouse para acercar"
+    : "Las guías punteadas marcan dónde caen el título y la tarjeta.";
+
+  if (!hay || viendoResultado) return;
+
+  const url = S.elegidas[S.i], a = ajuste(url);
+  if (foto.getAttribute("src") !== url) {
+    foto.src = url;
+    foto.alt = (S.fotos.find((f) => f.url === url) || {}).archivo || "";
+  }
+  foto.style.objectPosition = a.foco;
+  if (a.escala === 1) { foto.style.transform = ""; foto.style.transformOrigin = ""; }
+  else { foto.style.transform = `scale(${a.escala})`; foto.style.transformOrigin = a.foco; }
+  $("zoom").value = a.escala;
+  $("zoomTxt").value = Number(a.escala).toFixed(2) + "×";
+  guias();
+  marcar();
+}
+
+const verEncuadre = () => { $("resultado").hidden = true; pintar(); };
+const verResultado = () => { $("resultado").hidden = false; pintar(); };
+
+function guias() {
+  marco.querySelectorAll(".guia").forEach((g) => g.remove());
+  const ultima = S.elegidas.length - 1;
+  for (const g of GUIAS) {
+    if (g.soloPortada && S.i !== 0) continue;
+    if (g.desde !== undefined && S.i < g.desde) continue;
+    if (g.salvoUltima && S.i >= ultima) continue;
+    const d = document.createElement("div");
+    d.className = "guia" + (g.redonda ? " redonda" : "");
+    d.style.cssText = `left:${g.x / 10.8}%;top:${g.y / 10.8}%;` +
+                      `width:${g.w / 10.8}%;height:${g.h / 10.8}%`;
+    d.textContent = g.txt;
+    marco.appendChild(d);
+  }
+}
+
+// Cuánto se puede recorrer: lo que sobra del recorte cuadrado (una foto
+// apaisada sobra a los lados y nada arriba) más lo que agrega el zoom.
+function recorrido() {
+  const lado = marco.clientWidth, w = foto.naturalWidth, h = foto.naturalHeight;
+  if (!w || !h) return { x: 0, y: 0 };
+  const cubrir = Math.max(lado / w, lado / h);
+  const extra = lado * (ajuste(S.elegidas[S.i]).escala - 1);
+  return { x: w * cubrir - lado + extra, y: h * cubrir - lado + extra };
+}
+
+let arrastre = null;
+marco.addEventListener("pointerdown", (e) => {
+  if (!S.elegidas.length) return;
+  arrastre = { x: e.clientX, y: e.clientY,
+               foco: pct(ajuste(S.elegidas[S.i]).foco), rango: recorrido() };
+  marco.setPointerCapture(e.pointerId);
+  marco.classList.add("arrastrando");
+});
+marco.addEventListener("pointermove", (e) => {
+  if (!arrastre) return;
+  const a = ajuste(S.elegidas[S.i]);
+  const cerca = (v) => Math.min(100, Math.max(0, v));
+  const dx = (e.clientX - arrastre.x) / a.escala;
+  const dy = (e.clientY - arrastre.y) / a.escala;
+  a.foco = (arrastre.rango.x ? cerca(arrastre.foco[0] - dx / arrastre.rango.x * 100) : arrastre.foco[0]).toFixed(1)
+         + "% "
+         + (arrastre.rango.y ? cerca(arrastre.foco[1] - dy / arrastre.rango.y * 100) : arrastre.foco[1]).toFixed(1) + "%";
+  pintar();
+});
+const soltar = () => { arrastre = null; marco.classList.remove("arrastrando"); };
+marco.addEventListener("pointerup", soltar);
+marco.addEventListener("pointercancel", soltar);
+marco.addEventListener("wheel", (e) => {
+  if (!S.elegidas.length) return;
+  e.preventDefault();
+  const a = ajuste(S.elegidas[S.i]);
+  a.escala = Math.min(3, Math.max(1, +(a.escala - e.deltaY * 0.0015).toFixed(3)));
+  pintar();
+}, { passive: false });
+
+$("zoom").oninput = () => {
+  if (!S.elegidas.length) return;
+  ajuste(S.elegidas[S.i]).escala = +$("zoom").value;
+  pintar();
+};
+$("centrar").onclick = () => {
+  S.ajustes[S.elegidas[S.i]] = { foco: "50% 50%", escala: 1 };
+  pintar();
+};
+
+// ── 4 · generar ─────────────────────────────────────────────────────────────
+function revisar() {
+  const faltan = CAMPOS.filter(([k]) => !dato(k));
+  CAMPOS.forEach(([k]) =>
+    $("c-" + k).closest(".campo").classList.toggle("falta", !dato(k) && S.elegidas.length > 0));
+  $("generar").disabled = !S.elegidas.length || faltan.length > 0;
+  if (estado.classList.contains("mal") || estado.classList.contains("wip")) return;
+  if (!S.fotos.length) decir("Empezá por el código de la oferta, o subí tus fotos.");
+  else if (!S.elegidas.length) decir("Elegí las fotos del carrusel.");
+  else if (faltan.length) decir("Falta completar: " + faltan.map(([, r]) => r.toLowerCase()).join(", "));
+  else if (!estado.classList.contains("ok")) decir("Listo para generar.");
+}
+
+$("generar").onclick = async () => {
+  $("generar").disabled = true;
+  decir("Generando el carrusel…", "wip");
+  try {
+    const j = await pedir("/generar", {
+      codigo: S.codigo,
+      datos: Object.fromEntries(CAMPOS.map(([k]) => [k, dato(k)])),
+      fotos: S.elegidas.map((url) => {
+        const f = S.fotos.find((x) => x.url === url);
+        return { archivo: f.archivo, carpeta: f.carpeta, ...ajuste(url) };
+      }),
+    });
+    S.slug = j.slug;
+    $("resultado").innerHTML = j.slides.map((u, n) => `
+      <figure>
+        <a href="${u}" target="_blank" rel="noopener"><img src="${u}" alt="Slide ${n + 1}"></a>
+        <figcaption><span>${n + 1 === j.slides.length ? "Placa de cierre" : "Slide " + (n + 1)}</span>
+        <span>${n + 1}.png</span></figcaption>
+      </figure>`).join("");
+    verResultado();
+    decir(`Listo · Posts/${j.slug}/ · miralos antes de publicar`, "ok");
+  } catch (err) { decir("No se pudo generar: " + err.message, "mal"); }
+  $("generar").disabled = false;
+};
+
+// ── reabrir un carrusel ya hecho ────────────────────────────────────────────
+(async () => {
+  const j = await (await fetch("/inicio")).json();
+  if (!j.slug) { pintarGaleria(); pintar(); revisar(); return; }
+  S.codigo = j.codigo; S.fotos = j.fotos;
+  S.elegidas = j.elegidas; S.ajustes = j.ajustes; S.slug = j.slug;
+  ponerDatos(j.datos);
+  pintarGaleria(); pintar(); revisar();
+  decir(`${j.slug} · reencuadrá y volvé a generar`, "ok");
+})();
+</script>
