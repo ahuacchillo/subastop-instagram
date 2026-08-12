@@ -30,7 +30,7 @@ DATOS="$RAIZ/Posts/$SLUG/datos.json"
 [ -f "$DATOS" ] || { echo "No existe $DATOS." >&2; exit 1; }
 
 if [ "$MODO" != "--render" ]; then
-  exec python3 "$RAIZ/encuadre.py" "$SLUG"
+  exec python3 "$RAIZ/estudio.py" "$SLUG"
 fi
 
 # ── Render ───────────────────────────────────────────────────────────────────

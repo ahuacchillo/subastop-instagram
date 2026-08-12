@@ -1,7 +1,31 @@
 # Carruseles de Instagram — VMC Subastas
 
 Generador de piezas para @vmcsubastas: le das el código de una oferta de
-vmcsubastas.com y te devuelve los 3 PNG del carrusel listos para publicar.
+vmcsubastas.com y te devuelve los 4 PNG del carrusel listos para publicar.
+
+## El estudio — el camino sin terminal
+
+```bash
+./estudio.sh
+```
+
+Abre una página en el navegador y ahí se hace todo, en cuatro pasos:
+
+1. **La oferta** — pegás el código (`63015`) o el link, y trae marca, modelo,
+   año, transmisión, precio, fecha, hora, tienda y toda la galería de fotos.
+2. **Los datos** — quedan cargados; corregís lo que haga falta.
+3. **Las fotos** — clic para elegir; **el orden en que las tocás es el orden del
+   carrusel** y la primera es la portada. También podés subir las tuyas.
+4. **El encuadre** — arrastrás la foto para moverla, rueda del mouse para
+   acercar. El recuadro punteado marca dónde caen el título y la tarjeta.
+
+"Generar carrusel" deja los PNG y los muestra ahí mismo. Unos 10 segundos.
+
+```bash
+./estudio.sh 63015-toyota-corolla   # reabrir uno hecho, para reencuadrar
+```
+
+## Y el camino por terminal, que sigue igual
 
 ```bash
 ./nueva-subasta.sh 62996
@@ -11,24 +35,24 @@ vmcsubastas.com y te devuelve los 3 PNG del carrusel listos para publicar.
 El `4.png` es la placa de cierre (`Materiales/cierre.png`): se copia tal cual al
 final de todos los carruseles, no pasa por Remotion y no cambia nunca.
 
-Sin código que editar. Los datos entran a Remotion por `--props`, así que se
-puede correr dos veces seguidas con autos distintos sin que quede nada pegado.
+Los dos caminos usan las mismas piezas —`scraper.py` para los datos,
+`ajustar.sh --render` para los PNG— así que no pueden desincronizarse.
 
 ---
 
 ## Ponerlo a funcionar
 
-Hace falta `node` (18+), `npm` y `python3`. Nada más — el scraping usa solo
-stdlib.
+Hace falta `node` (18+), `npm` y `python3`. Nada más — el estudio y el scraping
+usan solo la stdlib de python.
 
 ```bash
 git clone git@github.com:ahuacchillo/subastop-instagram.git
 cd subastop-instagram/social-content && npm install && cd ..
-./nueva-subasta.sh 62996
+./estudio.sh
 ```
 
-El primer render se demora extra: Remotion se baja su Chrome headless solo. Los
-siguientes van a ~13s por slide.
+El primer render se demora extra: Remotion se baja su Chrome headless solo.
+Después, un carrusel entero sale en ~10s.
 
 Si `npx remotion` falla por librerías del sistema (Linux limpio):
 
@@ -171,28 +195,21 @@ alrededor del foco, no del centro. Un string suelto es lo mismo que
 `"50% 50%"` con `escala: 1` — o sea, el comportamiento de siempre. Todos los
 `datos.json` viejos siguen renderizando byte a byte igual.
 
-Pero a mano no se aciertan esos números. Para eso está la página de encuadre:
+Pero a mano no se aciertan esos números: se ajustan en el estudio, arrastrando.
 
 ```bash
-./ajustar.sh 62915-dfsk-glory            # abre la página en el navegador
-./ajustar.sh 62915-dfsk-glory --render   # rehace los PNG desde datos.json
+./estudio.sh 62915-dfsk-glory            # reabrir para reencuadrar
+./ajustar.sh 62915-dfsk-glory --render   # rehacer los PNG desde datos.json
 ```
 
-Sin bandera abre una página local que hace una sola cosa: **arrastrás la foto
-para moverla, rueda del mouse para acercar, y el botón guarda y renderiza.** Los
-valores del `datos.json` los escribe ella; no hace falta tocarlos.
+Al reabrir, la galería ofrece **las fotos que ya usó ese carrusel** (las de
+`public/autos/`) y no las de `Materiales/`. Es a propósito: son las únicas que
+mapean exacto contra el encuadre guardado, y adivinar por posición le pega el
+encuadre a la foto equivocada apenas el orden no fue 1-2-3.
 
-Los botones de arriba cambian de slide. El marco dibuja dónde caen el header, el
-título, la píldora, la tarjeta y el logo: son guías para ver qué le tapan al
-auto, no el render. El render sale al guardar, del mismo `--render` de siempre.
-
-Dos cosas que confunden si no se saben:
-
-- **Una foto apaisada no se mueve en vertical** hasta que la acerques. Recortada
-  en cuadrado no sobra nada arriba ni abajo, así que no hay foto escondida para
-  revelar; el zoom es el que crea ese margen.
-- Es `python3` de la stdlib escuchando en `127.0.0.1:4173`. No instala nada y no
-  sale de la máquina. Ctrl-C la cierra.
+**Una foto apaisada no se mueve en vertical** hasta que la acerques. Recortada
+en cuadrado no sobra nada arriba ni abajo, así que no hay foto escondida para
+revelar; el zoom es el que crea ese margen.
 
 Para trabajar el componente en sí —mover coordenadas, tocar el glass— sigue
 siendo el Studio (`cd social-content && npm run dev`). Esa es la herramienta del
@@ -236,7 +253,11 @@ Posts/<slug>/
 Con dentro: caption de feed (gancho + datos + CTA + link), variante corta para
 Stories, y el bloque de hashtags. Los datos ya están todos —marca, modelo, año,
 precio, fecha, hora, tienda, código de oferta—, así que es un paso más al final
-del script, no un proyecto aparte.
+del render, no un proyecto aparte.
+
+Ahora que existe el estudio, el lugar es obvio: un paso 5 en la misma página,
+con el copy al lado de los slides y un botón de copiar. Ahí la herramienta pasa
+a entregar el post entero y no solo las imágenes.
 
 Lo que hay que definir antes de escribirlo: si el texto se arma con plantillas
 (determinista, gratis, siempre igual) o con la API de Claude (mejor gancho,
@@ -246,10 +267,11 @@ repetido en el feed.
 
 ### 2. Un bundle de Remotion por slide
 
-~13s por slide porque cada `npx remotion still` bundlea de nuevo. Se arregla
-pasando a la API de Node (`@remotion/renderer`), que bundlea una vez y renderiza
-los tres. Marcado con `ponytail:` en el script. No corre prisa: 40s por carrusel
-es tolerable.
+Cada `npx remotion still` bundlea de nuevo. Se arregla pasando a la API de Node
+(`@remotion/renderer`), que bundlea una vez y renderiza los tres. Marcado con
+`ponytail:` en `ajustar.sh`. **Menos urgente de lo que parecía:** medido desde el
+estudio, un carrusel entero sale en 9–14s. La primera corrida del día es la
+lenta, después el caché de Remotion hace el trabajo.
 
 ### 3. `RESULTADOS.md` está vacío
 

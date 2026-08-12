@@ -58,70 +58,9 @@ if [[ "$ORIGEN" =~ ^https?://|^[0-9]+$ ]]; then
     mkdir -p "$ORIGEN"
     DESTINO="$ORIGEN"
   fi
-  SCRAPE="$(ID="$ID" DESTINO="$DESTINO" python3 - <<'PY'
-import os, re, sys, time, urllib.request as U
-from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
-
-ID, DESTINO = os.environ["ID"], os.environ["DESTINO"]
-bajar = lambda url: U.urlopen(
-    U.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=30).read()
-
-def uno(patron):
-    m = re.search(patron, html, re.S)
-    return m.group(1).strip() if m else ""
-
-# A veces el sitio contesta con la portada en vez de la oferta. Se nota en que
-# no hay galería; se reintenta antes de seguir con datos inventados.
-print(f"Leyendo oferta {ID}…", file=sys.stderr)
-for intento in range(3):
-    html = bajar(f"https://www.vmcsubastas.com/oferta/{ID}").decode("utf8", "replace")
-    # El carrusel es de 3 slides: de la galería solo interesan las 3 primeras.
-    fotos = list(dict.fromkeys(
-        re.findall(r'\\"image\\":\\"(https://[^\\]+?\.jpe?g)', html)))[:3]
-    if fotos:
-        break
-    time.sleep(2)
-else:
-    sys.exit(f"La oferta {ID} no trajo fotos. ¿El código es correcto?")
-
-# "Toyota Fortuner 2023" → marca / modelo / 23'
-titulo = uno(r"<h1[^>]*>([^<]+)</h1>").split()
-anio = titulo.pop() if titulo and titulo[-1].isdigit() else ""
-datos = {
-    "MARCA": titulo[0] if titulo else "",
-    "MODELO": " ".join(titulo[1:]),
-    "ANIO": anio[2:] + "'" if anio else "",
-    "TRANSMISION": uno(r"Transmisión.{0,80}?<span[^>]*>([^<]+)</span>"),
-    # Del payload y no del HTML pintado: en las ofertas que ya cerraron o que
-    # son negociables la tarjeta del precio no viene renderizada.
-    "PRECIO": uno(r'basePriceLabel\\":\\"US\$\s*([\d.,]+)'),
-    "TIENDA": uno(r"Vendedor:\s*([^<]+)<"),
-}
-cuando = uno(r'processDatetime\\":\\"([^\\]+)')
-if cuando:
-    d = datetime.strptime(cuando, "%Y-%m-%d %H:%M:%S")
-    datos["FECHA"] = d.strftime("%d/%m")
-    datos["HORA"] = d.strftime("%I:%M %p").lstrip("0").lower()
-
-# El orden de la galería importa: se numeran para que el `sort` de después no
-# lo revuelva. Las que ya están no se vuelven a bajar.
-def guardar(par):
-    i, url = par
-    ruta = f"{DESTINO}/{i:02d}.jpeg"
-    if not os.path.exists(ruta):
-        open(ruta, "wb").write(bajar(url))
-if DESTINO:
-    with ThreadPoolExecutor(8) as pool:
-        list(pool.map(guardar, enumerate(fotos, 1)))
-    print(f"{len(fotos)} fotos en {DESTINO}/", file=sys.stderr)
-
-# Lo que no se encontró no se imprime: así el default del script sobrevive.
-for clave, valor in datos.items():
-    if valor:
-        print(f"{clave}\t{valor}")
-PY
-)"
+  # ${DESTINO:+…} desaparece entero cuando está vacío: con --fotos el scraper
+  # no recibe carpeta y por lo tanto no baja nada.
+  SCRAPE="$(python3 "$RAIZ/scraper.py" "$ID" ${DESTINO:+"$DESTINO"})"
   while IFS=$'\t' read -r clave valor; do
     printf -v "$clave" '%s' "$valor"
   done <<< "$SCRAPE"
