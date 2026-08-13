@@ -1,5 +1,11 @@
 # Estudio VMC Subastas — la misma herramienta, dentro de un contenedor.
 #
+# NO ESTÁ EN USO. El estudio corre en local y así se queda; esto es la salida
+# de emergencia para el día que se decida exponerlo. Construido y probado: el
+# render completo sale en 13 s aquí dentro, con un pico de 704 MiB — que es
+# justo el número que descarta los planes gratuitos de 512 MB. El porqué de
+# todo esto está en el README.
+#
 # Nada del código cambia aquí: `estudio.py` toma host, puerto y clave del
 # entorno y el resto corre igual que en el escritorio. Lo que resuelve esta
 # imagen es que el render necesita un Chromium de verdad, y eso pide un
@@ -22,9 +28,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       libxrandr2 libgbm1 libasound2 libpango-1.0-0 libcairo2 \
     && rm -rf /var/lib/apt/lists/*
 
-# La imagen de node ya trae el usuario `node` con UID 1000, que es justo el que
-# espera Hugging Face. La app escribe (fotos, renders) dentro de su propio
-# directorio, así que el dueño de los archivos tiene que ser ese mismo usuario.
+# Sin privilegios: la imagen de node ya trae el usuario `node` con UID 1000, que
+# es además el que esperan casi todos los alojamientos de contenedores. La app
+# escribe (fotos, renders) dentro de su propio directorio, así que el dueño de
+# los archivos tiene que ser ese mismo usuario.
 USER node
 WORKDIR /home/node/app
 

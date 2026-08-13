@@ -1,14 +1,3 @@
----
-title: Estudio VMC Subastas
-emoji: 🚗
-colorFrom: purple
-colorTo: indigo
-sdk: docker
-app_port: 7860
-pinned: false
-short_description: De un código de oferta a los PNG del carrusel
----
-
 # Carruseles de Instagram — VMC Subastas
 
 Generador de piezas para @vmcsubastas: le das el código de una oferta de
@@ -167,71 +156,64 @@ proyecto y la página no puede desviarse de lo que produce el script.
 
 ---
 
-## Ponerlo en la web — Hugging Face Spaces
+## Por qué corre en local, y qué haría falta para no
 
-La misma herramienta, con la misma vista de encuadre, corriendo en un servidor
-para que la use alguien más sin instalar nada. **No cambia una línea del
-código**: `estudio.py` toma host, puerto y clave del entorno.
+Cada quien lo corre en su máquina. No hay servidor, no hay costo y no hay nada
+que mantener: se clona el repo y se abre. Para una herramienta que usan una o
+dos personas, eso es la respuesta correcta, no una limitación.
 
-### Por qué un contenedor y no Vercel
+Igual la pregunta se hizo en serio, así que aquí queda contestada con números,
+para no volver a discutirla de memoria.
 
 Renderizar un slide lanza un **Chromium de verdad** sobre los ~630 MB de
 `node_modules` de Remotion. Eso no entra en una función serverless —Vercel corta
 en 250 MB de bundle, con disco de solo lectura y tiempo limitado—, así que Vercel
 podría alojar la página pero nunca el render, ni en el plan pago. En un
-contenedor Chromium corre sin drama: **medido dentro de la imagen, un carrusel
-completo sale en 13 s y el proceso se queda en ~100 MB de RAM.**
+contenedor sí corre, y bien. Medido dentro de la imagen de este repo:
 
-Y no hace falta disco que sobreviva al reinicio, porque *Download carousel* baja
-el resultado en el momento. `Materiales/` y `Posts/` viven en el disco efímero
-del contenedor mientras dura la sesión, y eso es justo lo que sí regalan las
-capas gratuitas.
+| | |
+|---|---|
+| Carrusel completo (3 slides + placa) | **13 s** |
+| Memoria en reposo | **141 MiB** |
+| **Pico durante el render** | **704 MiB** |
+| Imagen, con Chromium horneado | ~1.5 GB |
 
-### El entorno
+Ese pico de 704 MiB es el que decide todo: **descarta cualquier plan gratuito de
+512 MB** (Render, y los que quedan por el estilo). Hugging Face dejó el SDK de
+Docker detrás de un plan de pago, y Fly.io ya no tiene capa gratuita. Queda Cloud
+Run, que para este volumen sale $0 pero exige una tarjeta registrada, o un túnel
+(`cloudflared tunnel --url http://localhost:4173`) sobre esta misma máquina.
 
-| Variable | Por defecto | Para qué |
-|---|---|---|
-| `ESTUDIO_HOST` | `127.0.0.1` | `0.0.0.0` para escuchar fuera de la máquina. Con el valor por defecto no entra nadie más, que es el modo escritorio |
-| `PORT` | `4173` | Hugging Face espera `7860`; el `Dockerfile` ya lo pone |
-| `ESTUDIO_CLAVE` | vacío | La contraseña. **Vacía no hay autenticación**, que es lo correcto en `127.0.0.1` y temerario en internet |
+O sea: gratis, sin tarjeta y encendido siempre, ya no existe para 704 MiB. Hay
+que ceder la laptop encendida o la tarjeta, y ninguna de las dos vale la pena
+todavía.
 
-`ESTUDIO_CLAVE` no es opcional una vez expuesto: el servidor escribe archivos y
-lanza un renderizador, así que sin clave le entregas las dos cosas a quien
-encuentre la URL. Si arranca escuchando fuera de `127.0.0.1` sin clave, lo avisa
-por consola.
+### El Dockerfile que quedó
 
-### Probarlo en local antes de subir
+Está construido y probado —el render de 13 s de la tabla salió de él— pero no
+está en uso. Es la salida de emergencia el día que se decida exponerlo:
 
 ```bash
 docker build -t estudio-vmc .
 docker run -p 7860:7860 -e ESTUDIO_CLAVE=loquesea estudio-vmc
-# → http://127.0.0.1:7860/ , usuario cualquiera, contraseña "loquesea"
 ```
 
-La imagen pesa ~1.5 GB. Chromium va horneado en tiempo de build a propósito: si
-no, el primer render de cada arranque en frío se pone a descargar 92 MB y parece
-que la herramienta se colgó.
+`estudio.py` lee tres variables de entorno, y con las tres sin poner se comporta
+exactamente como siempre:
 
-### Subirlo
+| Variable | Por defecto | Para qué |
+|---|---|---|
+| `ESTUDIO_HOST` | `127.0.0.1` | `0.0.0.0` para escuchar fuera de la máquina |
+| `PORT` | `4173` | el puerto |
+| `ESTUDIO_CLAVE` | vacío | la contraseña; **vacía no hay autenticación** |
 
-1. Crear el Space en <https://huggingface.co/new-space>: SDK **Docker**, y
-   **Private** — así lo protege también el login de Hugging Face, y a quien lo
-   vaya a usar lo agregas en *Settings → Members*.
-2. En *Settings → Variables and secrets*, añadir `ESTUDIO_CLAVE` **como secret**,
-   no como variable.
-3. Empujar el repo al Space:
+**`ESTUDIO_CLAVE` no es opcional en cuanto salga de `127.0.0.1`.** El servidor
+escribe archivos y lanza un renderizador: sin clave le entregas las dos cosas a
+quien dé con la URL. Si arranca escuchando fuera de `127.0.0.1` sin clave, avisa
+por consola.
 
-```bash
-git remote add space https://huggingface.co/spaces/<usuario>/<space>
-git push space main
-```
-
-El Space construye la imagen solo y queda en línea. Duerme cuando no se usa y
-despierta en uno o dos minutos.
-
-El frontmatter YAML del inicio de este archivo es lo que Hugging Face lee para
-configurar el Space (`sdk: docker`, `app_port: 7860`). GitHub lo muestra como una
-tabla al abrir el README; es el precio de tener un solo repo para las dos cosas.
+Y no hace falta disco persistente: *Download carousel* baja el resultado en el
+momento, así que `Materiales/` y `Posts/` pueden ser efímeros.
 
 ---
 
