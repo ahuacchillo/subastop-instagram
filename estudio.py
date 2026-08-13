@@ -17,6 +17,7 @@ machine, which also means no phone or other computer can reach it.
 """
 import base64
 import http.server
+import io
 import json
 import mimetypes
 import os
@@ -27,6 +28,7 @@ import threading
 import unicodedata
 import urllib.parse
 import webbrowser
+import zipfile
 
 import scraper
 
@@ -82,11 +84,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
     def log_message(self, *_):
         pass
 
-    def responder(self, codigo, tipo, cuerpo):
+    def responder(self, codigo, tipo, cuerpo, extra=None):
         self.send_response(codigo)
         self.send_header("Content-Type", tipo)
         self.send_header("Content-Length", str(len(cuerpo)))
         self.send_header("Cache-Control", "no-store")
+        for clave, valor in (extra or {}).items():
+            self.send_header(clave, valor)
         self.end_headers()
         self.wfile.write(cuerpo)
 
@@ -129,7 +133,26 @@ class Handler(http.server.BaseHTTPRequestHandler):
             _, _, slug, archivo = ruta.split("/", 3)
             return self.archivo(
                 os.path.join(POSTS, seguro(slug), seguro(archivo)), POSTS)
+        if ruta.startswith("/descargar/"):
+            return self.descargar(seguro(ruta.split("/", 2)[2]))
         self.responder(404, "text/plain", b"no existe")
+
+    def descargar(self, slug):
+        """The whole carousel as one ZIP, built in memory: four downloads in a
+        row is four trips to the file manager, and a temp file would be one
+        more thing to clean up."""
+        carpeta = os.path.join(POSTS, slug)
+        pngs = [f for f in listar(carpeta) if f.lower().endswith(".png")]
+        if not pngs:
+            return self.responder(404, "text/plain", b"no existe")
+        buf = io.BytesIO()
+        # Stored, not deflated: PNG is already compressed, so deflate spends
+        # CPU to save nothing.
+        with zipfile.ZipFile(buf, "w") as z:
+            for p in pngs:                       # listar() sorts: 1, 2, 3, 4
+                z.write(os.path.join(carpeta, p), p)
+        self.responder(200, "application/zip", buf.getvalue(),
+                       {"Content-Disposition": f'attachment; filename="{slug}.zip"'})
 
     def inicio(self):
         """State for reopening a finished carousel. Empty without an argument."""

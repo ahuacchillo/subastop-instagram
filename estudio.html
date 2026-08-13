@@ -334,6 +334,14 @@ kbd {
     <p class="status" id="status" role="status" aria-live="polite"></p>
 
     <button class="primary" id="build" disabled>Generate carousel</button>
+    <button class="primary" id="download" hidden>
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 4v12m0 0l-4.5-4.5M12 16l4.5-4.5"/>
+        <path d="M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"/>
+      </svg>
+      Download carousel
+    </button>
   </header>
 
   <main class="board">
@@ -467,7 +475,9 @@ $("lookup").onsubmit = async (e) => {
   try {
     const j = await ask("/oferta", { codigo: code });
     S.code = j.codigo; S.photos = j.fotos;
-    S.picked = j.fotos.slice(0, 3).map((f) => f.url);
+    // Nothing preselected: which three go in, and in what order, is the one
+    // judgement call the tool must not make on your behalf.
+    S.picked = []; S.crops = {};
     S.i = 0; S.slug = null;
     fill(j.datos);
     paintGallery(); paint();
@@ -477,13 +487,21 @@ $("lookup").onsubmit = async (e) => {
   review();
 };
 
-$("noCode").onclick = () => {
-  S.code = ""; S.photos = []; S.picked = []; S.slug = null;
+// Back to an empty page. Only the screen is cleared: Materiales/ and Posts/
+// keep everything, so a finished carousel is still there to reopen.
+function reset() {
+  Object.assign(S, { code: "", photos: [], picked: [], crops: {}, i: 0, slug: null });
   FIELDS.forEach(([k]) => ($("f-" + k).value = ""));
-  paintGallery(); paint();
+  $("code").value = "";
+  $("result").hidden = true;
+  $("result").innerHTML = "";
+  paintGallery(); paint(); review();
+}
+
+$("noCode").onclick = () => {
+  reset();
   say("Upload your photos and fill the details in.");
   $("f-marca").focus();
-  review();
 };
 
 // ── 2 · the photos ──────────────────────────────────────────────────────────
@@ -499,6 +517,9 @@ function paintGallery() {
     d.dataset.k = f.url;
     d.tabIndex = 0;
     d.setAttribute("role", "button");
+    // Removing works by clicking again. Nothing on screen says so, and a badge
+    // that only ever appears is read as permanent.
+    d.title = "Click to pick · click again to remove";
     d.innerHTML = `<img src="${f.url}" alt="${f.archivo}">
                    <div class="rank" hidden></div>
                    <div class="cover" hidden>COVER</div>`;
@@ -566,7 +587,6 @@ async function upload(files) {
       });
       const j = await ask("/subir", { codigo: S.code, nombre: f.name, datos });
       if (!S.photos.some((p) => p.url === j.foto.url)) S.photos.push(j.foto);
-      if (S.picked.length < 3) S.picked.push(j.foto.url);
     }
     paintGallery(); paint();
     say("Photos uploaded.", "ok");
@@ -599,6 +619,12 @@ function paint() {
     b.onclick = () => { $("result").hidden = false; paint(); };
     $("tabs").appendChild(b);
   }
+
+  // Once a carousel exists, taking it away is the next move — so it is the one
+  // that carries the weight, and generating again (after reframing) steps back.
+  $("download").hidden = !S.slug;
+  $("build").classList.toggle("primary", !S.slug);
+  $("build").classList.toggle("ghost", !!S.slug);
 
   // On the result view the zoom has nothing to act on, so it leaves rather
   // than sitting there offering something that does nothing.
@@ -748,6 +774,18 @@ $("build").onclick = async () => {
   } catch (err) { say("Could not generate: " + err.message, "bad"); }
   $("build").textContent = "Generate carousel";
   $("build").disabled = false; busy(false);
+};
+
+// An <a download> and not location.href: a navigation that lands on an error
+// would take the whole page's state with it, and this one runs after the work.
+$("download").onclick = () => {
+  const slug = S.slug;
+  const a = document.createElement("a");
+  a.href = "/descargar/" + slug;
+  a.download = "";                     // the server names it: <slug>.zip
+  a.click();
+  reset();
+  say(`${slug}.zip downloaded · ready for the next one`, "ok");
 };
 
 // ── reopening a finished carousel ───────────────────────────────────────────

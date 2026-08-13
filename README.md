@@ -15,9 +15,12 @@ inglés** — las piezas que produce siguen en español.
 
 - **Arriba** se pega el código (`63015`) o el link y se presiona *Fetch*. Trae
   marca, modelo, año, transmisión, precio, fecha, hora, tienda y la galería.
-- **Photos**, a la izquierda — clic en una foto para sumarla. **El orden en que
-  se tocan es el orden del carrusel** y la primera lleva el rótulo COVER. Las
-  fotos propias se arrastran desde el explorador y se sueltan sobre ese riel.
+- **Photos**, a la izquierda — **no viene nada preseleccionado**: la galería llega
+  entera y apagada. Clic en una foto para sumarla, clic otra vez para quitarla, y
+  las que quedan se renumeran solas. **El orden en que se tocan es el orden del
+  carrusel** y la primera lleva el rótulo COVER. Van tres; al llegar a tres hay
+  que soltar una para cambiarla. Las fotos propias se arrastran desde el
+  explorador y se sueltan sobre ese riel.
 - **Centro** — el auto a tamaño grande. Se arrastra para moverlo, rueda del
   mouse para acercar, y las flechas del teclado para corregir de uno en uno
   (con Shift, de cinco en cinco). Las guías punteadas marcan dónde caen el título y la
@@ -29,9 +32,10 @@ inglés** — las piezas que produce siguen en español.
 2×2. La pestaña `✓` vuelve al resultado, las numeradas vuelven al encuadre.
 Entre 10 y 15 segundos.
 
-**Es una herramienta de escritorio.** El servidor escucha solo en `127.0.0.1`,
-así que no entra desde el celular ni desde otra máquina — y el render necesita
-node y Remotion instalados en esa misma computadora de todos modos.
+Después aparece *Download carousel*: baja los cuatro PNG en un solo ZIP
+(`<slug>.zip`) y **deja la página en cero** para la siguiente subasta — galería
+vacía, campos en blanco. Se borra la pantalla, no el disco: `Posts/<slug>/`
+queda intacto y el carrusel se puede reabrir cuando sea.
 
 ```bash
 ./estudio.sh 63015-toyota-corolla   # reabrir uno hecho, para reencuadrar
@@ -52,34 +56,133 @@ Los dos caminos usan las mismas piezas —`scraper.py` para los datos,
 
 ---
 
-## Ponerlo a funcionar
+## Ponerlo a funcionar en tu máquina
 
-Hace falta `node` (18+), `npm` y `python3`. Nada más — el estudio y el scraping
-usan solo la stdlib de python.
+Esto corre local, en tu computadora, y no hay nada que desplegar. De cero a un
+carrusel son cuatro pasos.
+
+### 1 · Lo que hace falta
+
+Dos cosas, las dos gratis, y probablemente ya tengas una:
+
+| | Versión mínima | Comprobarlo | Para qué |
+|---|---|---|---|
+| **Python** | 3.9 | `python3 --version` | el estudio y el scraping |
+| **Node + npm** | 18 | `node --version && npm --version` | el render de los PNG |
+
+Probado sobre Python 3.12.3, Node 24.16.0 y npm 11.13.0, en Linux.
+
+El 3.9 de Python no es capricho: `estudio.py` usa `str.removeprefix`, que no
+existe antes. El 18 de Node lo pide Remotion 4. **No hace falta nada más:** el
+estudio, el servidor y el scraping usan pura librería estándar de Python — cero
+`pip install`, cero entorno virtual.
+
+En Ubuntu/Debian, si falta alguno:
+
+```bash
+sudo apt install python3 nodejs npm
+```
+
+### 2 · Instalar
 
 ```bash
 git clone git@github.com:ahuacchillo/subastop-instagram.git
-cd subastop-instagram/social-content && npm install && cd ..
+cd subastop-instagram/social-content
+npm install          # ~630 MB, un par de minutos. Es Remotion con todo.
+cd ..
+```
+
+Si los scripts no arrancan con "permiso denegado":
+
+```bash
+chmod +x *.sh
+```
+
+### 3 · Abrirlo
+
+```bash
 ./estudio.sh
 ```
 
-El primer render se demora extra: Remotion descarga su Chrome headless solo.
-Después, un carrusel entero sale en ~10s.
+Levanta un servidor en `http://127.0.0.1:4173/` y abre el navegador solo. Para
+cerrarlo, `Ctrl-C` en esa terminal.
 
-Si `npx remotion` falla por librerías del sistema (Linux limpio):
+Si dice `Address already in use`, ya lo tenías abierto en otra terminal: usa esa
+pestaña del navegador, o cierra la anterior con `Ctrl-C`.
+
+**El primer render del día se demora bastante más.** Remotion descarga su propio
+Chrome headless la primera vez (~150 MB) y bundlea sin caché. A partir del
+segundo, un carrusel entero sale en 10-15 s.
+
+Si `npx remotion` se queja de librerías del sistema (típico en un Linux recién
+instalado):
 
 ```bash
-npx remotion browser ensure
+cd social-content && npx remotion browser ensure
 ```
 
-### Comprobar que quedó bien
+### 4 · Comprobar que quedó bien
+
+Agarra un código de una subasta **abierta** —de la portada de vmcsubastas.com,
+el número que va después de `/oferta/`— y córrelo:
 
 ```bash
-./nueva-subasta.sh 62996
+./nueva-subasta.sh 63014
 ```
 
-Si imprime las 3 rutas de `Posts/` y los PNG abren, está funcional. Ese código
-es una oferta real y sirve de prueba de humo.
+Si imprime las 3 rutas de `Posts/` y los PNG abren, está funcional.
+
+Ojo con el código: las ofertas cerradas dejan de publicar su galería, y contra
+una vieja el scraping falla con "no trajo fotos". Falla ruidosamente a propósito
+—prefiere no renderizar antes que inventar datos—, así que ese mensaje casi
+siempre significa código caducado, no instalación rota.
+
+---
+
+## El stack, y por qué así
+
+Cuatro piezas, cada una elegida por una razón concreta:
+
+| Pieza | Qué hace | Por qué esa |
+|---|---|---|
+| **Python, solo stdlib** (`estudio.py`, `scraper.py`) | el servidor y la lectura de la oferta | sin dependencias no hay `pip install` que se pudra ni entorno que reconstruir: se clona y corre |
+| **`urllib` + regex** | sacar los datos y las fotos de vmcsubastas | la página viene renderizada del servidor, así que todo está en el HTML y no hace falta un navegador para leerla |
+| **Remotion + React + Chromium** | dibujar los PNG de 1080×1080 | la pieza se diseña en código, con las mismas coordenadas de Figma, y se versiona en git — un canvas no da eso |
+| **Un HTML servido desde disco** (`estudio.html`) | la interfaz | sin build, sin framework, sin `npm run dev` para la UI: se recarga el navegador y ya está el cambio |
+
+Los dos caminos —el estudio y la terminal— comparten `scraper.py` y
+`ajustar.sh --render`, así que hay **un solo camino de render** en todo el
+proyecto y la página no puede desviarse de lo que produce el script.
+
+## Por qué corre en local y no en la web (por ahora)
+
+El servidor escucha solo en `127.0.0.1`: no entra desde el celular ni desde otra
+máquina. Es a propósito, y el motivo es el render.
+
+Renderizar un slide lanza un **Chromium de verdad** sobre los ~630 MB de
+`node_modules` de Remotion, escribe PNG de ~1.2 MB a disco y tarda unos 40 s por
+carrusel. Eso no entra en una función serverless —Vercel corta en 250 MB de
+bundle, con disco de solo lectura y tiempo limitado—, así que **Vercel puede
+alojar la página pero no el render, ni en el plan pago**. Mientras la
+herramienta la use una persona en su computadora, montar servidores para eso es
+trabajo y costo sin nada a cambio.
+
+El día que haga falta, hay tres salidas, de menos a más esfuerzo:
+
+1. **Un túnel sobre esta misma máquina.** `estudio.py` escucha en `0.0.0.0` con
+   un token, y `cloudflared tunnel --url http://localhost:4173` le da una URL
+   https pública. Quince minutos, gratis, sin tocar el código. Requiere que esta
+   computadora esté encendida.
+2. **Un contenedor gratis.** Un `Dockerfile` con python + node + Chromium en
+   Hugging Face Spaces (sin tarjeta) o Cloud Run (con tarjeta, pero gratis para
+   este volumen). Mismo código, vive sin esta máquina, duerme cuando no se usa.
+3. **Vercel de verdad.** La página en Vercel y el render delegado a Remotion
+   Lambda o Cloud Run. Es reescribir el almacenamiento y mantener dos
+   proveedores para el mismo resultado.
+
+Lo que abarató las dos primeras es el ZIP de *Download carousel*: como el
+resultado se baja al momento, el servidor dejó de necesitar disco persistente, y
+eso es justo lo que las capas gratuitas no dan.
 
 ---
 
