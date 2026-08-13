@@ -12,10 +12,12 @@ Same pipeline as always: `scraper.py` for the details and `ajustar.sh --render`
 for the PNGs. This page renders nothing of its own, so it cannot drift away
 from what the terminal produces.
 
-A stdlib server on 127.0.0.1: nothing is installed and nothing leaves the
-machine, which also means no phone or other computer can reach it.
+A stdlib server: nothing is installed and, by default, nothing leaves the
+machine. It binds 127.0.0.1 unless told otherwise, so no phone or other
+computer can reach it — see ESTUDIO_HOST below for the container.
 """
 import base64
+import hmac
 import http.server
 import io
 import json
@@ -36,8 +38,18 @@ RAIZ = os.path.dirname(os.path.abspath(__file__))
 MATERIALES = os.path.join(RAIZ, "Materiales")
 POSTS = os.path.join(RAIZ, "Posts")
 AUTOS = os.path.join(RAIZ, "social-content", "public", "autos")
-PUERTO = 4173
 EXTS = (".png", ".jpg", ".jpeg")
+
+# Desktop by default; the container overrides all three.
+#
+# CLAVE is what makes the difference between "on my machine" and "on the
+# internet". Unset, the page is open — which is correct on 127.0.0.1, where
+# only this machine can knock. Set, every request has to carry it: the server
+# writes files and shells out to a renderer, so exposing it without a lock
+# would hand both to whoever finds the URL.
+HOST = os.environ.get("ESTUDIO_HOST", "127.0.0.1")
+PUERTO = int(os.environ.get("PORT") or os.environ.get("ESTUDIO_PUERTO") or 4173)
+CLAVE = os.environ.get("ESTUDIO_CLAVE", "")
 
 # Starting slug, set when reopening a finished carousel.
 SLUG_INICIAL = sys.argv[1].strip("/").removeprefix("Posts/") if len(sys.argv) > 1 else ""
@@ -98,6 +110,31 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.responder(200, "application/json",
                        json.dumps(obj, ensure_ascii=False).encode())
 
+    def autorizado(self):
+        """Basic auth, and only when CLAVE is set — on 127.0.0.1 there is
+        nobody to authenticate against. The user name is ignored: this locks
+        one tool for one person, it does not keep accounts."""
+        if not CLAVE:
+            return True
+        cabecera = self.headers.get("Authorization", "")
+        if cabecera.startswith("Basic "):
+            try:
+                pareja = base64.b64decode(cabecera[6:]).decode("utf8", "replace")
+            except Exception:  # noqa: BLE001 - malformed header is just a failure
+                pareja = ""
+            # compare_digest and not ==: a plain comparison gives the password
+            # away one character at a time to anyone who can time the answers.
+            if hmac.compare_digest(pareja.split(":", 1)[-1], CLAVE):
+                return True
+        # Drain the body before answering. With keep-alive, an unread POST body
+        # is read as the next request line and the connection derails.
+        largo = int(self.headers.get("Content-Length", 0) or 0)
+        if largo:
+            self.rfile.read(largo)
+        self.responder(401, "text/plain", "Hace falta la clave.".encode(),
+                       {"WWW-Authenticate": 'Basic realm="Estudio VMC"'})
+        return False
+
     def archivo(self, ruta, base):
         """Serve a file, always from inside `base`."""
         ruta = os.path.abspath(ruta)
@@ -109,6 +146,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
     # ── GET ──────────────────────────────────────────────────────────────────
     def do_GET(self):
+        if not self.autorizado():
+            return
         # unquote: WhatsApp file names carry spaces and the browser sends them
         # as %20. Without this the thumbnail comes out broken.
         ruta = urllib.parse.unquote(self.path.split("?")[0])
@@ -196,6 +235,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
     # ── POST ─────────────────────────────────────────────────────────────────
     def do_POST(self):
+        if not self.autorizado():
+            return
         try:
             largo = int(self.headers.get("Content-Length", 0))
             cuerpo = json.loads(self.rfile.read(largo) or b"{}")
@@ -302,11 +343,18 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    servidor = http.server.ThreadingHTTPServer(("127.0.0.1", PUERTO), Handler)
-    url = f"http://127.0.0.1:{PUERTO}/"
+    servidor = http.server.ThreadingHTTPServer((HOST, PUERTO), Handler)
+    local = HOST in ("127.0.0.1", "localhost")
+    url = f"http://{'127.0.0.1' if local else HOST}:{PUERTO}/"
     print(f"Estudio → {url}")
-    print("Ctrl-C para cerrar.", flush=True)
-    threading.Timer(0.5, lambda: webbrowser.open(url)).start()
+    if not local and not CLAVE:
+        print("  ⚠ Sin ESTUDIO_CLAVE y escuchando fuera de 127.0.0.1: "
+              "cualquiera que llegue a esta URL puede usarlo.", flush=True)
+    # Only on the desktop. In a container there is no browser to open, and the
+    # attempt hangs looking for one.
+    if local:
+        print("Ctrl-C para cerrar.", flush=True)
+        threading.Timer(0.5, lambda: webbrowser.open(url)).start()
     try:
         servidor.serve_forever()
     except KeyboardInterrupt:

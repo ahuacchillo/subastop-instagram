@@ -1,3 +1,14 @@
+---
+title: Estudio VMC Subastas
+emoji: 🚗
+colorFrom: purple
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+short_description: De un código de oferta a los PNG del carrusel
+---
+
 # Carruseles de Instagram — VMC Subastas
 
 Generador de piezas para @vmcsubastas: le das el código de una oferta de
@@ -154,35 +165,73 @@ Los dos caminos —el estudio y la terminal— comparten `scraper.py` y
 `ajustar.sh --render`, así que hay **un solo camino de render** en todo el
 proyecto y la página no puede desviarse de lo que produce el script.
 
-## Por qué corre en local y no en la web (por ahora)
+---
 
-El servidor escucha solo en `127.0.0.1`: no entra desde el celular ni desde otra
-máquina. Es a propósito, y el motivo es el render.
+## Ponerlo en la web — Hugging Face Spaces
+
+La misma herramienta, con la misma vista de encuadre, corriendo en un servidor
+para que la use alguien más sin instalar nada. **No cambia una línea del
+código**: `estudio.py` toma host, puerto y clave del entorno.
+
+### Por qué un contenedor y no Vercel
 
 Renderizar un slide lanza un **Chromium de verdad** sobre los ~630 MB de
-`node_modules` de Remotion, escribe PNG de ~1.2 MB a disco y tarda unos 40 s por
-carrusel. Eso no entra en una función serverless —Vercel corta en 250 MB de
-bundle, con disco de solo lectura y tiempo limitado—, así que **Vercel puede
-alojar la página pero no el render, ni en el plan pago**. Mientras la
-herramienta la use una persona en su computadora, montar servidores para eso es
-trabajo y costo sin nada a cambio.
+`node_modules` de Remotion. Eso no entra en una función serverless —Vercel corta
+en 250 MB de bundle, con disco de solo lectura y tiempo limitado—, así que Vercel
+podría alojar la página pero nunca el render, ni en el plan pago. En un
+contenedor Chromium corre sin drama: **medido dentro de la imagen, un carrusel
+completo sale en 13 s y el proceso se queda en ~100 MB de RAM.**
 
-El día que haga falta, hay tres salidas, de menos a más esfuerzo:
+Y no hace falta disco que sobreviva al reinicio, porque *Download carousel* baja
+el resultado en el momento. `Materiales/` y `Posts/` viven en el disco efímero
+del contenedor mientras dura la sesión, y eso es justo lo que sí regalan las
+capas gratuitas.
 
-1. **Un túnel sobre esta misma máquina.** `estudio.py` escucha en `0.0.0.0` con
-   un token, y `cloudflared tunnel --url http://localhost:4173` le da una URL
-   https pública. Quince minutos, gratis, sin tocar el código. Requiere que esta
-   computadora esté encendida.
-2. **Un contenedor gratis.** Un `Dockerfile` con python + node + Chromium en
-   Hugging Face Spaces (sin tarjeta) o Cloud Run (con tarjeta, pero gratis para
-   este volumen). Mismo código, vive sin esta máquina, duerme cuando no se usa.
-3. **Vercel de verdad.** La página en Vercel y el render delegado a Remotion
-   Lambda o Cloud Run. Es reescribir el almacenamiento y mantener dos
-   proveedores para el mismo resultado.
+### El entorno
 
-Lo que abarató las dos primeras es el ZIP de *Download carousel*: como el
-resultado se baja al momento, el servidor dejó de necesitar disco persistente, y
-eso es justo lo que las capas gratuitas no dan.
+| Variable | Por defecto | Para qué |
+|---|---|---|
+| `ESTUDIO_HOST` | `127.0.0.1` | `0.0.0.0` para escuchar fuera de la máquina. Con el valor por defecto no entra nadie más, que es el modo escritorio |
+| `PORT` | `4173` | Hugging Face espera `7860`; el `Dockerfile` ya lo pone |
+| `ESTUDIO_CLAVE` | vacío | La contraseña. **Vacía no hay autenticación**, que es lo correcto en `127.0.0.1` y temerario en internet |
+
+`ESTUDIO_CLAVE` no es opcional una vez expuesto: el servidor escribe archivos y
+lanza un renderizador, así que sin clave le entregas las dos cosas a quien
+encuentre la URL. Si arranca escuchando fuera de `127.0.0.1` sin clave, lo avisa
+por consola.
+
+### Probarlo en local antes de subir
+
+```bash
+docker build -t estudio-vmc .
+docker run -p 7860:7860 -e ESTUDIO_CLAVE=loquesea estudio-vmc
+# → http://127.0.0.1:7860/ , usuario cualquiera, contraseña "loquesea"
+```
+
+La imagen pesa ~1.5 GB. Chromium va horneado en tiempo de build a propósito: si
+no, el primer render de cada arranque en frío se pone a descargar 92 MB y parece
+que la herramienta se colgó.
+
+### Subirlo
+
+1. Crear el Space en <https://huggingface.co/new-space>: SDK **Docker**, y
+   **Private** — así lo protege también el login de Hugging Face, y a quien lo
+   vaya a usar lo agregas en *Settings → Members*.
+2. En *Settings → Variables and secrets*, añadir `ESTUDIO_CLAVE` **como secret**,
+   no como variable.
+3. Empujar el repo al Space:
+
+```bash
+git remote add space https://huggingface.co/spaces/<usuario>/<space>
+git push space main
+```
+
+El Space construye la imagen solo y queda en línea. Duerme cuando no se usa y
+despierta en uno o dos minutos.
+
+El frontmatter YAML del inicio de este archivo es lo que Hugging Face lee para
+configurar el Space (`sdk: docker`, `app_port: 7860`). GitHub lo muestra como una
+tabla al abrir el README; es el precio de tener un solo repo para las dos cosas.
 
 ---
 
