@@ -7,6 +7,99 @@ antes de tocar nada: qué hay, cómo se hace, por qué se hace así, y qué est�
 
 ---
 
+## 0. Setup desde cero
+
+Si no tienes nada instalado, esto es lo primero. Toma unos 20 minutos.
+
+### 0.1 · Lo que hay que instalar
+
+| Qué | Para qué | Versión con la que corre hoy |
+|---|---|---|
+| **Node.js** | Remotion es JavaScript | v24.16.0 (sirve cualquier 20+) |
+| **ffmpeg** + **ffprobe** | medir la voz, cortar y parchar tomas | 6.1.1 |
+| **ImageMagick** (`convert`) | hornear los fondos desenfocados | 6.9.12 |
+| **git** | el repo | 2.43 |
+
+**Ubuntu / Debian**
+
+```bash
+sudo apt update
+sudo apt install -y git ffmpeg imagemagick
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install -y nodejs
+```
+
+**macOS** (con [Homebrew](https://brew.sh))
+
+```bash
+brew install git node ffmpeg imagemagick
+```
+
+**Windows** — instala **WSL2** con Ubuntu y sigue los pasos de Ubuntu dentro de WSL. Remotion corre
+en Windows nativo, pero medio pipeline son comandos de shell y te vas a pelear con las rutas.
+
+Comprueba que quedó todo:
+
+```bash
+node --version && ffmpeg -version | head -1 && convert --version | head -1
+```
+
+Si `convert` no existe pero sí `magick`, tienes ImageMagick 7: usa `magick` en lugar de `convert`
+en los comandos de este documento.
+
+### 0.2 · Clonar y arrancar
+
+```bash
+git clone https://github.com/ahuacchillo/subastop-instagram.git
+cd subastop-instagram/social-content
+npm install          # ~2 min, baja Remotion y Chrome Headless Shell
+npm run dev          # abre Remotion Studio en el navegador
+```
+
+En el Studio, en la barra izquierda, elige la composición `VendeSolo` y dale play. Si se ve y se
+oye, tienes el entorno completo: el repo trae las tomas, la voz y las fotos.
+
+Y comprueba que renderiza:
+
+```bash
+npm run reel:vendesolo     # ~5 min → out/vendesolo.mp4
+```
+
+**Si eso funciona, ya puedes trabajar.** El resto de este documento es cómo se hace un reel nuevo.
+
+### 0.3 · Las cuentas que hacen falta
+
+Sólo para **crear material nuevo**. Para tocar los reels que ya existen no necesitas ninguna.
+
+| Servicio | Para qué | Nota |
+|---|---|---|
+| **ElevenLabs** | la voz en off | tiene que ser un plan que dé acceso a **Eleven v3**: es el que respeta las etiquetas de emoción |
+| **Un generador de video** | las tomas | hoy salen de generadores tipo Veo / Kling. Cualquiera sirve mientras acepte **imagen de referencia** para mantener el personaje |
+| **Gemini / Nano Banana** o similar | las imágenes base del personaje | opcional, si prefieres generar el still y después animarlo |
+
+No hay claves de API en el repo ni el pipeline las usa: la voz y las tomas se generan en la web de
+cada servicio y se descargan a mano. Es a propósito — son pocos archivos al mes y automatizarlo no
+compensa.
+
+### 0.4 · Claude Code
+
+El repo está preparado para trabajar con [Claude Code](https://claude.com/claude-code):
+
+```bash
+npm install -g @anthropic-ai/claude-code
+cd subastop-instagram
+claude
+```
+
+- `CLAUDE.md` en la raíz se carga solo en cada sesión: le dice cuál de los dos productos es cuál y
+  las cuatro reglas que no se rompen.
+- Los **skills** del repo se activan solos por contexto: `concorde-ui` para traer componentes del
+  design system, `copy-subastas-vmc` para el copy de una subasta.
+- Arranca cada sesión de reel pidiéndole que lea este documento: *"lee social-content/REELS.md antes
+  de tocar el reel"*. Es lo que evita que improvise el método.
+
+---
+
 ## 1. Qué hay hoy
 
 Tres reels, todos verticales 1080×1920 para Instagram, todos hechos con Remotion.
