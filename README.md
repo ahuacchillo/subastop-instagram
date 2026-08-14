@@ -32,8 +32,14 @@ inglés** — las piezas que produce siguen en español.
 2×2. La pestaña `✓` vuelve al resultado, las numeradas vuelven al encuadre.
 Entre 10 y 15 segundos.
 
-Después aparece *Download carousel*: baja los cuatro PNG en un solo ZIP
-(`<slug>.zip`) y **deja la página en cero** para la siguiente subasta — galería
+- **Caption**, debajo de los datos — aparece recién con el carrusel hecho. Es
+  `Posts/<slug>/copy.md` en vivo: *Draft it* se lo pide a Claude con el skill
+  `copy-subastas-vmc` y deja las dos versiones, Instagram y Canal de WhatsApp
+  (unos 40 segundos). Lo que se escriba encima se guarda solo, *Reload* vuelve
+  a leer el archivo del disco y *Copy to clipboard* lo deja listo para pegar.
+
+Después aparece *Download carousel*: baja los cuatro PNG y el `copy.md` en un
+solo ZIP (`<slug>.zip`) y **deja la página en cero** para la siguiente subasta — galería
 vacía, campos en blanco. Se borra la pantalla, no el disco: `Posts/<slug>/`
 queda intacto y el carrusel se puede reabrir cuando sea.
 
@@ -274,6 +280,23 @@ es una decisión suya, no del sitio.
 Es un wrapper de `nueva-subasta.sh 62996 --fotos <carpeta>` — un solo generador,
 tres formas de entrar.
 
+### La marca de agua — se pide el original, no se despeja
+
+Las fotos del CDN vienen con la marca "vmc Subastas / powered by SUBASTOP.Co"
+quemada en el pixel, en los tres tamaños que publica (`s_` 244×183, `m_` 460×345
+y 800×600 sin prefijo). No es un overlay de CSS: la pone nuestra propia web al
+subir la foto, y no hay variante limpia publicada.
+
+Se probó revertirla. La capa es idéntica en todas las fotos, así que sale con
+un ajuste por pixel calibrado contra originales, pero el resultado no llegó a
+calidad publicable: la foto queda en 800×450 —la web *encaja* la foto en el
+cuadro y rellena con borroso, y solo ese rectángulo es despejable— y el ruido de
+la calibración se ve como moteado en las zonas planas. Se descartó.
+
+**El camino es pedirle al equipo de la web el archivo pre-marca**: existe antes
+de que el pipeline lo estampe, y además rompe el techo de 800×600, que para un
+carrusel de 1080×1080 se nota. Mientras tanto, las fotos se usan con marca.
+
 ### Con Claude Code
 
 ```
@@ -382,34 +405,54 @@ el formato y el orden de fotos se eligen con lo que ya funcionó.
 
 Ordenados por lo que más duele.
 
-### 1. Generador de copys — no existe
+### 1. Generador de copys — hecho, con una dependencia nueva
 
-Es el hueco grande. Hoy el script deja los PNG y el copy se escribe a mano cada
-vez, que es donde se pierde el tiempo y donde se pierde la consistencia.
-
-Debería salir del mismo `datos.json` que ya se genera, en la misma ejecución:
+El hueco ya no es entero. `Posts/<slug>/copy.md` existe, el estudio lo muestra
+al lado de los slides, se guarda solo y viaja en el ZIP:
 
 ```
 Posts/<slug>/
-├── 1.png 2.png 3.png
-├── datos.json          ← ya existe
-└── copy.md             ← falta
+├── 1.png 2.png 3.png 4.png
+├── datos.json
+└── copy.md             ← caption de feed + Stories + hashtags
 ```
 
-Con dentro: caption de feed (gancho + datos + CTA + link), variante corta para
-Stories, y el bloque de hashtags. Los datos ya están todos —marca, modelo, año,
-precio, fecha, hora, tienda, código de oferta—, así que es un paso más al final
-del render, no un proyecto aparte.
+La receta ya está fijada: `.claude/skills/copy-subastas-vmc/SKILL.md` — léxico
+prohibido ("remate", "puja", "mejor postor"), estructura de ficha, patrones de
+titular y las reglas sobre el estado del vehículo, que es donde más se metió la
+pata. Hoy Claude la lee y deja las dos versiones (Instagram y Canal de
+WhatsApp) en `copy.md`; el estudio solo lo muestra.
 
-Ahora que existe el estudio, el lugar es obvio: un paso 5 en la misma página,
-con el copy al lado de los slides y un botón de copiar. Ahí la herramienta pasa
-a entregar el post entero y no solo las imágenes.
+`POST /generar-copy` arma el prompt con `datos.json` y llama al CLI de Claude
+(`claude -p … --allowed-tools Skill Write`), que lee la skill y **escribe el
+archivo él mismo**. Es a propósito: pedirle el texto por stdout devuelve el
+texto más una nota de lo que hizo, y esa nota termina dentro del `copy.md`. El
+archivo es el contrato, y así no hay nada que parsear.
 
-Lo que hay que definir antes de escribirlo: si el texto se arma con plantillas
-(determinista, gratis, siempre igual) o con la API de Claude (mejor gancho,
-distinto cada vez). La recomendación es plantillas con 3–4 variantes de gancho
-rotando por tipo de auto, y subir a la API solo si el copy plantillado se nota
-repetido en el feed.
+La regla §1 viaja en el prompt aunque ya esté en la skill. Sin ella el borrador
+vuelve con "ágil", "económico de mantener", "de ciudad" — atributos que nadie
+dio, que es el error que la propia skill llama el más repetido.
+
+Dos cosas que esto trae: el estudio ahora **depende del CLI de Claude** para ese
+botón (sin él, el resto sigue funcionando y el textarea se escribe a mano), y
+cuando haya API, se cambia el `subprocess.run` por la llamada y nada más — la
+página no se entera.
+
+**Pedido abierto: opción de API key.** Hoy el botón exige el CLI instalado y con
+sesión iniciada, lo que no sirve en el contenedor ni para nadie del equipo que
+no use Claude Code. Falta la bifurcación en `generar_copy()`:
+
+- Con `ANTHROPIC_API_KEY` en el entorno → llamada directa a la API de Mensajes
+  (`claude-sonnet-5` alcanza para un caption), mandando el contenido de
+  `.claude/skills/copy-subastas-vmc/SKILL.md` como prompt de sistema y los datos
+  de la subasta como mensaje. Con `urllib` de la stdlib basta: no hace falta el
+  SDK y el proyecto se queda sin dependencias.
+- Sin la variable → el `subprocess.run` del CLI que ya existe.
+- Sin ninguno de los dos → error claro en la página, no un traceback.
+
+La respuesta se escribe en el mismo `copy.md`, así que la página no cambia. La
+clave va en el entorno —nunca en el repo— y en el contenedor viaja igual que
+`ESTUDIO_CLAVE`.
 
 ### 2. Un bundle de Remotion por slide
 

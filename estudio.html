@@ -119,6 +119,20 @@ body.busy .topbar::after { opacity: 1; animation: sweep 1.1s linear infinite; }
 }
 .rail-body { flex: 1; padding: var(--s2) var(--s4) var(--s5); }
 
+/* The caption shares the rail with the details, under its own heading: it
+   belongs next to the slides, and it only shows once there is a carousel. */
+.copy-head { border-block-start: 1px solid var(--line); padding-block-start: var(--s4); }
+.copy-state { font-size: 12px; color: var(--ink-2); }
+.copy-body { display: grid; gap: var(--s2); padding: 0 var(--s4) var(--s5); }
+.copy-body textarea {
+  width: 100%; min-height: 34vh; resize: vertical; padding: var(--s3);
+  background: var(--raised); border: 1px solid var(--line);
+  border-radius: var(--r2); color: var(--ink);
+  font: 400 13px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.copy-body textarea:hover { border-color: #362b4a; }
+.copy-actions { display: flex; gap: var(--s2); }
+
 /* ── Controls ─────────────────────────────────────────────────────────────── */
 input[type=text] {
   width: 100%; padding: 9px var(--s3);
@@ -402,6 +416,20 @@ kbd {
     <aside class="rail right">
       <div class="rail-head"><h2>Car details</h2></div>
       <div class="rail-body fields" id="fields"></div>
+      <div class="rail-head copy-head" id="copyHead" hidden>
+        <h2>Caption</h2>
+        <span class="copy-state" id="copyState"></span>
+      </div>
+      <div class="copy-body" id="copyBody" hidden>
+        <textarea id="copyText" spellcheck="false"
+                  placeholder="Posts/&lt;slug&gt;/copy.md — write it here, or let Claude fill it in and hit reload."></textarea>
+        <div class="copy-actions">
+          <button class="small" id="copyWrite"
+                  title="Claude writes it with the copy-subastas-vmc skill">Draft it</button>
+          <button class="ghost small" id="copyReload" title="Re-read copy.md from disk">Reload</button>
+          <button class="ghost small" id="copyCopy">Copy to clipboard</button>
+        </div>
+      </div>
     </aside>
   </main>
 </div>
@@ -465,6 +493,53 @@ async function ask(route, body) {
   return j;
 }
 
+// ── the caption ─────────────────────────────────────────────────────────────
+// The file on disk is the source of truth, not this textarea: Claude writes
+// Posts/<slug>/copy.md from the terminal today and an API will write the same
+// file tomorrow. Reload pulls whatever is there; typing here writes it back.
+let copyTimer = null;
+
+async function loadCopy() {
+  if (!S.slug) return;
+  const r = await fetch(`/post/${S.slug}/copy.md?v=${Date.now()}`);
+  $("copyText").value = r.ok ? await r.text() : "";
+  $("copyState").textContent = r.ok ? "copy.md" : "not written yet";
+}
+
+function showCopy(on) {
+  $("copyHead").hidden = $("copyBody").hidden = !on;
+  if (on) loadCopy(); else $("copyText").value = "";
+}
+
+$("copyText").oninput = () => {
+  $("copyState").textContent = "saving…";
+  clearTimeout(copyTimer);
+  copyTimer = setTimeout(async () => {
+    try {
+      await ask("/copy", { slug: S.slug, texto: $("copyText").value });
+      $("copyState").textContent = "saved";
+    } catch (err) { $("copyState").textContent = "not saved: " + err.message; }
+  }, 600);
+};
+
+$("copyReload").onclick = loadCopy;
+
+// A minute or so: the skill is read and the caption written on the spot.
+$("copyWrite").onclick = async () => {
+  $("copyWrite").disabled = true;
+  $("copyState").textContent = "Claude is writing it…";
+  try {
+    await ask("/generar-copy", { slug: S.slug });
+    await loadCopy();
+  } catch (err) { $("copyState").textContent = "could not draft it: " + err.message; }
+  $("copyWrite").disabled = false;
+};
+
+$("copyCopy").onclick = async () => {
+  await navigator.clipboard.writeText($("copyText").value);
+  $("copyState").textContent = "copied";
+};
+
 // ── 1 · the auction ─────────────────────────────────────────────────────────
 $("lookup").onsubmit = async (e) => {
   e.preventDefault();
@@ -495,6 +570,7 @@ function reset() {
   $("code").value = "";
   $("result").hidden = true;
   $("result").innerHTML = "";
+  showCopy(false);
   paintGallery(); paint(); review();
 }
 
@@ -769,6 +845,7 @@ $("build").onclick = async () => {
         <span>${n + 1}.png</span></figcaption>
       </figure>`).join("");
     $("result").hidden = false;
+    showCopy(true);
     paint();
     say(`Done · Posts/${j.slug}/ · check them before publishing`, "ok");
   } catch (err) { say("Could not generate: " + err.message, "bad"); }
@@ -795,7 +872,7 @@ $("download").onclick = () => {
   S.code = j.codigo; S.photos = j.fotos;
   S.picked = j.elegidas; S.crops = j.ajustes; S.slug = j.slug;
   fill(j.datos);
-  paintGallery(); paint(); review();
+  paintGallery(); paint(); review(); showCopy(true);
   say(`${j.slug} · reframe it and generate again`, "ok");
 })();
 </script>

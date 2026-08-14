@@ -190,6 +190,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         with zipfile.ZipFile(buf, "w") as z:
             for p in pngs:                       # listar() sorts: 1, 2, 3, 4
                 z.write(os.path.join(carpeta, p), p)
+            texto = os.path.join(carpeta, "copy.md")
+            if os.path.isfile(texto):            # the post, not just the images
+                z.write(texto, "copy.md")
         self.responder(200, "application/zip", buf.getvalue(),
                        {"Content-Disposition": f'attachment; filename="{slug}.zip"'})
 
@@ -241,7 +244,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             largo = int(self.headers.get("Content-Length", 0))
             cuerpo = json.loads(self.rfile.read(largo) or b"{}")
             accion = {"/oferta": self.oferta, "/subir": self.subir,
-                      "/generar": self.generar}.get(self.path)
+                      "/generar": self.generar, "/copy": self.copy,
+                      "/generar-copy": self.generar_copy}.get(self.path)
             if not accion:
                 return self.responder(404, "text/plain", b"no existe")
             r = accion(cuerpo)
@@ -340,6 +344,68 @@ class Handler(http.server.BaseHTTPRequestHandler):
         import time as _t
         v = int(_t.time())
         return {"slug": slug, "slides": [f"/post/{slug}/{p}?v={v}" for p in pngs]}
+
+    def generar_copy(self, c):
+        """Have Claude write the caption with the `copy-subastas-vmc` skill.
+
+        It writes `copy.md` itself instead of printing it: asked for the text,
+        it answers with the text plus a note about what it did, and that note
+        ends up in the file. The file is the contract, so the parsing problem
+        disappears.
+
+        The §1 rule travels in the prompt on purpose. Without it the draft comes
+        back with "ágil", "económico de mantener", "de ciudad" — attributes
+        nobody gave it, which is the mistake the skill itself calls the most
+        repeated one."""
+        slug = seguro(c.get("slug", ""))
+        ruta = os.path.join(POSTS, slug, "datos.json")
+        if not os.path.isfile(ruta):
+            raise ValueError("Ese carrusel no existe todavía.")
+        with open(ruta, encoding="utf8") as f:
+            d = json.load(f)
+        anio = d.get("anio", "").strip("'")
+        # Today's date travels too: the skill's urgency patterns say "HOY", and
+        # with no way to tell it would say it about an auction five days out.
+        from datetime import date
+        prompt = f"""Usa la skill copy-subastas-vmc y escribe el copy de esta subasta de VMC.
+
+Hoy es {date.today().strftime('%d/%m/%Y')}.
+
+Datos (son TODO lo que hay):
+- Marca y modelo: {d.get('marca', '')} {d.get('modelo', '')}
+- Año: {'20' + anio if anio else ''}
+- Transmisión: {d.get('transmision', '')}
+- Vendedor: {d.get('tienda', '')}
+- Precio base: {d.get('precioBase', '')}
+- Subasta: {d.get('fecha', '')} a la(s) {d.get('hora', '')}
+
+Reglas:
+- §1 al pie: NO inventes atributos, estado, condición ni demanda de mercado.
+- "HOY" solo si la subasta es hoy; si no, nombra el día que es.
+- Sin dato de kilometraje ni de estado: no los menciones ni los insinúes.
+- La ficha lleva solo las líneas cuyo dato exista, con los emojis estables de la skill.
+
+Escribe el resultado en Posts/{slug}/copy.md con dos secciones, "## Instagram" y
+"## WhatsApp", y nada más: ese archivo es el entregable, no lleva comentarios tuyos."""
+
+        r = subprocess.run(
+            ["claude", "-p", prompt, "--allowed-tools", "Skill", "Write",
+             "--permission-mode", "acceptEdits"],
+            cwd=RAIZ, capture_output=True, text=True, timeout=300)
+        if r.returncode != 0:
+            raise RuntimeError((r.stderr or r.stdout).strip()[-300:])
+        return {}
+
+    def copy(self, c):
+        """Save the caption next to the slides. Whoever wrote it —a person, or
+        Claude reading the skill, or one day an API— it lands in the same file,
+        and it travels in the ZIP with the images."""
+        carpeta = os.path.join(POSTS, seguro(c.get("slug", "")))
+        if not os.path.isdir(carpeta):
+            raise ValueError("Ese carrusel no existe todavía.")
+        with open(os.path.join(carpeta, "copy.md"), "w", encoding="utf8") as f:
+            f.write(c.get("texto", ""))
+        return {}
 
 
 if __name__ == "__main__":
