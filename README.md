@@ -317,7 +317,7 @@ social-content/src/
 ├── brand/vmc.ts          ← tokens VOYAGER. Fuente de verdad, única.
 ├── subasta.ts            ← subasta de ejemplo, solo para el Studio
 ├── posts/AutoSlide.tsx   ← el slide del carrusel
-├── reels/                ← reel "Negociable" (aparte del script)
+├── reels/                ← los tres reels (pipeline aparte: social-content/REELS.md)
 └── Root.tsx              ← composición `Auto`; el slide lo elige `indice`
 ```
 
@@ -468,11 +468,16 @@ Ocho carruseles publicados, cero métricas anotadas. Sin esos números el criter
 de portada es opinión. El experimento abierto es el orden de fotos: frontal →
 interior → 3/4 contra uno que abra en 3/4.
 
-### 4. El reel no está en el pipeline
+### 4. Los reels no están en el pipeline
 
-`reels/Negociable.tsx` se renderiza a mano con `npm run reel` y sus datos están
-quemados en la constante `NEGOCIABLE`. Si se va a usar con frecuencia, merece el mismo
-tratamiento que el carrusel: props por JSON y una entrada en el script.
+Son otro producto con otro flujo: se montan a mano y se renderizan con
+`npm run reel:<nombre>`. **Todo eso está documentado aparte en
+[`social-content/REELS.md`](social-content/REELS.md)** — metodología, stack, reglas y
+pendientes. Empieza por ahí si vas a tocar un reel.
+
+Lo que sigue pendiente: sus datos están quemados en una constante dentro del `.tsx`
+(`NEGOCIABLE`, `VENDER`, `VENDESOLO`). Merecen el mismo tratamiento que el carrusel:
+props por JSON y una entrada en el script.
 
 ### 5. Solo vmcsubastas.com
 
@@ -505,3 +510,7 @@ que un cambio no rompió nada. Hay que mirar.
 regeneran con el código de oferta. La consecuencia es que no hay historial
 compartido de piezas publicadas. Si el equipo lo necesita, va a un Drive, no a
 git.
+
+**El material de los reels sí va al repo**, y es la excepción a propósito: una toma
+de un generador no se puede volver a pedir, aunque repitas el prompt exacto. Vive en
+`Materiales/reels/` y está desexcluido a mano en el `.gitignore`.
