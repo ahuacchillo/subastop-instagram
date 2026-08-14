@@ -32,6 +32,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # es además el que esperan casi todos los alojamientos de contenedores. La app
 # escribe (fotos, renders) dentro de su propio directorio, así que el dueño de
 # los archivos tiene que ser ese mismo usuario.
+#
+# El mkdir explícito no sobra: WORKDIR crea la carpeta como root en el builder
+# clásico de docker —el que usa Cloud Build— aunque USER ya esté puesto. Con
+# BuildKit sale bien y el fallo no aparece hasta que se construye en la nube:
+# `mkdir: cannot create directory 'Posts': Permission denied`.
+RUN mkdir -p /home/node/app && chown node:node /home/node/app
 USER node
 WORKDIR /home/node/app
 
