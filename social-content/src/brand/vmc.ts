@@ -193,13 +193,22 @@ export const vyGradient = {
   monto: "linear-gradient(217deg, #00CCCC 0%, #00CCCC 40%, #AE8EFF 100%)",
   /** The close X's ring. */
   cerrar: "linear-gradient(180deg, #FF9639 0%, #EF852E 40%, #BE3D00 100%)",
+  /**
+   * The auction room's chat bubbles (BidChat).
+   *
+   * Incoming runs right to left across the bubble; the answer is the same
+   * orange ramp as `cerrar`, top to bottom. Both carry white type and square
+   * off the corner they point from: 16px everywhere, 4px on the tail side.
+   */
+  burbuja: "linear-gradient(270deg, #19004A 0%, #3B1782 50%, #2E0F70 100%)",
+  burbujaMia: "linear-gradient(180deg, #FF9639 0%, #EF852E 40%, #BE3D00 100%)",
 } as const;
 
 /**
  * Vertical reel.
  *
- * 260×411 is the authoring size, not the delivery size: it renders with
- * `--scale=4` → 1040×1644, which is even and uploads sharp to Instagram.
- * Authoring in small units keeps the numbers identical to the product's Figma.
+ * 270×480 is the authoring size, not the delivery size: it renders with
+ * `--scale=4` → 1080×1920, Instagram's full-screen 9:16. Authoring in small
+ * units keeps the numbers identical to the product's Figma.
  */
-export const REEL = { width: 260, height: 411, fps: 30 } as const;
+export const REEL = { width: 270, height: 480, fps: 30 } as const;

@@ -5,10 +5,22 @@
  * All configuration options: https://remotion.dev/docs/config
  */
 
+import path from "path";
 import { Config } from "@remotion/cli/config";
 import { enableTailwind } from '@remotion/tailwind-v4';
 
 Config.setRspack(true);
 Config.setVideoImageFormat("jpeg");
 Config.setOverwriteOutput(true);
-Config.overrideBundlerConfig(enableTailwind);
+// `@/...` is what the Concorde CLI writes into the components it installs.
+// The bundler does not read tsconfig paths, so the alias lives here too.
+Config.overrideBundlerConfig((c) => {
+  const conf = enableTailwind(c);
+  return {
+    ...conf,
+    resolve: {
+      ...conf.resolve,
+      alias: { ...conf.resolve?.alias, "@": path.resolve(process.cwd()) },
+    },
+  };
+});

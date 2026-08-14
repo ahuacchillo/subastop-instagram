@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2018",
+    "baseUrl": ".",
+    "paths": { "@/*": ["./*"] },
     "module": "Preserve",
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
@@ -12,5 +14,5 @@
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": true
   },
-  "exclude": ["remotion.config.ts"]
+  "exclude": ["remotion.config.ts", "concorde/bloques"]
 }

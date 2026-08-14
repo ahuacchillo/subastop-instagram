@@ -1,9 +1,12 @@
 import React from "react";
 import {
   AbsoluteFill,
+  Easing,
+  Img,
   Sequence,
   interpolate,
   spring,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
@@ -24,40 +27,90 @@ import { glassMarca, gradient, mono, sans, vy, vyGradient } from "../brand/vmc";
 
 // ── Time ─────────────────────────────────────────────────────────────────────
 
-/** Fade in and out. 6 frames each side: you notice the cut, not the fade. */
+/**
+ * How long two scenes overlap. The outgoing one keeps playing underneath while
+ * the incoming one fades over it — without this the reel dips to the bare
+ * background for a few frames at every cut, which is exactly what reads as a
+ * stutter.
+ */
+const SOLAPE = 12;
+
+/**
+ * The cross-dissolve, with movement through it.
+ *
+ * A dissolve on its own still reads as a slide deck. The incoming scene comes
+ * in 3.5% large and settles; the outgoing one shrinks slightly as it leaves.
+ * The two moving in opposite directions is what makes the cut feel continuous
+ * rather than stacked.
+ */
 const Fundido: React.FC<{ dura: number; children: React.ReactNode }> = ({
   dura,
   children,
 }) => {
   const f = useCurrentFrame();
-  const opacity = Math.min(
-    interpolate(f, [0, 6], [0, 1], { extrapolateRight: "clamp" }),
-    interpolate(f, [dura - 6, dura], [1, 0], { extrapolateLeft: "clamp" }),
+  const entra = interpolate(f, [0, SOLAPE], [0, 1], {
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+  const sale = interpolate(f, [dura, dura + SOLAPE], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.in(Easing.cubic),
+  });
+  const escala = 1 + (1 - entra) * 0.035 - (1 - sale) * 0.022;
+  return (
+    <AbsoluteFill
+      style={{ opacity: Math.min(entra, sale), transform: `scale(${escala})` }}
+    >
+      {children}
+    </AbsoluteFill>
   );
-  return <AbsoluteFill style={{ opacity }}>{children}</AbsoluteFill>;
 };
 
+/**
+ * `de` and `dura` are the beat's frames in GUION — the moment the scene is
+ * fully up. The extra `SOLAPE` frames are its tail, which plays under the next
+ * scene, so lengthening the overlap never shifts a beat off the voiceover.
+ */
 export const Escena: React.FC<{
   de: number;
   dura: number;
   children: React.ReactNode;
 }> = ({ de, dura, children }) => (
-  <Sequence from={de} durationInFrames={dura}>
+  <Sequence from={de} durationInFrames={dura + SOLAPE}>
     <Fundido dura={dura}>{children}</Fundido>
   </Sequence>
 );
 
 /**
- * The standard entrance for any element: rises 14px and appears.
+ * The standard entrance for any element: rises and settles into focus.
+ *
+ * Three things separate this from a plain fade. The spring carries a touch of
+ * overshoot (damping 26, not 200) so the element arrives with weight instead
+ * of easing to a mechanical stop. Opacity runs ahead of the movement on its
+ * own curve, so nothing is still invisible while it is already sliding. And it
+ * comes in fractionally out of focus — the way a camera settles — which is
+ * what reads as "produced" rather than "animated in CSS".
  *
  * Returned as a style rather than a component so delays can be chained inside
  * a scene without nesting wrappers.
  */
-export const useEntrada = (retraso = 0): React.CSSProperties => {
+export const useEntrada = (retraso = 0, desplazamiento = 16): React.CSSProperties => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const s = spring({ frame: f - retraso, fps, config: { damping: 200 } });
-  return { opacity: s, transform: `translateY(${(1 - s) * 14}px)` };
+  const t = f - retraso;
+  const s = spring({ frame: t, fps, config: { damping: 26, mass: 0.6, stiffness: 130 } });
+  const opacity = interpolate(t, [0, 9], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.quad),
+  });
+  const resto = 1 - Math.min(1, s);
+  return {
+    opacity,
+    transform: `translateY(${resto * desplazamiento}px) scale(${1 - resto * 0.02})`,
+    filter: resto > 0.01 ? `blur(${resto * 2.4}px)` : "none",
+  };
 };
 
 /** A figure that counts up. Returns the string already comma-formatted. */
@@ -83,8 +136,21 @@ export const useConteo = (
  * The halos move on a slow sine against the absolute frame, so they never
  * restart per scene — that is what makes the reel read as one continuous take
  * even where the scenes cut.
+ *
+ * `fondo` goes underneath, blurred to nothing legible. It is not decoration:
+ * `backdropFilter` has to have something to blur, and over a smooth gradient
+ * it has nothing, which is why the glass reads as flat plastic. With the car
+ * out of focus behind it the panels actually refract, and the reel keeps
+ * showing one car from the first frame to the last.
+ *
+ * The blur is baked into the file, not applied in CSS. A `blur(34px)` over a
+ * full-bleed photo is re-rasterised on every single frame — it was most of the
+ * render time on its own. A 320px JPEG that is already soft costs nothing and
+ * looks identical once it is scaled up. Bake a new one with:
+ *
+ *   convert <foto> -resize 320x -blur 0x22 -modulate 55,58 -quality 82 <foto>-fondo.jpg
  */
-export const Fondo: React.FC = () => {
+export const Fondo: React.FC<{ fondo?: string }> = ({ fondo }) => {
   const f = useCurrentFrame();
   const halo = (
     x: number,
@@ -98,13 +164,41 @@ export const Fondo: React.FC = () => {
     width: 300,
     height: 300,
     borderRadius: "50%",
+    // No CSS blur here: the radial gradient is already soft, and blurring it
+    // costs a full re-raster of a 300×300 box on every frame for no visible
+    // difference.
     background: `radial-gradient(circle, ${color} 0%, rgba(0,0,0,0) 68%)`,
-    filter: "blur(6px)",
   });
   return (
     <AbsoluteFill style={{ background: vyGradient.header, overflow: "hidden" }}>
+      {fondo ? (
+        <Img
+          src={staticFile(fondo)}
+          style={{
+            // Full-bleed and then scaled up from the centre. Sizing it with
+            // negative insets left a hard seam down the right edge where the
+            // photo stopped and the bare gradient showed through; scaling a
+            // 100% box always covers, whatever the drift does.
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "50% 68%",
+            opacity: 0.34,
+            transform: `scale(1.18) translateY(${Math.sin(f / 130) * 14}px)`,
+          }}
+        />
+      ) : null}
       <div style={halo(-110, -60, "rgba(0,204,204,0.28)", 0)} />
       <div style={halo(90, 240, "rgba(132,96,229,0.35)", 90)} />
+      {/* Vignette: pulls the corners down so the white cards sit forward. */}
+      <AbsoluteFill
+        style={{
+          background:
+            "radial-gradient(120% 75% at 50% 42%, rgba(0,0,0,0) 45%, rgba(20,0,70,0.55) 100%)",
+        }}
+      />
     </AbsoluteFill>
   );
 };
@@ -567,3 +661,52 @@ export const Pestania: React.FC<{ children: React.ReactNode }> = ({
     {children}
   </div>
 );
+
+// ── Concorde ─────────────────────────────────────────────────────────────────
+
+/**
+ * A Concorde component, at reel scale.
+ *
+ * The design system is authored for a 420-wide phone; this reel is 270 across.
+ * `zoom` shrinks the component and its layout box together, so the flexbox
+ * around it keeps measuring the right thing — which `transform: scale()` does
+ * not. It also hands down the font the reel already loaded.
+ */
+export const DS: React.FC<{
+  e: number;
+  children: React.ReactNode;
+  estilo?: React.CSSProperties;
+}> = ({ e, children, estilo }) => (
+  <div
+    style={
+      {
+        zoom: e,
+        ["--vmc-font-display" as string]: sans,
+        ...estilo,
+      } as React.CSSProperties
+    }
+  >
+    {children}
+  </div>
+);
+
+/**
+ * Enters and then beats, so a Concorde component can keep its own pixels and
+ * still behave like something the reel is pointing at.
+ */
+export const Latido: React.FC<{
+  children: React.ReactNode;
+  retraso?: number;
+  pulso?: boolean;
+}> = ({ children, retraso = 0, pulso = true }) => {
+  const f = useCurrentFrame();
+  const entrada = useEntrada(retraso);
+  const latido = pulso ? 1 + Math.sin(f / 7) * 0.022 : 1;
+  return (
+    <div
+      style={{ ...entrada, transform: `${entrada.transform} scale(${latido})` }}
+    >
+      {children}
+    </div>
+  );
+};
