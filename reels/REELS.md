@@ -280,6 +280,23 @@ solapamientos sin esperar nada.
 
 `npm run reel:<nombre>`. Sale a `out/`, que está en `.gitignore` porque se regenera.
 
+**El reel completo son 2 min 18 s**, medido con `VendeSolo` (1590 frames, 1080×1920). Antes eran
+4 min 3 s: la diferencia es `Config.setChromiumOpenGlRenderer("vulkan")` en `remotion.config.ts`.
+Por defecto Remotion rasteriza con SwiftShader, que es CPU pura, y estos reels son `backdrop-filter:
+blur()` de punta a punta — justo lo que un rasterizador de software hace más lento. Con Vulkan el
+trabajo se va a la GPU.
+
+Dos cosas que hay que saber de ese cambio:
+
+- **No es idéntico pixel a pixel.** Cambia ~24% de los píxeles en ±1, todos en el dithering del
+  degradado violeta; el texto y los bordes de las tarjetas no se mueven. Verificado frame por frame
+  antes de activarlo, y el mp4 pesa 3% más porque el encoder gasta bits en ese ruido.
+- **Necesita Vulkan en la máquina.** En un Mac o en un contenedor sin `/dev/dri` hay que comentar
+  esa línea del config, o pasar `--gl=swiftshader` en la línea de comandos, que la pisa.
+
+La concurrencia también se probó: entre 3 y 6 no hay diferencia medible en esta máquina, así que
+sigue en 6. `--concurrency` no acepta más que núcleos disponibles.
+
 ---
 
 ## 4. Las reglas que costaron
