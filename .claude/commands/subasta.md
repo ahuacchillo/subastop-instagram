@@ -5,7 +5,8 @@ description: Arma el carrusel de Instagram de una subasta — pregunta los datos
 Vas a producir un carrusel de subasta de VMC. Lee primero
 `.agents/skills/vmc-subastas-content/SKILL.md` si no lo tienes en contexto.
 
-Argumento opcional: la carpeta con las fotos. Si no viene, es `Materiales/`.
+Todo esto corre desde `carrusel/`. Argumento opcional: la carpeta con las
+fotos. Si no viene, es `carrusel/Materiales/`.
 
 ## 1. Mira las fotos antes de preguntar nada
 
@@ -68,5 +69,5 @@ en vez de entregarlo.
 
 ## 5. Anota
 
-Agrega la fila en `RESULTADOS.md`: fecha, pieza, formato, qué foto fue portada.
+Agrega la fila en `RESULTADOS.md` (en la raíz del repo): fecha, pieza, formato, qué foto fue portada.
 Las métricas se llenan a mano a las 72h.

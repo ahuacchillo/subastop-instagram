@@ -18,8 +18,9 @@ de tocar un componente.
 
 ## Sistema Visual — VOYAGER
 
-Los tokens viven en `social-content/src/brand/vmc.ts`. **Ese archivo es la
-fuente de verdad.** Ningún componente define colores, sombras ni degradados
+Los tokens del carrusel viven en `carrusel/remotion/src/brand/vmc.ts`. **Ese
+archivo es la fuente de verdad.** (Los reels tienen su propia mitad del kit en
+`reels/remotion/src/brand/vmc.ts`.) Ningún componente define colores, sombras ni degradados
 propios: si un número no está en `vmc.ts`, no existe.
 
 ### Tipografía
@@ -99,25 +100,28 @@ posición. Separarlos rompe el remate visual.
 
 ```
 Instagram/
-├── Materiales/               # lo que entrega el usuario: fotos, logo, SVGs
-│   └── <auto>/               # una subcarpeta por subasta, en cuanto haya varias
-├── Posts/<slug>/             # renders listos + datos.json de la pieza
-├── nueva-subasta.sh          # ← el generador
 ├── .claude/commands/subasta.md
-└── social-content/           # proyecto Remotion
-    ├── public/
-    │   ├── autos/            # fotos ya normalizadas, prefijadas por slug
-    │   └── brand/vmc-logo.svg
-    └── src/
-        ├── brand/vmc.ts      # tokens VOYAGER — fuente de verdad
-        ├── subasta.ts        # solo el ejemplo que se ve en el Studio
-        ├── posts/AutoSlide.tsx
-        └── Root.tsx          # una composición `Auto`; el slide lo elige `indice`
+├── reels/                    # el otro producto, pipeline aparte (reels/REELS.md)
+└── carrusel/                 # ← todo lo de este skill
+    ├── Materiales/           # lo que entrega el usuario: fotos, logo, SVGs
+    │   └── <auto>/           # una subcarpeta por subasta
+    ├── Posts/<slug>/         # renders listos + datos.json de la pieza
+    ├── nueva-subasta.sh      # ← el generador
+    └── remotion/             # proyecto Remotion del carrusel
+        ├── public/
+        │   ├── autos/        # fotos ya normalizadas, prefijadas por slug
+        │   └── brand/vmc-logo.svg
+        └── src/
+            ├── brand/vmc.ts  # tokens VOYAGER del carrusel — fuente de verdad
+            ├── subasta.ts    # solo el ejemplo que se ve en el Studio
+            ├── posts/AutoSlide.tsx
+            └── Root.tsx      # una composición `Auto`; el slide lo elige `indice`
 ```
 
 ### Publicar un carrusel nuevo
 
 ```bash
+cd carrusel
 ./nueva-subasta.sh Materiales/<auto>
 ```
 
@@ -151,7 +155,7 @@ instante. Es más rápido y más honesto que medir a ojo.
 
 Paso obligatorio. Nunca se asume el material visual.
 
-1. Revisar `Materiales/`.
+1. Revisar `carrusel/Materiales/`.
 2. Preguntarle al usuario, con el guion de slides ya en la mano:
    - Qué fotos van y en qué orden (cuál es la portada).
    - Qué falta y hay que generar o pedir.

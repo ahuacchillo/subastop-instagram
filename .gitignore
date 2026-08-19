@@ -3,19 +3,17 @@ __pycache__/
 
 # ── Carrusel: efímero, se regenera ───────────────────────────────────────────
 # Fotos de cada subasta y sus renders. Salen del scraper o de las fotos que pase
-# el vendedor, y el carrusel se rearma con `./nueva-subasta.sh`. Son ~50 MB que
-# no aportan nada al repo porque nadie los vuelve a mirar.
-Materiales/*/
-Posts/
-social-content/public/autos/
+# el vendedor, y el carrusel se rearma con `carrusel/nueva-subasta.sh`. Son
+# ~150 MB que no aportan nada al repo porque nadie los vuelve a mirar.
+carrusel/Materiales/*/
+carrusel/Posts/
+carrusel/remotion/public/autos/
 
-# ── Reel: irreemplazable, va al repo ─────────────────────────────────────────
-# Lo de arriba se regenera; esto no. Las tomas y las locuciones salen de
-# generadores de pago y **la misma toma no se puede volver a pedir**: aunque
-# repitas el prompt, sale otra. Por eso las dos carpetas siguientes están
-# desexcluidas a mano de la regla `Materiales/*/`.
-!Materiales/reels/
-!Materiales/marca/
-
+# ── Reels: irreemplazable, va al repo ────────────────────────────────────────
+# Lo de arriba se regenera; esto no. Las tomas y las locuciones de `reels/tomas/`
+# salen de generadores de pago y **la misma toma no se puede volver a pedir**:
+# aunque repitas el prompt, sale otra. Por eso viven fuera de `carrusel/` y no
+# hace falta desexcluirlas a mano de ninguna regla.
+#
 # Los renders finales sí se regeneran, con `npm run reel:<nombre>`.
-social-content/out/
+reels/remotion/out/
