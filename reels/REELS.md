@@ -102,13 +102,14 @@ claude
 
 ## 1. Qué hay hoy
 
-Tres reels, todos verticales 1080×1920 para Instagram, todos hechos con Remotion.
+Cuatro reels, todos verticales 1080×1920 para Instagram, todos hechos con Remotion.
 
 | Composición | Archivo | Dura | Voz | Estado |
 |---|---|---|---|---|
 | `Negociable` | `src/reels/Negociable.tsx` | 42 s | Kate | terminado |
 | `Vender` | `src/reels/Vender.tsx` | 42.2 s | Jessica | terminado |
 | `VendeSolo` | `src/reels/VendeSolo.tsx` | 53 s | Jessica | terminado, con un pendiente (§9) |
+| `Registro` | `src/reels/Registro.tsx` | ~42.7 s | **sin grabar** | montado y mudo — le falta la voz (§9) |
 
 Cada uno tiene sus documentos hermanos:
 
@@ -119,6 +120,21 @@ Cada uno tiene sus documentos hermanos:
 `Negociable` y `Vender` son dos formas de contar lo mismo (cómo se vende en VMC).
 `VendeSolo` es la tercera pasada y la más lograda: **reemplaza a `Vender`**, no lo complementa.
 Los tres siguen en el repo porque el material se recicla entre ellos.
+
+**`Registro` es de otra familia.** Los tres primeros son reels de marca: venden una idea y
+reconstruyen el producto con componentes de Concorde para que el reel se mueva cuando el producto
+se mueva. `Registro` es un **tutorial**, y por eso hace lo contrario: reproduce las capturas reales
+del Centro de Ayuda dentro de una ventana de teléfono y se acerca al control que hay que tocar.
+Quien lo ve va a ir a buscar ese botón, y un botón redibujado que está 90% bien manda a alguien a
+buscar un control que no se ve así. La regla de "todo sale de Concorde" (§4) es de los reels de
+marca; no aplica a un tutorial y el motivo largo está en `GUION-REGISTRO.md`.
+
+Y trae una regla propia que los de marca no necesitaban: **cada frase se contrasta contra los T&C y
+el Centro de Ayuda antes de entrar**, con el skill `vmc-modelo-negocio`. Un reel de marca que
+exagera queda cursi; un tutorial que exagera manda a alguien a hacer algo que la plataforma no
+hace. La tabla de trazabilidad —qué dice cada línea y de qué sección sale— está en
+`GUION-REGISTRO.md` §Validación, y **es parte del entregable**: si escribes una línea nueva, va con
+su cita o no va.
 
 ### Lo que NO es esto
 
@@ -488,6 +504,20 @@ Ordenado por lo que más rinde primero.
   sofá, misma luz— pero no es propio. El prompt para reemplazarlo (T7) está en
   `PROMPTS-VENDESOLO.md`.
 - **`Vender` y `VendeSolo` cuentan lo mismo.** Decidir cuál se publica.
+- **A `Registro` le falta la voz.** Está montado, corre mudo y sus frames son una **estimación** por
+  conteo de palabras, no una medición. El bloque para pegar en ElevenLabs está en `VOZ-REGISTRO.md`;
+  cuando llegue la toma se mide con `silencedetect` y se reemplazan `GUION` y la tabla del `VOZ-`,
+  en el mismo commit.
+- **El artículo de registro se contradice con su propia captura.** Su Paso 1 dice «haz clic en el
+  botón **Ingresar**» y la imagen que lo acompaña muestra un botón que dice **Ingresa**. El reel
+  sigue la captura, que es lo que el usuario ve; hay que alinear el texto en el repo
+  `CentroDeAyudaVMC`.
+- **El scraper del skill `vmc-modelo-negocio` se salta los `div[role="alert"]`.** «No permitimos
+  registros de terceros» está en el artículo publicado y no en `reference/centro-de-ayuda.md`. Es
+  un agujero de validación, no sólo de este reel.
+- **El artículo de registro sigue enlazando el video viejo de YouTube** (`DGFzz3IY_hg`), que camina
+  por la compra de SubaCoins y una pasarela de pago que ya no son parte del registro. Mientras los
+  dos convivan, el artículo se contradice a sí mismo.
 
 ---
 

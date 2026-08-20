@@ -28,6 +28,7 @@
     "reel": "remotion render Negociable out/negociable.mp4 --scale=4 --concurrency=6",
     "reel:vender": "remotion render Vender out/vender.mp4 --scale=4 --concurrency=6",
     "reel:vendesolo": "remotion render VendeSolo out/vendesolo.mp4 --scale=4 --concurrency=6",
+    "reel:registro": "remotion render Registro out/registro.mp4 --scale=4 --concurrency=6",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"

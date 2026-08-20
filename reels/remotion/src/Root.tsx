@@ -12,10 +12,11 @@ import {
   ReelVendeSoloVideo,
   VENDESOLO,
 } from "./reels/VendeSolo";
+import { DURACION_REGISTRO, REGISTRO, ReelRegistroVideo } from "./reels/Registro";
 
 /**
- * The three brand reels. Authored at 270×480 and delivered by
- * `npm run reel:<nombre>` (--scale=4 → 1080×1920).
+ * The three brand reels and the first tutorial. Authored at 270×480 and
+ * delivered by `npm run reel:<nombre>` (--scale=4 → 1080×1920).
  *
  * The auction carousel is a project of its own, in `carrusel/remotion/`.
  */
@@ -50,6 +51,19 @@ export const RemotionRoot: React.FC = () => (
       component={ReelVendeSoloVideo}
       defaultProps={{ d: VENDESOLO }}
       durationInFrames={DURACION_VENDESOLO}
+      {...REEL}
+    />
+    {/*
+      The first tutorial, and the first one silent by choice rather than by
+      accident: its GUION is an estimate off the word count, not a measurement
+      of a take, because `public/voz/registro.mp3` does not exist yet. Read the
+      note on GUION in Registro.tsx before trusting any of those frames.
+    */}
+    <Composition
+      id="Registro"
+      component={ReelRegistroVideo}
+      defaultProps={{ d: REGISTRO }}
+      durationInFrames={DURACION_REGISTRO}
       {...REEL}
     />
   </>
