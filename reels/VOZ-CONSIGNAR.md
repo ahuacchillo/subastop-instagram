@@ -44,6 +44,11 @@ algo al que escucha, y es lo único que este reel no se puede permitir.
 
 El bloque 4 es el más importante de la toma. Es el que evita una sanción.
 
+Y el **bloque 8 es el único que vende**, así que es el único que sube: es SubasPass, y llega justo
+después de siete bloques planos hablando de plata que sale. Ese contraste es todo su efecto — si la
+toma lo lee con la misma energía que los anteriores, deja de leerse como una salida. Pero la segunda
+mitad («con tu cuenta habilitada y sin deuda») vuelve a plano: es una condición, no un beneficio.
+
 ## Pronunciación — escríbelo así en el prompt, no como se escribe
 
 | Se escribe | Se manda |
@@ -52,6 +57,8 @@ El bloque 4 es el más importante de la toma. Es el que evita una sanción.
 | vmcsubastas.com | `ve eme ce subastas punto com` |
 | SubasCoins | `subascoins` — una palabra, acento en *coins* |
 | bid | `bid` — como en inglés, no `bíd` ni `bi de` |
+| SubasPass | `subas pass` — dos golpes, acento en *pass* |
+| >S< 30 | `treinta subascoins` — el símbolo no se lee |
 | >S< 50 | no se lee: el monto vive en pantalla, no en la voz |
 
 ---
@@ -76,6 +83,8 @@ igual al final. Pega esto tal cual en ElevenLabs v3:
 
 [flat, matter-of-fact] Para todo esto necesitas fondos. Los cargas desde tu Billetera, con subascoins o con una recarga.
 
+[bright, offering] Y si vas a participar seguido, con subas pass consignas cero. Desde treinta subascoins al mes, con tu cuenta habilitada y sin deuda.
+
 [warm, closing] Con eso ya puedes consignar y entrar a la sala. Todo está en ve eme ce subastas punto com.
 ```
 
@@ -86,7 +95,7 @@ sirve y hay que regrabar con `...` al final de cada bloque.
 
 Ninguna línea es de cosecha propia: todas salen de los Términos y Condiciones o del Centro de
 Ayuda. La trazabilidad completa —incluido lo que está sólo en pantalla— está en
-`GUION-CONSIGNAR.md` §Validación. Los tres que conviene tener a mano al dirigir la toma:
+`GUION-CONSIGNAR.md` §Validación. Los cinco que conviene tener a mano al dirigir la toma:
 
 - **«son dos taps»** es un conteo, no un adorno: el artículo dice «dale clic o tap a *Participa*» y
   después «haz clic o tap sobre *acepto*». Dos. Dilo como un dato tranquilizador, no como un claim
@@ -97,6 +106,15 @@ Ayuda. La trazabilidad completa —incluido lo que está sólo en pantalla— es
 - **«por lo menos un bid válido»** es literal en las dos fuentes y en el pop-up del producto. Es la
   única línea del reel que evita una sanción: va **seria, sin sonrisa, y con un respiro antes**.
   Si esta línea suena simpática, la toma no sirve.
+- **«con SubasPass consignas cero»** es el beneficio literal de las dos fuentes (T&C IV.9.b —
+  «consignando 0 SubasCoins»; CA **[consignacion] Subaspass** — «con consignación 0»). El precio
+  también es literal: «Mensual >S< 30 (30 días)» es la lista del artículo, y «desde» es exacto porque
+  es el más barato de los cuatro planes. **Lo que no se dice**: nada sobre que salga más barato que
+  consignar. Nadie lo compara en ninguna fuente.
+- **«con tu cuenta habilitada y sin deuda»** no es una advertencia decorativa: es la condición que los
+  T&C le ponen al beneficio entero (IV.9.b) y que el Centro de Ayuda se salta cuando dice «sin
+  restricciones». Los Términos prevalecen. Va **plana**, pegada a la frase anterior, sin pausa
+  dramática — es una condición, no una amenaza.
 
 ## Los tiempos — **estimados, no medidos**
 
@@ -114,11 +132,16 @@ toma. Los cortes se pusieron 0.15 s después del final del habla.
 | 5 | `negocia` | 724–858 | 24.73–28.46 | 12 | clara, instructiva | En una oferta Negociable no hay botón de aceptar: toca Negocia ahora. |
 | 6 | `propone` | 858–1030 | 29.19–34.18 | 16 | firme, guiando | Al iniciar la negociación se debita la consignación, y ahí mismo digitas el monto que propones. |
 | 7 | `billetera` | 1030–1201 | 34.91–39.89 | 16 | plana, de dato | Para todo esto necesitas fondos. Los cargas desde tu Billetera, con SubasCoins o con una recarga. |
-| 8 | `cierre` | 1201–1350 | 40.62–44.98 | 14 | cálida, cerrando | Con eso ya puedes consignar y entrar a la sala. Todo está en vmcsubastas.com. |
+| 8 | `subaspass` | 1201–1429 | 40.62–47.48 | 22 | brillante, ofreciendo | Y si vas a participar seguido, con SubasPass consignas cero. Desde treinta SubasCoins al mes, con tu cuenta habilitada y sin deuda. |
+| 9 | `cierre` | 1429–1577 | 48.21–52.57 | 14 | cálida, cerrando | Con eso ya puedes consignar y entrar a la sala. Todo está en vmcsubastas.com. |
 
-**Total estimado: 45.0 s / 1350 frames.** Es una estimación con un error esperable de ±10%, y el
-sesgo es hacia **más largo**: 128 palabras de texto instructivo se leen más lento que 128 de marca,
+**Total estimado: 52.6 s / 1577 frames.** Es una estimación con un error esperable de ±10%, y el
+sesgo es hacia **más largo**: 150 palabras de texto instructivo se leen más lento que 150 de marca,
 y el bloque 4 tiene un respiro pedido que la aritmética no cuenta.
+
+Es el reel más largo del repo, empatado con `VendeSolo` (53 s). Si la toma se pasa de los 55 s, el
+candidato a recortar es el bloque 6 —el modal de Negociable— antes que el 8: el 8 es lo único que
+vende.
 
 Los bloques 2 y 5 son los más cortos (3.7 s cada uno) y son **líneas de tránsito**: nombran un botón
 y nada más. Si la toma los estira más allá de 5 s, la voz está poniendo énfasis donde no toca.
@@ -136,7 +159,7 @@ y nada más. Si la toma los estira más allá de 5 s, la voz está poniendo énf
    ```
 
    El umbral es por toma: `vender.mp3` se mide a −30 dB y `vendesolo.mp3` a −35 dB. Ajústalo hasta
-   que el número de huecos tenga sentido contra la puntuación del guion. **Este guion tiene siete
+   que el número de huecos tenga sentido contra la puntuación del guion. **Este guion tiene ocho
    límites de bloque**, y dos trampas propias: los dos puntos del bloque 5 («de aceptar: toca
    Negocia ahora») y el respiro pedido del bloque 4, que va a aparecer como un hueco **dentro** del
    bloque y no es un corte.

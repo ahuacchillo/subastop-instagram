@@ -1,6 +1,6 @@
 # Guión — ¡Consignar es necesario para participar!
 
-Voz y pantalla del reel `Consignar` (`out/consignar.mp4`, ~45.0 s estimados, 270×480 @ 30 fps), beat
+Voz y pantalla del reel `Consignar` (`out/consignar.mp4`, ~52.6 s estimados, 270×480 @ 30 fps), beat
 por beat.
 
 **Un solo objetivo:** que alguien que ya tiene cuenta llegue a consignar sin sorpresas. Nada de cómo
@@ -42,7 +42,11 @@ El artículo fuente es **CA [consignacion] «¡Consignar es necesario para parti
 2. ¿Y en una oferta «Negociable»? → al iniciar la negociación el débito es automático.
 3. ¿Cómo agrego valor a mi billetera? → SubasCoins o Recarga, y el fee de 3.9% con tarjeta.
 
-El reel es esas tres preguntas y nada más.
+El reel es esas tres preguntas, más **un beat de SubasPass** que sale del artículo hermano
+(**CA [consignacion] Subaspass**) y de **T&C IV.9**. No es un anuncio pegado al final: SubasPass es
+*la excepción a la premisa de este reel* —«la facultad de participar en todas las subastas del
+ecosistema de Subastop consignando 0 SubasCoins» (T&C **IV.9.b**)—, así que el sitio donde se explica
+qué es consignar es el sitio donde tiene sentido decir que hay un caso en que no consignas.
 
 ### El video viejo hacía otra cosa
 
@@ -63,14 +67,20 @@ importa —que consignar son dos toques— quedaba enterrada en el minuto medio.
 
 ## Cómo se reparte la venta
 
-Este reel casi no vende, y es a propósito. `Registro` tiene que convencer a alguien de crear una
-cuenta; acá el que mira **ya tiene cuenta y ya quiere participar** — la pregunta no es «¿me
-conviene?» sino «¿qué me van a cobrar y qué estoy firmando?».
+`Registro` tiene que convencer a alguien de crear una cuenta; acá el que mira **ya tiene cuenta y ya
+quiere participar** — la pregunta no es «¿me conviene?» sino «¿qué me van a cobrar y qué estoy
+firmando?».
 
 Así que las puntas hacen menos trabajo de venta y más de orientación, y el cuerpo hace algo que
-`Registro` no necesitaba: **avisar**. Tres de los ocho beats hablan de plata (el débito automático,
-la sanción, el 3.9%) y los tres van planos. Un reel que suena entusiasta explicando un débito
-automático suena a que está escondiendo algo, y es lo único que este reel no se puede permitir.
+`Registro` no necesitaba: **avisar**. Cuatro de los nueve beats hablan de plata (el débito
+automático, la sanción, el 3.9%, el precio del pase) y los tres primeros van planos. Un reel que
+suena entusiasta explicando un débito automático suena a que está escondiendo algo, y es lo único que
+este reel no se puede permitir.
+
+**Toda la venta está en un solo beat, el 8**, y llega después de siete planos hablando de plata que
+sale. Ese contraste es su efecto entero: SubasPass no se lee como oferta porque esté bien escrito, se
+lee como salida porque el reel acaba de pasar cuarenta segundos explicando el problema que resuelve.
+Repartir la venta por el cuerpo —un adjetivo acá, un beneficio allá— le quitaría exactamente eso.
 
 ---
 
@@ -250,9 +260,65 @@ nombra como la vía sin el cobro porque **el artículo la nombra así**, no como
 
 ---
 
-## CIERRE · 40.62 – 44.98 s
+## ACTO 6 — La excepción · 40.62 – 47.48 s
 
-### Beat 8 · `cierre` · frames 1201–1350
+### Beat 8 · `subaspass` · frames 1201–1429
+
+Captura: `subaspass.png` — **la misma pantalla de detalle del beat 2**, con el flujo entero
+desaparecido: no hay *Participa*, no hay pop-up, el botón ya dice *Ingresa a la Sala* y la línea de
+comisión está en `>S< 0`.
+
+**No lleva número y el chip es una pregunta**, como el aparte de la factura en `Registro`: al que vino
+a consignar una sola vez no le aplica, y tiene que poder dejar de leer en el chip.
+
+| | |
+|---|---|
+| **VOZ** | Y si vas a participar seguido, con SubasPass consignas cero. Desde treinta SubasCoins al mes, con tu cuenta habilitada y sin deuda. |
+| **Chip** | ¿PARTICIPAS SEGUIDO? |
+| **Titular** | Consignación 0 |
+| **Bajada** | Con SubasPass el paso de consignar no existe. Desde >S< 30 al mes. |
+| **Toque** | sobre *Ingresa a la Sala* |
+| **Aviso** | Sirve con la cuenta habilitada y sin deuda. Con deuda, el pase queda inaccesible. |
+
+**Es el único beat que vende, y se gana el lugar siendo la excepción** a la premisa del reel en vez de
+un anuncio atornillado al final.
+
+**La captura es la prueba, no la tabla de precios.** `subaspass-planes.png` existe —cuatro planes,
+de `>S< 30` a `>S< 120`— pero es una tabla apaisada de cuatro columnas, y a cualquier ancho que entre
+en un cuadro vertical sus números dejan de leerse. Y ésta es mejor de todos modos: es *la misma
+pantalla* del beat 2 con todo lo que el reel acaba de enseñar borrado. Dos beats de este reel valen
+más como antes-y-después que cualquier tabla.
+
+### Lo que la copia no afirma
+
+Esa pantalla rotula su línea en cero como **«Comisión >S< 0»**, y las dos fuentes describen SubasPass
+anulando la **consignación** (T&C **IV.9.b**; CA **[consignacion] Subaspass** — «con consignación
+0»). Son dos cosas distintas y nada de lo disponible dice cuál de las dos significa la pantalla, así
+que la copia dice lo único en que todas las fuentes coinciden: **el paso de consignar no ocurre**. Es
+la misma disciplina que con el descuento de SubasCoins.
+
+El precio va en la voz y en la bajada, y es literal: «Mensual >S< 30 (30 días)» es la lista del
+artículo, junto con Trimestral `>S< 50`, Semestral `>S< 80` y Anual `>S< 120`. «Desde» es exacto —es
+el más barato de los cuatro—. Lo que **no** se dice es nada sobre que salga más barato que consignar:
+nadie lo compara en ninguna fuente, aunque las cifras del propio reel inviten a hacer la cuenta.
+
+### El aviso es la condición, y es donde las fuentes no coinciden
+
+El Centro de Ayuda dice que el pase te deja participar «sin restricciones … sin que tu nivel de
+riesgo limite tu participación». Los T&C le ponen condiciones al beneficio entero: «siempre que la
+cuenta del Usuario se encuentre habilitada y libre de deuda y/o bloqueos por parte del vendedor»
+(**IV.9.b**), y **IV.9.c** deja el beneficio «inaccesible» hasta que se regularice una deuda.
+
+**Los Términos prevalecen**, así que la condición va en pantalla. Vender un pase sin ella es cómo
+alguien lo compra y no lo puede usar.
+
+Es **violeta y no naranja**: es una condición sobre un beneficio, no un peligro.
+
+---
+
+## CIERRE · 48.21 – 52.57 s
+
+### Beat 9 · `cierre` · frames 1429–1577
 
 | | |
 |---|---|
@@ -308,13 +374,31 @@ con su cita.
 | Billetera, voz | «con SubasCoins o con una recarga» | CA **[consignacion]** Q3 — literal |
 | Billetera, aviso | «con tarjeta cobra 3.9%» | T&C **IV.2.2.1.a** — «equivale al 3.9% del valor de los SubasCoins adquiridos» · CA, mismo artículo |
 | Billetera, aviso | «la recarga es la opción sin ese cobro» | CA **[consignacion]** — «la Recarga es la opción sin este cobro» |
+| SubasPass, titular | «consignación 0» | CA **[consignacion] Subaspass** — «con consignación 0» · T&C **IV.9.b** — «consignando 0 SubasCoins» |
+| SubasPass, bajada | «el paso de consignar no existe» | T&C **IV.10.e** — «podrán participar sin necesidad de consignación» · la captura `subaspass.png` |
+| SubasPass, bajada | «desde >S< 30 al mes» | CA **[consignacion] Subaspass** — «Mensual >S< 30 (30 días)», el más barato de los cuatro planes |
+| SubasPass, voz | «si vas a participar seguido» | CA **[consignacion] Subaspass** — «en caso quieras participar de múltiples procesos … el SubasPass es tu mejor alternativa» |
+| SubasPass, aviso | «cuenta habilitada y sin deuda» | T&C **IV.9.b** — literal (+ **IV.10.e**) |
+| SubasPass, aviso | «con deuda, el pase queda inaccesible» | T&C **IV.9.c** — «el beneficio de SubasPass quedará inaccesible hasta que regularice su situación» |
 | Cierre, aviso | «vuelve como SubasCoins» | T&C **IV.2.1.e** — literal |
 | Cierre, botón | «el link está en la bio» | Editorial, y depende de la publicación — ver el aviso del Beat 8 |
 
-Las dos fuentes **se complementan** y no se contradicen en nada de lo que toca este reel: el Centro de
-Ayuda da el paso a paso y los dos números (3.9%, el débito automático) y los T&C dan el marco
-contractual — qué es una consignación, de quién es la responsabilidad de tener fondos, qué se asume
-como participante y en qué moneda vuelve la plata si no se cumple.
+Las dos fuentes **se complementan** en casi todo lo que toca este reel: el Centro de Ayuda da el paso
+a paso y los dos números (3.9%, el débito automático) y los T&C dan el marco contractual — qué es una
+consignación, de quién es la responsabilidad de tener fondos, qué se asume como participante y en qué
+moneda vuelve la plata si no se cumple.
+
+**Difieren en un punto, y es de SubasPass.** El Centro de Ayuda dice que el pase deja participar «sin
+restricciones … sin que tu nivel de riesgo limite tu participación»; los T&C condicionan el beneficio
+entero a que la cuenta esté «habilitada y libre de deuda y/o bloqueos por parte del vendedor»
+(**IV.9.b**) y lo declaran «inaccesible» mientras haya deuda (**IV.9.c**). **Los Términos
+prevalecen**, así que el reel dice la condición. Vale corregir el artículo: «sin restricciones» es
+más de lo que el contrato promete.
+
+**Y hay una contradicción interna en los propios T&C**, menor pero real: el glosario (**II.24**)
+define SubasPass como «suscripción **anual**», y **IV.9.d** enumera cuatro vigencias —mensual,
+trimestral, semestral y anual—, que es lo que el Centro de Ayuda y la pantalla de planes muestran. El
+reel sigue **IV.9.d**, que es la cláusula específica y coincide con el producto.
 
 ### Lo que no tiene respaldo, y por eso no está en el reel
 
@@ -337,6 +421,19 @@ como participante y en qué moneda vuelve la plata si no se cumple.
   aplica. Vive en `[riesgo-usuario]`.
 - **La pantalla amarilla de «Ya eres participante».** Sale en el video viejo y no está en ninguna de
   las capturas del artículo. No se dibuja de nuevo.
+- **Que SubasPass salga más barato que consignar.** Las cifras invitan a la cuenta —un plan Mensual
+  cuesta `>S< 30` y la consignación del propio ejemplo del artículo es `>S< 50`— pero **nadie las
+  compara en ninguna fuente**, y una consignación no tiene monto fijo: cambia por oferta. El reel
+  pone el precio y no hace la resta. Si la comparación se quiere afirmar, hay que sostenerla con un
+  rango real de consignaciones, no con un ejemplo.
+- **Que SubasPass anule la comisión.** La captura rotula su línea en cero como «Comisión >S< 0», pero
+  las dos fuentes hablan de la **consignación**. Nada dice cuál de las dos significa esa pantalla, así
+  que la copia dice sólo lo que todas las fuentes sostienen: el paso de consignar no ocurre. **Vale
+  preguntarlo**, porque si además anula la comisión de 7.5% el pase vale muchísimo más de lo que el
+  artículo cuenta.
+- **Los planes de SubasPass, en pantalla.** `subaspass-planes.png` es una tabla apaisada de cuatro
+  columnas y sus números no se leen a ningún ancho que entre en un cuadro vertical. Los cuatro precios
+  están en el artículo y en la voz; la tabla no se muestra.
 
 ---
 
@@ -353,7 +450,12 @@ como participante y en qué moneda vuelve la plata si no se cumple.
    flujo más largo que el artículo y termina en la sala en vivo. Este reel es vertical y cubre menos,
    así que no es un reemplazo directo — pero el video viejo muestra pantallas que ya no están en el
    artículo.
-5. **`Registro` sigue con `de={4}`, que ya no usa.** Al pasar a `PasoEscena` la etiqueta explícita,
+5. **El artículo de SubasPass promete más que el contrato.** Ver §Validación: «sin restricciones»
+   contra la condición de cuenta habilitada y sin deuda de T&C IV.9.b. Hay que alinear el artículo en
+   `CentroDeAyudaVMC`.
+6. **Los T&C se contradicen sobre la vigencia del pase.** El glosario II.24 dice «anual», IV.9.d
+   enumera cuatro planes. El reel sigue IV.9.d; el glosario habría que corregirlo.
+7. **`Registro` sigue con `de={4}`, que ya no usa.** Al pasar a `PasoEscena` la etiqueta explícita,
    `Registro` mantiene `n`/`de` y `Consignar` usa `etiqueta`. Las dos vías funcionan y conviven a
    propósito, pero si aparece un tercer tutorial que tampoco numere, `n`/`de` sobra y se borra.
 
@@ -362,7 +464,7 @@ como participante y en qué moneda vuelve la plata si no se cumple.
 Casi nada llega por props: `CONSIGNAR` sólo lleva `sitio` y `fondo`. Es a propósito — un tutorial de
 consignación no se re-parametriza, se reescribe cuando el producto cambia.
 
-Lo que sí hay que resincronizar cuando las pantallas se muevan son las cinco capturas:
+Lo que sí hay que resincronizar cuando las pantallas se muevan son las seis capturas:
 
 ```bash
 cd <CentroDeAyudaVMC>/public/images/articulos
@@ -371,7 +473,13 @@ cp consignacion-paso-2-acepto.png               <Instagram>/reels/remotion/publi
 cp consignacion-negociable-paso-1-negocia.png   <Instagram>/reels/remotion/public/reel/consignar/negocia.png
 cp consignacion-negociable-paso-2-proponer.png  <Instagram>/reels/remotion/public/reel/consignar/proponer.png
 cp consignacion-billetera-adquiere.png          <Instagram>/reels/remotion/public/reel/consignar/billetera.png
+cp subaspass-paso-2-ingresa-sala.png            <Instagram>/reels/remotion/public/reel/consignar/subaspass.png
 ```
+
+La sexta —`subaspass.png`— viene del artículo hermano, no del principal. Si el detalle de la oferta
+cambia hay que resincronizar **`participa.png` y `subaspass.png` juntas**: todo el beat 8 funciona
+porque son la misma pantalla con y sin pase, y si una se actualiza sin la otra el antes-y-después
+deja de ser cierto.
 
 Y si alguna cambia de tamaño, corregir `w`/`h` en `PANTALLAS` (`identify` los imprime) y volver a
 mirar el `foco`: son fracciones de la imagen, así que un recorte distinto los mueve. Ojo con

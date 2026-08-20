@@ -23,7 +23,8 @@ import Button from "@/concorde/components/Button";
 //      article exists, and the reason this beat gets the orange notice.
 //   4. Negociable: no Acepto at all, the debit rides on starting the negotiation.
 //   5. The wallet, because none of the above works on an empty one.
-//   6. Close.
+//   6. SubasPass — the one case where none of the above happens at all.
+//   7. Close.
 //
 // **Not in this reel, on purpose.** The old YouTube video (BArqY0cM39I, the one
 // the article still links) runs the whole road to the live room: favourites,
@@ -65,7 +66,7 @@ export const CONSIGNAR: ReelConsignar = {
 };
 
 /**
- * The beats: [first frame, length]. 30fps, 1350 = 45.0s.
+ * The beats: [first frame, length]. 30fps, 1577 = 52.6s.
  *
  * **Provisional — not measured.** Same footing as `Registro` was: there is no
  * take yet, so these are arithmetic. Each block's word count at 3.21 words/s
@@ -90,7 +91,10 @@ export const CONSIGNAR: ReelConsignar = {
  *                          y ahí mismo digitas el monto que propones.
  *   billetera 34.91–39.89  Para todo esto necesitas fondos. Los cargas desde tu
  *                          Billetera, con SubasCoins o con una recarga.
- *   cierre    40.62–44.98  Con eso ya puedes consignar y entrar a la sala. Todo
+ *   subaspass 40.62–47.48  Y si vas a participar seguido, con SubasPass consignas
+ *                          cero. Desde treinta SubasCoins al mes, con tu cuenta
+ *                          habilitada y sin deuda.
+ *   cierre    48.21–52.57  Con eso ya puedes consignar y entrar a la sala. Todo
  *                          está en vmcsubastas.com.
  *
  * When the take lands: measure with `silencedetect`, rewrite this and the table
@@ -104,7 +108,8 @@ const GUION = {
   negocia: [724, 134],
   propone: [858, 172],
   billetera: [1030, 171],
-  cierre: [1201, 149],
+  subaspass: [1201, 228],
+  cierre: [1429, 148],
 } as const;
 
 export const DURACION_CONSIGNAR = GUION.cierre[0] + GUION.cierre[1];
@@ -164,6 +169,15 @@ const PANTALLAS: Record<string, Captura> = {
     w: 502,
     h: 704,
     foco: [0.5, 0.92],
+  },
+  // The proof, and the reason this capture beats the price table: it is the same
+  // offer detail as `participa`, with the whole consignación flow gone. No
+  // Participa, no pop-up — the button is already "Ingresa a la Sala".
+  subaspass: {
+    archivo: "reel/consignar/subaspass.png",
+    w: 509,
+    h: 711,
+    foco: [0.5, 0.7],
   },
 };
 
@@ -507,7 +521,114 @@ const Billetera: React.FC = () => (
   </AbsoluteFill>
 );
 
-// ── Act 6 · the close ────────────────────────────────────────────────────────
+// ── Act 6 · the exception ────────────────────────────────────────────────────
+
+/**
+ * The one beat that sells, and it earns the place by being the exception to the
+ * reel's own premise rather than an ad bolted onto it: SubasPass is "la facultad
+ * de participar en todas las subastas del ecosistema de Subastop **consignando 0
+ * SubasCoins**" (T&C IV.9.b), which is the subject of this reel, negated.
+ *
+ * Unnumbered and chipped with a question, like the factura aside in `Registro`:
+ * it does not apply to someone who came to consign once, and they should be able
+ * to stop reading at the chip.
+ *
+ * The capture is the proof, not the price table. `subaspass-planes.png` exists —
+ * four plans, >S< 30 to >S< 120 — but it is a four-column landscape table, and at
+ * any width that fits a vertical frame its numbers stop being legible. This one
+ * is better anyway: it is the *same offer detail* as the `participa` beat, and
+ * the whole flow the reel just taught is gone from it. No Participa, no pop-up.
+ * The button already says "Ingresa a la Sala". Two beats of this reel are worth
+ * more as a before/after than any table.
+ *
+ * **What the copy does not claim.** That screen labels its zeroed line
+ * "Comisión >S< 0", and both sources describe SubasPass as zeroing the
+ * *consignación* (T&C IV.9.b, Centro de Ayuda [consignacion] Subaspass — "con
+ * consignación 0"). Those are two different things and nothing available says
+ * which the screen means, so the copy says the part every source agrees on: the
+ * consigning step does not happen. Same discipline as the SubasCoins discount in
+ * the header note.
+ *
+ * The price is in the voice and not on screen, and it is literal: "Mensual >S< 30
+ * (30 días)" is the Centro de Ayuda's own list, along with Trimestral >S< 50,
+ * Semestral >S< 80 and Anual >S< 120. "Desde" is accurate — it is the cheapest of
+ * the four.
+ *
+ * And the notice is the condition, because this is the one place where the two
+ * sources do not match. The Centro de Ayuda says the pass lets you participate
+ * "sin restricciones … sin que tu nivel de riesgo limite tu participación". The
+ * T&C condition the whole benefit: "siempre que la cuenta del Usuario se
+ * encuentre habilitada y libre de deuda y/o bloqueos por parte del vendedor"
+ * (IV.9.b), and IV.9.c makes the benefit "inaccesible" until a debt is cleared.
+ * The Términos prevail, so the condition goes on screen. Selling a pass without
+ * it is how somebody buys one and cannot use it.
+ *
+ * Violet, not orange: it is a condition on a benefit, not a hazard.
+ */
+const SubasPass: React.FC = () => (
+  <AbsoluteFill
+    style={{
+      padding: "26px 22px 22px",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 12,
+    }}
+  >
+    <div
+      style={{
+        alignSelf: "stretch",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        gap: 7,
+      }}
+    >
+      <Chip retraso={2}>¿PARTICIPAS SEGUIDO?</Chip>
+      <Titular tam={23} retraso={5}>
+        Consignación 0
+      </Titular>
+      <Bajada retraso={9}>
+        Con SubasPass el paso de consignar
+        <br />
+        no existe. Desde {">S< 30"} al mes.
+      </Bajada>
+    </div>
+    <Pantalla
+      p={PANTALLAS.subaspass}
+      dura={GUION.subaspass[1]}
+      alto={205}
+      retraso={5}
+    />
+    <div
+      style={{
+        ...useEntrada(58),
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 8,
+        padding: "9px 12px",
+        borderRadius: 13,
+        background: "rgba(20,0,70,0.5)",
+        border: "1px solid rgba(174,142,255,0.5)",
+      }}
+    >
+      <span
+        style={{
+          fontFamily: sans,
+          fontWeight: 600,
+          fontSize: 9.5,
+          lineHeight: 1.35,
+          color: "#FFFFFF",
+        }}
+      >
+        Sirve con la cuenta habilitada y sin deuda. Con deuda, el pase queda
+        inaccesible.
+      </span>
+    </div>
+  </AbsoluteFill>
+);
+
+// ── Act 7 · the close ────────────────────────────────────────────────────────
 
 /**
  * The closing notice is the rule that lives in the Términos and nowhere in the
@@ -615,6 +736,9 @@ export const ReelConsignarVideo: React.FC<{ d: ReelConsignar }> = ({ d }) => (
     </Escena>
     <Escena de={GUION.billetera[0]} dura={GUION.billetera[1]}>
       <Billetera />
+    </Escena>
+    <Escena de={GUION.subaspass[0]} dura={GUION.subaspass[1]}>
+      <SubasPass />
     </Escena>
     <Escena de={GUION.cierre[0]} dura={GUION.cierre[1]}>
       <Cierre d={d} />

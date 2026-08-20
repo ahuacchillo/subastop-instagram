@@ -111,7 +111,7 @@ dos tutoriales.
 | `Vender` | `src/reels/Vender.tsx` | 42.2 s | Jessica | terminado |
 | `VendeSolo` | `src/reels/VendeSolo.tsx` | 53 s | Jessica | terminado, con un pendiente (§9) |
 | `Registro` | `src/reels/Registro.tsx` | ~42.7 s | **sin grabar** | montado y mudo — le falta la voz (§9) |
-| `Consignar` | `src/reels/Consignar.tsx` | ~45.0 s | **sin grabar** | montado y mudo — le falta la voz (§9) |
+| `Consignar` | `src/reels/Consignar.tsx` | ~52.6 s | **sin grabar** | montado y mudo — le falta la voz (§9) |
 
 Cada uno tiene sus documentos hermanos:
 
@@ -535,6 +535,17 @@ Ordenado por lo que más rinde primero.
   camino hasta la sala en vivo —favoritos, scroll, cuenta regresiva, sala de espera— y muestra
   pantallas que ya no están en el artículo, incluida una amarilla de «Ya eres participante». Ese
   tramo es `[oferta-en-vivo] Es hora de participar`, no consignación.
+- **El artículo de SubasPass promete más que el contrato.** Dice que el pase deja participar «sin
+  restricciones … sin que tu nivel de riesgo limite tu participación»; los T&C condicionan el
+  beneficio entero a que la cuenta esté «habilitada y libre de deuda y/o bloqueos por parte del
+  vendedor» (IV.9.b) y lo declaran «inaccesible» mientras haya deuda (IV.9.c). `Consignar` dice la
+  condición porque los Términos prevalecen, pero hay que alinear el artículo.
+- **¿SubasPass anula también la comisión?** Su captura rotula la línea en cero como «Comisión >S< 0»
+  y las dos fuentes hablan de la **consignación**. Si además anula el 7.5% de comisión, el pase vale
+  mucho más de lo que el artículo cuenta y nadie lo está diciendo.
+- **Los T&C se contradicen sobre la vigencia de SubasPass.** El glosario (II.24) dice «suscripción
+  anual»; IV.9.d enumera mensual, trimestral, semestral y anual, que es lo que muestra el producto.
+  `Consignar` sigue IV.9.d.
 - **El artículo de registro se contradice con su propia captura.** Su Paso 1 dice «haz clic en el
   botón **Ingresar**» y la imagen que lo acompaña muestra un botón que dice **Ingresa**. El reel
   sigue la captura, que es lo que el usuario ve; hay que alinear el texto en el repo
