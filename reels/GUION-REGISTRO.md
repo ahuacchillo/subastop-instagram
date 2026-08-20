@@ -111,7 +111,7 @@ siguen; una pantalla acá sería el paso 1 llegando temprano.
 | **Logo** | *[logo VMC]* |
 | **Titular** | Compra o vende:<br>todo empieza<br>con tu cuenta. |
 | **Bajada** | Ofertas En Vivo y Negociables, visitas para ver el auto en físico, y vender el tuyo. |
-| **Chip** | SON 4 PASOS |
+| **Chip** | TEN TU DNI A MANO |
 
 El titular y la voz dicen lo mismo con otras palabras —«compras y vendes» / «Compra o vende»—, y es
 la excepción de `REELS.md` §4: en el primer acto el titular va casi palabra por palabra a propósito.
@@ -124,7 +124,14 @@ La bajada es la lista de lo que esa cuenta abre, y las cuatro cosas están en la
 tipos de oferta (T&C **IV.5** y **IV.6**), la visita física (CA **[visitas]**) y consignar el propio
 vehículo (T&C **IV.4**). Ninguna necesita nada más que la cuenta.
 
-El chip es la promesa de brevedad, y es lo único que sostiene la retención en el segundo tres.
+El chip decía **SON 4 PASOS** y era la promesa de brevedad. Salió porque la voz ya dice «son cuatro
+pasos» en ese mismo segundo, así que el chip estaba repitiendo en pantalla lo que se oía —justo lo
+que `REELS.md` §4 prohíbe— y gastando el único elemento que sostiene la retención en el segundo tres.
+
+Ahora dice **TEN TU DNI A MANO**, que es lo único útil que un tutorial de formulario puede decir
+antes de empezar: la fricción real del paso 3 no es encontrarlo, es llegar al campo del DNI sin el
+DNI a la mano. Está en las fuentes (T&C **IV.1.1.a.i**) y además es mejor gancho: un dato que obliga
+a hacer algo retiene más que una promesa de brevedad.
 
 ---
 
@@ -221,9 +228,19 @@ Captura: `condiciones-terminos.png` — el texto de las Condiciones, las tres ca
 |---|---|
 | **VOZ** | Marca las casillas de Condiciones y Términos y de la política de privacidad, y toca Sigamos. |
 | **Chip** | PASO 4 / 4 |
-| **Titular** | Acepta y sigue |
+| **Titular** | Toca Sigamos |
 | **Bajada** | Es el último paso. Al terminarlo tu cuenta ya está creada. |
 | **Toque** | sobre *Sigamos* |
+
+El titular era **«Acepta y sigue»** y era el único de los cuatro que no nombraba su botón, cuando el
+botón dice **Sigamos**. Es exactamente lo que `VOZ-REGISTRO.md` le exige a la voz —«si la voz dice
+"entra a tu cuenta" y el botón dice "Ingresa", el reel falló»— y la pantalla se estaba eximiendo sola.
+
+«Acepta y toca Sigamos» lo arreglaba pero se parte en dos líneas, y eso baja la ventana de este paso
+27 px respecto de los otros tres: le cuesta a la lista su forma. Así que el titular toma el patrón
+**«Toca X»** de los pasos 1 y 2 —tres de cuatro pasos abriendo igual es una ventaja en un tutorial—
+y «acepta» se queda en la voz, que tiene sitio para decir *cuáles* casillas. La pantalla las muestra
+ya marcadas.
 
 La bajada dice **qué pasa al terminar**, y es el único beat donde eso sirve de algo: es el que cierra
 el registro, así que es el único que puede prometer que ya está.
@@ -245,7 +262,7 @@ La voz sigue diciendo qué se marca.
 | **VOZ** | Y listo, ya eres parte de VMC. Ahora entra, elige tu oferta y agenda tu visita para ver el auto en físico. |
 | | *[logo VMC]* |
 | **Chip** | VMCSUBASTAS.COM |
-| **Botón** | Regístrate ahora |
+| **Botón** | El link está en la bio |
 | **Aviso** | **14 DÍAS** · Úsala antes: una cuenta sin transacciones se da de baja sola. |
 
 El cierre hace dos trabajos distintos: cerrar la cuenta y hacer que se use. Los separa la regla de
@@ -260,9 +277,41 @@ sólo funciona con sonido de todos modos.
 El aviso es **violeta y no naranja** como el de la factura: es una fecha límite, no un peligro, y
 cerrar el reel en color de alarma le desarma el CTA que tiene encima.
 
+El botón decía **«Regístrate ahora»** y tenía dos problemas a la vez. Es un botón dibujado dentro de
+un video: nadie lo puede tocar, así que un texto de acción ahí es una afordancia falsa. Y con
+VMCSUBASTAS.COM justo encima, el cierre tenía **dos llamados compitiendo** y ninguno decía el gesto
+real que hace un espectador de Instagram.
+
+Ahora se reparten: el chip dice **dónde** (el sitio) y el botón dice **cómo** (el link de la bio).
+Una píldora que dice «el link está en la bio» es el idioma del formato, no una afordancia falsa.
+
+> **Depende de la publicación:** esto es cierto sólo si la bio de la cuenta que publique el reel
+> apunta a `vmcsubastas.com` el día que salga. Si el reel va a un carrusel o a un post sin link en
+> bio, el botón tiene que volver a decir el sitio.
+
 Y el llamado es **agendar una visita**, no «a cazar ofertas», porque es lo único que una cuenta
 recién creada puede hacer de verdad: ofertar necesita consignación, agendar una visita no necesita
 más que estar registrado.
+
+---
+
+## Cómo se ve — las tres decisiones que no son de copy
+
+El detalle largo de cada una está en su comentario en `remotion/src/reels/Registro.tsx`. Resumen
+para quien esté revisando el reel y se pregunte si algo es a propósito:
+
+- **Los cortes son cortes, no disolvencias.** `Escena` acá es propio del reel: sólo reproduce la cola
+  de la escena que sale, sin fundido de entrada. El `Escena` compartido de `ui.tsx` es simétrico, y
+  con dos beats que ponen chip y titular en la misma esquina dejaba los dos legibles a la vez —el
+  render tenía «PASO 1 / 4 · Toca Ingresa» encima de «Compra o vende» a los 7.9 s. Los tres reels de
+  marca siguen usando el compartido: están terminados.
+- **Los bordes de la ventana van desenfocados.** El recorte siempre parte algo (`ingresar` pierde
+  36 px por la izquierda, `factura` 22 px por la derecha) y una palabra cortada se lee como bug de
+  render. Un inset shadow no servía: sobre el morado del home no se ve nada. Un desenfoque no tiene
+  color propio y disuelve el tipo igual sobre blanco que sobre morado.
+- **El anillo de toque rodea el control, no lo pisa.** Arrancaba en escala 0.55 y algunos frames lo
+  agarraban dentro del botón, dibujado por encima de «Regístrate» y de «Factura» — la única palabra
+  que el reel manda a buscar. Ahora el mínimo son 38 px y el punto sólido del centro se fue.
 
 ---
 
@@ -276,6 +325,7 @@ con su cita.
 | Gancho, voz | «compras y vendes autos» | T&C **I** (participar en el Marketplace) y **IV.4** (consignación) |
 | Gancho, voz | «es muy fácil y rápido» | CA **[registro]** — literal |
 | Gancho, voz | «son cuatro pasos» | CA **[registro]** — Paso 1 a Paso 4 |
+| Gancho, chip | «ten tu DNI a mano» | T&C **IV.1.1.a.i** — el DNI es dato obligatorio del registro |
 | Gancho, titular | «compra o vende» | T&C **I** (acceder y participar con Cuenta activa) y **IV.4** (consignar) |
 | Gancho, bajada | «ofertas En Vivo y Negociables» | T&C **IV.5** y **IV.6** — son los dos nombres del producto |
 | Gancho, bajada | «visitas para ver el auto en físico» | CA **[visitas]** — «solo debes estar registrado como usuario de nuestro servicio» |
@@ -293,11 +343,13 @@ con su cita.
 | Factura, voz | «persona natural y recibes boleta» | CA **[registro]** — «si te registras como persona natural solo recibirás boleta» |
 | Factura, aviso | «a nombre de la razón social» | CA **[registro]** — literal |
 | Paso 4 | casillas de C&T y política de privacidad | CA **[registro]** Paso 4 |
+| Paso 4, titular | «Toca Sigamos» | Rótulo del botón en `condiciones-terminos.png` |
 | Paso 4, bajada | «es el último paso» | CA **[registro]** — Paso 4 es el último del artículo |
 | Paso 4, bajada | «tu cuenta ya está creada» | CA **[registro]** — el artículo termina en Sigamos, no hay paso 5 |
 | Cierre, aviso | «14 días sin transacciones se da de baja sola» | T&C **IV.1.2.a** — literal |
 | Cierre, aviso | «Úsala antes» | Editorial: es el imperativo de la cláusula de arriba, no un dato nuevo |
 | Cierre, voz | «agenda tu visita» | CA **[visitas]** |
+| Cierre, botón | «el link está en la bio» | Editorial, y depende de la publicación — ver el aviso del Beat 7 |
 
 Las dos fuentes **se complementan** y no se contradicen en nada de lo que toca este reel: los T&C
 dan la regla contractual (cuenta activa obligatoria, qué datos, intransferibilidad, RUC, los 14

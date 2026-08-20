@@ -4,6 +4,7 @@ import {
   Easing,
   Img,
   interpolate,
+  Sequence,
   staticFile,
   useCurrentFrame,
 } from "remotion";
@@ -12,7 +13,6 @@ import {
   Bajada,
   Chip,
   DS,
-  Escena,
   Fondo,
   Latido,
   Paso,
@@ -171,6 +171,61 @@ const PANTALLAS = {
 const acotar = (v: number, min: number, max: number) =>
   Math.max(min, Math.min(max, v));
 
+/** Frames the outgoing beat keeps playing under the incoming one. */
+const COLA = 8;
+
+/**
+ * The cut, and it is this reel's own — `Escena` in `ui.tsx` is a symmetric
+ * cross-dissolve shared with the three brand reels, and those are finished.
+ *
+ * The symmetric version does not work here. Both layers sit at ~50% through the
+ * middle of a 12-frame dissolve, and in a tutorial both layers are a chip and a
+ * headline in the same corner of the frame: at 7.9s the render showed
+ * "PASO 1 / 4 · Toca Ingresa" legible on top of a still-legible
+ * "Compra o vende: todo empieza con tu cuenta". Two headlines stacked, seven
+ * times, at exactly the moment the viewer is looking for the next instruction.
+ *
+ * So the incoming scene gets no fade of its own — every element inside already
+ * rises in through `useEntrada`, staggered 2 to 30 frames — and the wrapper only
+ * plays the outgoing tail. The old beat is gone by the time the new headline is
+ * readable, and nothing ever flashes bare background: the tail is still up while
+ * the new chip is on its way in.
+ *
+ * ponytail: no fade-in here on purpose, not an omission. Adding one back
+ * recreates the double-headline frame.
+ */
+const Escena: React.FC<{
+  de: number;
+  dura: number;
+  children: React.ReactNode;
+}> = ({ de, dura, children }) => (
+  <Sequence from={de} durationInFrames={dura + COLA}>
+    <Salida dura={dura}>{children}</Salida>
+  </Sequence>
+);
+
+const Salida: React.FC<{ dura: number; children: React.ReactNode }> = ({
+  dura,
+  children,
+}) => {
+  const f = useCurrentFrame();
+  const sale = interpolate(f, [dura, dura + COLA], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.in(Easing.cubic),
+  });
+  // Pushing back as it leaves, so the exit has a direction instead of just
+  // thinning out. Half of what the shared dissolve used: the incoming scene is
+  // not scaling toward it any more, so the movement has nothing to match.
+  return (
+    <AbsoluteFill
+      style={{ opacity: sale, transform: `scale(${1 - (1 - sale) * 0.02})` }}
+    >
+      {children}
+    </AbsoluteFill>
+  );
+};
+
 /**
  * The tap: a dot with a ring breathing out of it.
  *
@@ -200,7 +255,12 @@ const Toque: React.FC<{ x: number; y: number; retraso?: number }> = ({
       marginTop: -13,
       borderRadius: "50%",
       border: `1.6px solid ${vy.naranja}`,
-      transform: `scale(${0.55 + t * 1.5})`,
+      // Starts at 1.45, not 0.55. The ring cycles continuously, so a small
+      // floor means some frames catch it *inside* the control: the render had
+      // it drawn straight through "Regístrate" and "Factura" — the one word the
+      // voice is telling you to look for. From 38px up it always reads as a halo
+      // around the control instead of a target on top of it.
+      transform: `scale(${1.45 + t * 1.7})`,
       opacity: f < 0 ? 0 : (1 - t) * 0.85,
     };
   };
@@ -208,24 +268,6 @@ const Toque: React.FC<{ x: number; y: number; retraso?: number }> = ({
     <>
       <div style={onda(0)} />
       <div style={onda(0.5)} />
-      <div
-        style={{
-          position: "absolute",
-          left: x,
-          top: y,
-          // Small and semi-transparent on purpose: the dot lands on top of the
-          // control's own label ("Factura", "Regístrate", "Sigamos"), and a
-          // solid one blanks out the word the voice is telling you to look for.
-          width: 8,
-          height: 8,
-          marginLeft: -4,
-          marginTop: -4,
-          borderRadius: "50%",
-          background: vy.naranja,
-          boxShadow: `0 0 9px ${vy.naranja}`,
-          opacity: f < 0 ? 0 : 0.72,
-        }}
-      />
     </>
   );
 };
@@ -295,6 +337,43 @@ const Pantalla: React.FC<{
       {anillo ? (
         <Toque x={p.foco[0] * W + x} y={p.foco[1] * H + y} retraso={retraso + 14} />
       ) : null}
+      {/*
+        The crop always slices something, because the window covers and the
+        image is wider than it: `ingresar` loses 36px off the left (mid-word
+        through "¿Tienes deuda?") and `factura` loses 22px off the right ("Ingr",
+        and the RUC value). Sliced words read as a broken render, not as a zoom.
+
+        A tried-and-discarded inset shadow is why these are blur strips instead.
+        A shadow only darkens, so it disappears over `ingresar`'s purple hero and
+        the sliced words stayed sliced. A blur has no colour of its own: the last
+        22px of type dissolve into an unreadable band on white and on purple
+        alike, which is what "continues past the edge" looks like. The mask fades
+        the blur inward so the band has no hard inner boundary of its own.
+
+        Horizontal only, and not because the vertical axis is clean — `registrate`
+        loses the top half of "¡Bienvenido!". It is that a strip across the purple
+        header would read as exactly the artifact it is there to explain, and the
+        vertical cuts land on decoration, not on the control. If a re-capture ever
+        makes a vertical cut land on type, the same strip works rotated.
+      */}
+      {([-1, 1] as const).map((lado) => (
+        <div
+          key={lado}
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            [lado < 0 ? "left" : "right"]: 0,
+            width: 22,
+            pointerEvents: "none",
+            backdropFilter: "blur(5px)",
+            WebkitBackdropFilter: "blur(5px)",
+            background: `linear-gradient(to ${lado < 0 ? "right" : "left"}, rgba(20,0,70,0.3), rgba(20,0,70,0))`,
+            maskImage: `linear-gradient(to ${lado < 0 ? "right" : "left"}, #000, transparent)`,
+            WebkitMaskImage: `linear-gradient(to ${lado < 0 ? "right" : "left"}, #000, transparent)`,
+          }}
+        />
+      ))}
     </div>
   );
 };
@@ -337,9 +416,22 @@ const PasoEscena: React.FC<{
       <Titular tam={23} retraso={5}>
         {titulo}
       </Titular>
-      <Bajada retraso={12}>{bajada}</Bajada>
+      <Bajada retraso={9}>{bajada}</Bajada>
     </div>
-    <Pantalla pantalla={pantalla} dura={dura} alto={alto} anillo={anillo} />
+    {/*
+      Pulled in from 12 to 5. With the old cross-dissolve the window could take
+      its time, because the previous beat was still holding the frame. It is not
+      any more — `Escena` here only plays an outgoing tail — so a late window
+      left ~8 frames of almost-empty screen right after every cut. It is the
+      biggest mass in the beat: it has to arrive with the headline, not after it.
+    */}
+    <Pantalla
+      pantalla={pantalla}
+      dura={dura}
+      alto={alto}
+      anillo={anillo}
+      retraso={5}
+    />
   </AbsoluteFill>
 );
 
@@ -401,7 +493,7 @@ const Gancho: React.FC = () => (
       </Bajada>
     </div>
     {/* The brevity promise, and the only reason anyone stays past second three. */}
-    <Chip retraso={46}>SON 4 PASOS</Chip>
+    <Chip retraso={46}>TEN TU DNI A MANO</Chip>
   </AbsoluteFill>
 );
 
@@ -570,10 +662,23 @@ const Factura: React.FC = () => (
   </AbsoluteFill>
 );
 
+/**
+ * "Acepta y sigue" was the only headline of the four that did not name its
+ * button, and the button says **Sigamos** — the exact thing VOZ-REGISTRO.md
+ * demands of the voice ("si la voz dice 'entra a tu cuenta' y el botón dice
+ * 'Ingresa', el reel falló") and the screen was quietly exempting itself from.
+ *
+ * "Acepta y toca Sigamos" fixes that and wraps to two lines, which pushes this
+ * step's window 27px below the other three and costs the list its shape. So the
+ * headline keeps the "Toca X" pattern of steps 1 and 2 instead — three of four
+ * steps opening the same way is a feature in a tutorial — and "acepta" goes to
+ * the voice, which has the room to say *which* boxes. The screen shows them
+ * already ticked.
+ */
 const Paso4: React.FC = () => (
   <PasoEscena
     n={4}
-    titulo="Acepta y sigue"
+    titulo="Toca Sigamos"
     bajada={
       <>
         Es el último paso. Al terminarlo
@@ -628,7 +733,7 @@ const Cierre: React.FC<{ d: ReelRegistro }> = ({ d }) => (
     <Chip retraso={18}>{d.sitio.toUpperCase()}</Chip>
     <Latido retraso={34}>
       <DS e={0.78}>
-        <Button variant="primary">Regístrate ahora</Button>
+        <Button variant="primary">El link está en la bio</Button>
       </DS>
     </Latido>
     {/*
