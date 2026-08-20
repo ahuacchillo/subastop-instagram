@@ -26,7 +26,7 @@ concreto. Las cuatro que más se rompen:
 Cambiar los frames de `GUION` en un `.tsx` obliga a actualizar la tabla del `VOZ-<reel>.md`
 correspondiente. Van siempre juntos.
 
-**Los tutoriales** (`Registro`, `Consignar`) comparten su formato en
+**Los tutoriales** (`Registro`, `Consignar`, `Visitas`) comparten su formato en
 `reels/remotion/src/reels/tutorial.tsx`, y no usan Concorde para las pantallas: van las capturas
 reales del Centro de Ayuda, por el motivo del punto 4 al revés. Y el gancho de un tutorial dice
 **qué enseña el video**, no qué vende el producto.

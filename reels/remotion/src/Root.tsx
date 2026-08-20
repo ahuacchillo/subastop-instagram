@@ -18,9 +18,10 @@ import {
   DURACION_CONSIGNAR,
   ReelConsignarVideo,
 } from "./reels/Consignar";
+import { DURACION_VISITAS, ReelVisitasVideo, VISITAS } from "./reels/Visitas";
 
 /**
- * The three brand reels and the two tutorials. Authored at 270×480 and
+ * The three brand reels and the three tutorials. Authored at 270×480 and
  * delivered by `npm run reel:<nombre>` (--scale=4 → 1080×1920).
 
  * The tutorials share their format — cuts, phone window, tap ring, per-step
@@ -85,6 +86,13 @@ export const RemotionRoot: React.FC = () => (
       component={ReelConsignarVideo}
       defaultProps={{ d: CONSIGNAR }}
       durationInFrames={DURACION_CONSIGNAR}
+      {...REEL}
+    />
+    <Composition
+      id="Visitas"
+      component={ReelVisitasVideo}
+      defaultProps={{ d: VISITAS }}
+      durationInFrames={DURACION_VISITAS}
       {...REEL}
     />
   </>
