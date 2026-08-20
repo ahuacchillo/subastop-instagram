@@ -127,7 +127,7 @@ siguen; una pantalla acá sería el paso 1 llegando temprano.
 | **Logo** | *[logo VMC]* |
 | **Titular** | En Vivo<br>o Negociable |
 | **Bajada** | Compites en sala, o negocias directo con el vendedor. Las dos, con tu cuenta. |
-| **Chip** | TEN TU DNI A MANO |
+| **Chip** | TE LO MUESTRO |
 
 El titular y la voz dicen lo mismo con otras palabras, y es la excepción de `REELS.md` §4: en el
 primer acto el titular va casi palabra por palabra a propósito.
@@ -141,14 +141,23 @@ la definición literal de En Vivo (T&C **II.26**) y negociar directo con el vend
 (T&C **IV.6.1.b**, CA **[oferta-negociable]**). El remate —«las dos, con tu cuenta»— es lo único que
 el gancho tiene que dejar clavado, porque es el motivo del reel.
 
-El chip decía **SON 4 PASOS** y era la promesa de brevedad. Salió porque la voz ya dice «son cuatro
-pasos» en ese mismo segundo, así que el chip estaba repitiendo en pantalla lo que se oía —justo lo
-que `REELS.md` §4 prohíbe— y gastando el único elemento que sostiene la retención en el segundo tres.
+El chip es el único elemento que sostiene la retención en el segundo tres, y pasó por tres versiones
+buscando el trabajo que le queda libre.
 
-Ahora dice **TEN TU DNI A MANO**, que es lo único útil que un tutorial de formulario puede decir
-antes de empezar: la fricción real del paso 3 no es encontrarlo, es llegar al campo del DNI sin el
-DNI a la mano. Está en las fuentes (T&C **IV.1.1.a.i**) y además es mejor gancho: un dato que obliga
-a hacer algo retiene más que una promesa de brevedad.
+**SON 4 PASOS** era la promesa de brevedad, y salió porque la voz dice «son cuatro pasos» en ese
+mismo segundo: el chip estaba repitiendo en pantalla lo que se oía, justo lo que `REELS.md` §4
+prohíbe. **TEN TU DNI A MANO** era el requisito, y es un dato útil —la fricción real del paso 3 es
+llegar al campo del DNI sin el DNI— pero abre el gancho con una tarea, y una tarea en el segundo
+tres es un motivo para irse a buscar la billetera en vez de seguir mirando.
+
+Ahora dice **TE LO MUESTRO**, que es la promesa del formato. Con este gancho el titular ya dice
+**qué** son las dos ofertas y la bajada dice **por qué** hace falta la cuenta, así que lo único que
+falta es que alguien prometa que el reel de verdad lo va a mostrar. Es también el único elemento del
+reel que habla en primera persona, que es el tono que `VOZ-REGISTRO.md` le pide a la toma: alguien
+que te guía por encima del hombro, no un comercial.
+
+Y no necesita fuente, porque no afirma nada del producto: es el reel hablando de sí mismo. Lo del
+DNI no se perdió como información —la voz lo enumera en el paso 3— sino como tarea previa.
 
 ---
 
@@ -347,7 +356,7 @@ con su cita.
 | Gancho, voz | «compites en una subasta en vivo» | T&C **II.26** — «compiten en tiempo real, enviando sus bids en sala» |
 | Gancho, voz | «negocias directo con el vendedor» | T&C **IV.6.1.b** y CA **[oferta-negociable]** — literal |
 | Gancho, voz | «son cuatro pasos» | CA **[registro]** — Paso 1 a Paso 4 |
-| Gancho, chip | «ten tu DNI a mano» | T&C **IV.1.1.a.i** — el DNI es dato obligatorio del registro |
+| Gancho, chip | «te lo muestro» | No lleva fuente: no afirma nada del producto, es el reel hablando de sí mismo |
 | Gancho, titular | «En Vivo» · «Negociable» | T&C **II.26** y **IV.6** — son los dos nombres del producto |
 | Gancho, bajada | «compites en sala» | T&C **II.26** y **II.29** (Sala) |
 | Gancho, bajada | «negocias directo con el vendedor» | CA **[oferta-negociable]** — literal |

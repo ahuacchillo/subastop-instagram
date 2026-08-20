@@ -504,7 +504,7 @@ const Gancho: React.FC = () => (
       </Bajada>
     </div>
     {/* The brevity promise, and the only reason anyone stays past second three. */}
-    <Chip retraso={46}>TEN TU DNI A MANO</Chip>
+    <Chip retraso={46}>TE LO MUESTRO</Chip>
   </AbsoluteFill>
 );
 
