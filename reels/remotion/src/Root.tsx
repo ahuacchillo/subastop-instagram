@@ -1,6 +1,6 @@
 import { Composition } from "remotion";
 import "./index.css";
-import { REEL } from "./brand/vmc";
+import { REEL, VIDEO } from "./brand/vmc";
 import {
   DURACION_NEGOCIABLE,
   NEGOCIABLE,
@@ -94,6 +94,39 @@ export const RemotionRoot: React.FC = () => (
       defaultProps={{ d: VISITAS }}
       durationInFrames={DURACION_VISITAS}
       {...REEL}
+    />
+    {/*
+      The same three tutorials in 16:9, for YouTube.
+
+      They are not a separate build: each reel takes an `ancho` prop, and the
+      beats re-flow from one column into two through `FormatoTutorial`. Copy,
+      captures, frames and voice are shared — fix a line once and both shapes
+      get it.
+
+      They exist because all three Centro de Ayuda articles link a YouTube video
+      and all three link the outdated one. A vertical upload is a Short, not a
+      replacement for what those articles point at.
+    */}
+    <Composition
+      id="RegistroYT"
+      component={ReelRegistroVideo}
+      defaultProps={{ d: REGISTRO, ancho: true }}
+      durationInFrames={DURACION_REGISTRO}
+      {...VIDEO}
+    />
+    <Composition
+      id="ConsignarYT"
+      component={ReelConsignarVideo}
+      defaultProps={{ d: CONSIGNAR, ancho: true }}
+      durationInFrames={DURACION_CONSIGNAR}
+      {...VIDEO}
+    />
+    <Composition
+      id="VisitasYT"
+      component={ReelVisitasVideo}
+      defaultProps={{ d: VISITAS, ancho: true }}
+      durationInFrames={DURACION_VISITAS}
+      {...VIDEO}
     />
   </>
 );

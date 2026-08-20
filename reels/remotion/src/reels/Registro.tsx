@@ -1,8 +1,14 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { sans, vy } from "../brand/vmc";
 import { Bajada, Chip, DS, Fondo, Latido, Titular, useEntrada } from "./ui";
-import { Captura, Escena, Pantalla, PasoEscena } from "./tutorial";
+import {
+  Aviso,
+  BeatAviso,
+  Captura,
+  Escena,
+  FormatoTutorial,
+  PasoEscena,
+} from "./tutorial";
 import { Logo } from "./Vender";
 import Button from "@/concorde/components/Button";
 
@@ -343,87 +349,43 @@ const Paso3: React.FC = () => (
  * off the bottom or scale the whole thing to a blur.
  */
 const Factura: React.FC = () => (
-  <AbsoluteFill
-    style={{
-      padding: "34px 22px 26px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 15,
-    }}
-  >
-    <div
-      style={{
-        alignSelf: "stretch",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        gap: 7,
-      }}
-    >
-      <Chip retraso={2}>¿NECESITAS FACTURA?</Chip>
-      <Titular tam={23} retraso={6}>
+  <BeatAviso
+    /* A question, so the ~60% of viewers it does not apply to know they can stop
+       reading. Deliberately unnumbered: persona jurídica is a field inside step
+       3, not a fifth step, and numbering it would tell a buyer who only wants a
+       boleta that the reel still owes them two more steps. */
+    etiqueta={<Chip retraso={2}>¿NECESITAS FACTURA?</Chip>}
+    titulo={
+      <>
         Elígelo en
         <br />
         Quiero Recibir.
-      </Titular>
-    </div>
-    <Pantalla p={PANTALLAS.factura} dura={GUION.factura[1]} alto={147} retraso={16} />
-    {/*
+      </>
+    }
+    p={PANTALLAS.factura}
+    dura={GUION.factura[1]}
+    /* Short window: the source capture is 554×407 and the section is three
+       controls tall. Forcing it into the tall window would crop the RUC field
+       off the bottom or scale the whole thing to a blur. */
+    alto={147}
+    centrado
+    avisoRetraso={96}
+    /*
       The warning the article puts in an orange box, and the only reason this
       beat exists: choosing Factura is not a preference, it is the tax identity
       of every purchase you will ever make here. Nobody discovers that from the
       form itself.
 
-      Both halves are now the Centro de Ayuda's own words ("los comprobantes se
+      Both halves are the Centro de Ayuda's own words ("los comprobantes se
       emitirán a nombre de la razón social", "si te registras como persona
       natural solo recibirás boleta"). The old second half said the boleta comes
       out in your name, which is true and obvious but is nowhere in either
       source — and a line nobody can point to is a line that gets argued about.
-    */}
-    <div
-      style={{
-        ...useEntrada(96),
-        alignSelf: "stretch",
-        display: "flex",
-        gap: 8,
-        padding: "9px 11px",
-        borderRadius: 10,
-        background: "rgba(190,61,0,0.28)",
-        border: "1px solid rgba(255,150,57,0.55)",
-      }}
-    >
-      <span style={{ fontSize: 11, lineHeight: 1.25 }}>⚠️</span>
-      <span
-        style={{
-          fontFamily: sans,
-          fontWeight: 600,
-          fontSize: 9.5,
-          lineHeight: 1.35,
-          color: "#FFFFFF",
-        }}
-      >
-        Con Factura, los comprobantes salen a nombre de la razón social. Como
-        persona natural, solo recibes boleta.
-      </span>
-    </div>
-  </AbsoluteFill>
+    */
+    aviso="Con Factura, los comprobantes salen a nombre de la razón social. Como persona natural, solo recibes boleta."
+  />
 );
 
-/**
- * "Acepta y sigue" was the only headline of the four that did not name its
- * button, and the button says **Sigamos** — the exact thing VOZ-REGISTRO.md
- * demands of the voice ("si la voz dice 'entra a tu cuenta' y el botón dice
- * 'Ingresa', el reel falló") and the screen was quietly exempting itself from.
- *
- * "Acepta y toca Sigamos" fixes that and wraps to two lines, which pushes this
- * step's window 27px below the other three and costs the list its shape. So the
- * headline keeps the "Toca X" pattern of steps 1 and 2 instead — three of four
- * steps opening the same way is a feature in a tutorial — and "acepta" goes to
- * the voice, which has the room to say *which* boxes. The screen shows them
- * already ticked.
- */
 const Paso4: React.FC = () => (
   <PasoEscena
     de={4}
@@ -496,42 +458,9 @@ const Cierre: React.FC<{ d: ReelRegistro }> = ({ d }) => (
       IV.1.2.a in its own words. A deadline stated flat reads as fine print, and
       fine print under a CTA gets skipped.
     */}
-    <div
-      style={{
-        ...useEntrada(84),
-        display: "flex",
-        alignItems: "center",
-        gap: 7,
-        padding: "8px 13px",
-        borderRadius: 13,
-        background: "rgba(20,0,70,0.5)",
-        border: "1px solid rgba(174,142,255,0.5)",
-      }}
-    >
-      <span
-        style={{
-          fontFamily: sans,
-          fontWeight: 700,
-          fontSize: 9,
-          letterSpacing: 0.6,
-          color: vy.violeta100,
-          // Or the flex row folds it to "14 / DÍAS" against the sentence.
-          whiteSpace: "nowrap",
-        }}
-      >
-        14 DÍAS
-      </span>
-      <span
-        style={{
-          fontFamily: sans,
-          fontWeight: 600,
-          fontSize: 9,
-          color: "rgba(255,255,255,0.82)",
-        }}
-      >
-        Úsala antes: una cuenta sin transacciones se da de baja sola.
-      </span>
-    </div>
+    <Aviso tono="regla" rotulo="14 DÍAS" retraso={84}>
+      Úsala antes: una cuenta sin transacciones se da de baja sola.
+    </Aviso>
   </AbsoluteFill>
 );
 
@@ -542,8 +471,13 @@ const Cierre: React.FC<{ d: ReelRegistro }> = ({ d }) => (
  * has not been recorded — the script to paste into ElevenLabs is in
  * VOZ-REGISTRO.md. When it lands, add the `<Audio>` here and re-measure GUION.
  */
-export const ReelRegistroVideo: React.FC<{ d: ReelRegistro }> = ({ d }) => (
-  <AbsoluteFill>
+export const ReelRegistroVideo: React.FC<{
+  d: ReelRegistro;
+  /** 480×270 for YouTube instead of 270×480 for Instagram. */
+  ancho?: boolean;
+}> = ({ d, ancho = false }) => (
+  <FormatoTutorial ancho={ancho}>
+    <AbsoluteFill>
     <Fondo fondo={d.fondo} />
     <Escena de={GUION.gancho[0]} dura={GUION.gancho[1]}>
       <Gancho />
@@ -566,5 +500,6 @@ export const ReelRegistroVideo: React.FC<{ d: ReelRegistro }> = ({ d }) => (
     <Escena de={GUION.cierre[0]} dura={GUION.cierre[1]}>
       <Cierre d={d} />
     </Escena>
-  </AbsoluteFill>
+    </AbsoluteFill>
+  </FormatoTutorial>
 );

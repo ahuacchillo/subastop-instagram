@@ -26,8 +26,14 @@ fuente de la verdad de nada.
 | Las capturas | `remotion/public/reel/registro/`, copiadas del Centro de Ayuda |
 | Locución grabada | **no existe todavía** → `VOZ-REGISTRO.md` |
 | Los hechos | T&C + Centro de Ayuda, vía el skill `vmc-modelo-negocio` |
+| La versión 16:9 | la misma composición con `ancho`, en `RegistroYT` → `out/yt-registro.mp4` |
 
 Si cambias cualquiera de esos, este archivo queda desactualizado y hay que tocarlo a mano.
+
+**Este guión vale para las dos formas.** `Registro` (1080×1920, Instagram) y `RegistroYT` (1920×1080,
+YouTube) son la misma composición: mismo copy, mismas capturas, mismos frames, misma voz. Sólo
+cambia cómo se acomodan los beats — una columna contra dos —, y eso vive en `tutorial.tsx`, no
+acá. Corregir una línea la corrige en las dos.
 
 ---
 

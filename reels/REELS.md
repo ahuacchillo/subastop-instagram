@@ -102,8 +102,9 @@ claude
 
 ## 1. Qué hay hoy
 
-Seis reels, todos verticales 1080×1920 para Instagram, todos hechos con Remotion. Tres de marca y
-tres tutoriales.
+Seis reels hechos con Remotion: tres de marca y tres tutoriales. Los seis son verticales
+1080×1920 para Instagram, y **los tres tutoriales se entregan además en 1920×1080 para YouTube** —
+ver §1.1.
 
 | Composición | Archivo | Dura | Voz | Estado |
 |---|---|---|---|---|
@@ -131,6 +132,33 @@ Ayuda dentro de una ventana de teléfono y se acercan al control que hay que toc
 ir a buscar ese botón, y un botón redibujado que está 90% bien manda a alguien a buscar un control
 que no se ve así. La regla de "todo sale de Concorde" (§4) es de los reels de marca; no aplica a un
 tutorial y el motivo largo está en `GUION-REGISTRO.md`.
+
+### 1.1 · Los tutoriales tienen dos formas
+
+| Composición | Entrega | Para | Comando |
+|---|---|---|---|
+| `Registro` · `Consignar` · `Visitas` | 1080×1920 | Instagram | `npm run reel:<nombre>` |
+| `RegistroYT` · `ConsignarYT` · `VisitasYT` | 1920×1080 | YouTube | `npm run yt:<nombre>` |
+
+**No son dos builds.** Es la misma composición con un prop `ancho`, y los beats se reacomodan de una
+columna a dos a través de `FormatoTutorial` en `tutorial.tsx`. Copy, capturas, frames y voz son los
+mismos: **arreglas una línea una vez y las dos formas la reciben**. Dos archivos separados
+significarían corregir cada copy dos veces, y la segunda se olvidaría.
+
+Existen porque **los tres artículos del Centro de Ayuda enlazan un video de YouTube, y los tres
+enlazan el viejo** (`DGFzz3IY_hg`, `BArqY0cM39I`, `3wqedeVF4d8`). Un archivo vertical en YouTube es
+un Short, no un reemplazo de lo que esos artículos apuntan.
+
+Qué cambia entre las dos formas, y por qué:
+
+- **Vertical:** una columna — encabezado, pantalla, aviso. La pantalla va al medio porque es la masa
+  más grande y el ojo cae ahí primero.
+- **Horizontal:** dos columnas — todo el texto a la izquierda, la pantalla a la derecha. **No es
+  preferencia**: a 480×270 el cuadro mide 270 de alto, así que apilar un titular sobre una ventana de
+  teléfono la deja en ~120 px y su texto deja de leerse. De lado la ventana conserva su altura
+  completa, y el texto gana una columna que no lo parte cada tres palabras.
+
+Los ganchos y los cierres no cambian de forma: son tarjetas centradas y funcionan igual en las dos.
 
 **Los tres tutoriales comparten su formato** en `src/reels/tutorial.tsx`: el corte (no la
 disolvencia), la ventana de teléfono con bordes desenfocados, el anillo de toque y la geometría
@@ -190,6 +218,9 @@ npm run reel:vendesolo     # render VendeSolo   → out/vendesolo.mp4
 npm run reel:registro      # render Registro    → out/registro.mp4   (mudo)
 npm run reel:consignar     # render Consignar   → out/consignar.mp4  (mudo)
 npm run reel:visitas       # render Visitas     → out/visitas.mp4    (mudo)
+npm run yt:registro        # 16:9 para YouTube  → out/yt-registro.mp4
+npm run yt:consignar       # 16:9 para YouTube  → out/yt-consignar.mp4
+npm run yt:visitas         # 16:9 para YouTube  → out/yt-visitas.mp4
 npm run lint               # eslint + tsc, corre esto antes de commitear
 ```
 

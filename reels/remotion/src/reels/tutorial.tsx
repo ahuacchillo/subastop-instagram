@@ -8,7 +8,7 @@ import {
   staticFile,
   useCurrentFrame,
 } from "remotion";
-import { vy } from "../brand/vmc";
+import { sans, vy } from "../brand/vmc";
 import { Bajada, Chip, Paso, Titular, useEntrada } from "./ui";
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -44,6 +44,105 @@ export type Captura = {
   w: number;
   h: number;
   foco: readonly [number, number];
+};
+
+/**
+ * Which shape the tutorial is being rendered in.
+ *
+ * `false` is the 270×480 reel for Instagram. `true` is the 480×270 cut for
+ * YouTube, where the articles in the Centro de Ayuda link their videos — all
+ * three of them still link the outdated ones, and a vertical file is a Short,
+ * not a replacement.
+ *
+ * It is a context and not a prop because the beats are nested three deep and
+ * every one of them needs the answer. The reel sets it once at its root; the
+ * layout components below are the only things that read it.
+ *
+ * ponytail: one boolean, not a layout engine. If a third shape ever shows up
+ * (square, for a feed post), make it a union then — not now.
+ */
+const Ancho = React.createContext(false);
+
+export const useAncho = () => React.useContext(Ancho);
+
+export const FormatoTutorial: React.FC<{
+  ancho: boolean;
+  children: React.ReactNode;
+}> = ({ ancho, children }) => (
+  <Ancho.Provider value={ancho}>{children}</Ancho.Provider>
+);
+
+/**
+ * The boxed line under a beat. Two tones, and the difference is not decorative:
+ *
+ *   riesgo — orange, with a warning glyph. Something goes wrong if you miss it:
+ *            a sanction, a fee, a visit you cannot make.
+ *   regla  — violet, no glyph. A rule or a consequence that is simply true and
+ *            usually lives only in the Términos.
+ *
+ * Closing beats use `regla` with a `rotulo` ("OJO", "14 DÍAS") instead of the
+ * glyph, because ending a reel on an alarm colour undoes the CTA above it.
+ */
+export const Aviso: React.FC<{
+  children: React.ReactNode;
+  tono?: "riesgo" | "regla";
+  /** Short caps label that replaces the warning glyph. */
+  rotulo?: string;
+  retraso?: number;
+}> = ({ children, tono = "riesgo", rotulo, retraso = 58 }) => {
+  const riesgo = tono === "riesgo";
+  return (
+    <div
+      style={{
+        ...useEntrada(retraso),
+        // Body notices span their column, because the column is the measure.
+        // The closing card centres its children, so its notice hugs its own text
+        // instead — a full-width bar under a centred logo and CTA reads as a
+        // separate footer rather than a footnote on the card. `rotulo` is only
+        // ever used by the closing beats, which is why it is the switch.
+        alignSelf: rotulo ? "auto" : "stretch",
+        display: "flex",
+        alignItems: rotulo ? "center" : "flex-start",
+        gap: rotulo ? 7 : 8,
+        padding: rotulo ? "8px 13px" : "9px 12px",
+        borderRadius: 13,
+        background: riesgo ? "rgba(70,26,0,0.5)" : "rgba(20,0,70,0.5)",
+        border: `1px solid ${riesgo ? `${vy.naranja}66` : "rgba(174,142,255,0.5)"}`,
+      }}
+    >
+      {rotulo ? (
+        <span
+          style={{
+            fontFamily: sans,
+            fontWeight: 700,
+            fontSize: 9,
+            letterSpacing: 0.6,
+            color: vy.violeta100,
+            // Or the flex row folds it to "14 / DÍAS" against the sentence.
+            whiteSpace: "nowrap",
+          }}
+        >
+          {rotulo}
+        </span>
+      ) : riesgo ? (
+        // The glyph belongs to the tone, not to the absence of a label: orange
+        // means something goes wrong, and a warning sign over a violet box that
+        // only states a rule cries wolf.
+        <span style={{ fontSize: 12, lineHeight: 1 }}>⚠️</span>
+      ) : null}
+      <span
+        style={{
+          fontFamily: sans,
+          fontWeight: 600,
+          fontSize: rotulo ? 9 : 9.5,
+          lineHeight: 1.35,
+          color: "#FFFFFF",
+        }}
+      >
+        {children}
+      </span>
+    </div>
+  );
 };
 
 export const acotar = (v: number, min: number, max: number) =>
@@ -262,6 +361,198 @@ export const Pantalla: React.FC<{
  * and a list whose items move around the frame stops reading as a list — the
  * viewer re-finds the text on every cut instead of just reading the next one.
  */
+/**
+ * The body every beat shares, in whichever shape the reel is being rendered.
+ *
+ * Vertical (Instagram): one column — heading, screen, notice. The screen sits in
+ * the middle because it is the largest mass and the eye lands on it first.
+ *
+ * Horizontal (YouTube): two columns — everything textual on the left, screen on
+ * the right. Not a preference: at 480×270 the frame is 270 tall, so stacking a
+ * heading over a phone-shaped window leaves the window about 120px high and its
+ * body text stops being readable. Side by side the window keeps its full height
+ * and the text gets a column wide enough to stop wrapping every three words.
+ *
+ * The reason both live in one component rather than two files: the *content* of
+ * a beat is identical in both shapes, and only the flow changes. Two files would
+ * mean every copy fix has to be made twice, and the second one would eventually
+ * be forgotten.
+ */
+const CuerpoTutorial: React.FC<{
+  encabezado: React.ReactNode;
+  pantalla?: React.ReactNode;
+  aviso?: React.ReactNode;
+  /** Anything that replaces the screen — the rule list in `Visitas`, say. */
+  extra?: React.ReactNode;
+  /**
+   * Centre the column vertically instead of hanging it from the top.
+   *
+   * For beats whose screen is deliberately short — the factura aside in
+   * `Registro` uses a 147px window because its capture is three controls tall —
+   * top-aligning leaves a third of the frame empty under the notice and the beat
+   * reads as unfinished. Beats with a full-height window fill the frame on their
+   * own and must not be centred, or they drift off their neighbours' grid.
+   */
+  centrado?: boolean;
+}> = ({ encabezado, pantalla, aviso, extra, centrado }) => {
+  const ancho = useAncho();
+  if (ancho) {
+    return (
+      <AbsoluteFill
+        style={{
+          // 22px, the same side margin the vertical beats use, and it is load
+          // bearing: at 30px the text column is squeezed to 216 and the copy's
+          // hand-placed line breaks — tuned for the vertical's 226 — start
+          // wrapping a third line off the end. 480 − 44 − 26 − 178 = 232.
+          padding: "0 22px",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: pantalla ? 26 : 0,
+        }}
+      >
+        <div
+          style={{
+            flex: 1,
+            // Without a cap the column drinks the whole frame when there is no
+            // screen beside it, and a 400px line of 9.5px type is unreadable in
+            // the other direction. With a screen the flex row settles it at 232
+            // anyway; the cap only matters for the screenless beats.
+            maxWidth: pantalla ? 260 : 380,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: 9,
+          }}
+        >
+          {encabezado}
+          {extra}
+          {aviso}
+        </div>
+        {pantalla}
+      </AbsoluteFill>
+    );
+  }
+  return (
+    <AbsoluteFill
+      style={{
+        padding: "26px 22px 22px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent:
+          centrado || (extra && !pantalla) ? "center" : "flex-start",
+        // Four stacked elements need less air between them than two. Not a
+        // fudge: a beat that carries a notice is a fuller frame, and 13 pushes
+        // the notice into the bottom margin.
+        gap: aviso ? 12 : 13,
+      }}
+    >
+      {encabezado}
+      {extra}
+      {pantalla}
+      {aviso}
+    </AbsoluteFill>
+  );
+};
+
+/**
+ * Chip, headline and one supporting line. Stretches to its column either way, so
+ * the three stay left-aligned to each other and not to the frame.
+ */
+export const Encabezado: React.FC<{
+  etiqueta: React.ReactNode;
+  titulo: React.ReactNode;
+  bajada?: React.ReactNode;
+}> = ({ etiqueta, titulo, bajada }) => (
+  <div
+    style={{
+      alignSelf: "stretch",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-start",
+      gap: 7,
+    }}
+  >
+    {etiqueta}
+    <Titular tam={23} retraso={5}>
+      {titulo}
+    </Titular>
+    {bajada ? <Bajada retraso={9}>{bajada}</Bajada> : null}
+  </div>
+);
+
+/**
+ * A beat that is a heading, a screen and a boxed notice. Five of these across
+ * the three tutorials were hand-rolled copies of the same skeleton before the
+ * horizontal cut needed them to agree.
+ */
+export const BeatAviso: React.FC<{
+  etiqueta: React.ReactNode;
+  titulo: React.ReactNode;
+  bajada?: React.ReactNode;
+  p?: Captura;
+  dura: number;
+  ancho?: number;
+  alto?: number;
+  anillo?: boolean;
+  aviso?: React.ReactNode;
+  tono?: "riesgo" | "regla";
+  rotulo?: string;
+  avisoRetraso?: number;
+  extra?: React.ReactNode;
+  centrado?: boolean;
+}> = ({
+  etiqueta,
+  titulo,
+  bajada,
+  p,
+  dura,
+  ancho,
+  alto,
+  anillo = true,
+  aviso,
+  tono,
+  rotulo,
+  avisoRetraso = 58,
+  extra,
+  centrado,
+}) => {
+  const horizontal = useAncho();
+  return (
+    <CuerpoTutorial
+      centrado={centrado}
+      encabezado={
+        <Encabezado etiqueta={etiqueta} titulo={titulo} bajada={bajada} />
+      }
+      extra={extra}
+      pantalla={
+        p ? (
+          <Pantalla
+            p={p}
+            dura={dura}
+            ancho={ancho}
+            alto={alto ?? (horizontal ? ALTO_ANCHO : 205)}
+            anillo={anillo}
+            retraso={5}
+          />
+        ) : undefined
+      }
+      aviso={
+        aviso ? (
+          <Aviso tono={tono} rotulo={rotulo} retraso={avisoRetraso}>
+            {aviso}
+          </Aviso>
+        ) : undefined
+      }
+    />
+  );
+};
+
+/** How tall a phone window can be in the 480×270 cut: 270 minus the margins. */
+const ALTO_ANCHO = 222;
+
 export const PasoEscena: React.FC<{
   n: number;
   /** How many steps the reel has in total — the "/ 4" of "PASO 2 / 4". */
@@ -290,57 +581,18 @@ export const PasoEscena: React.FC<{
   ancho?: number;
   alto?: number;
   anillo?: boolean;
-}> = ({
-  n,
-  de,
-  etiqueta,
-  titulo,
-  bajada,
-  p,
-  dura,
-  ancho,
-  alto = 262,
-  anillo = true,
-}) => (
-  <AbsoluteFill
-    style={{
-      padding: "26px 22px 22px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 13,
-    }}
-  >
-    <div
-      style={{
-        alignSelf: "stretch",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        gap: 7,
-      }}
-    >
-      {etiqueta ? <Chip>{etiqueta}</Chip> : <Paso n={n} de={de} />}
-      <Titular tam={23} retraso={5}>
-        {titulo}
-      </Titular>
-      <Bajada retraso={9}>{bajada}</Bajada>
-    </div>
-    {/*
-      Pulled in from 12 to 5. With the old cross-dissolve the window could take
-      its time, because the previous beat was still holding the frame. It is not
-      any more — `Escena` here only plays an outgoing tail — so a late window
-      left ~8 frames of almost-empty screen right after every cut. It is the
-      biggest mass in the beat: it has to arrive with the headline, not after it.
-    */}
-    <Pantalla
+}> = ({ n, de, etiqueta, titulo, bajada, p, dura, ancho, alto, anillo = true }) => {
+  const horizontal = useAncho();
+  return (
+    <BeatAviso
+      etiqueta={etiqueta ? <Chip>{etiqueta}</Chip> : <Paso n={n} de={de} />}
+      titulo={titulo}
+      bajada={bajada}
       p={p}
       dura={dura}
       ancho={ancho}
-      alto={alto}
+      alto={alto ?? (horizontal ? ALTO_ANCHO : 262)}
       anillo={anillo}
-      retraso={5}
     />
-  </AbsoluteFill>
-);
-
+  );
+};

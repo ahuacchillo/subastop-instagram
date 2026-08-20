@@ -2,7 +2,14 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { sans, vy } from "../brand/vmc";
 import { Bajada, Chip, DS, Fondo, Latido, Titular, useEntrada } from "./ui";
-import { Captura, Escena, Pantalla, PasoEscena } from "./tutorial";
+import {
+  Aviso,
+  BeatAviso,
+  Captura,
+  Escena,
+  FormatoTutorial,
+  PasoEscena,
+} from "./tutorial";
 import { Logo } from "./Vender";
 import Button from "@/concorde/components/Button";
 
@@ -267,69 +274,24 @@ const Visitas: React.FC = () => (
  * cannot happen before the offer closes.
  */
 const FechaHora: React.FC = () => (
-  <AbsoluteFill
-    style={{
-      padding: "26px 22px 22px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 12,
-    }}
-  >
-    <div
-      style={{
-        alignSelf: "stretch",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        gap: 7,
-      }}
-    >
-      <Chip retraso={2}>
+  <BeatAviso
+    etiqueta={
+      <Chip>
         PASO 3<span style={{ opacity: 0.5 }}> / 3</span>
       </Chip>
-      <Titular tam={23} retraso={5}>
-        Fecha, hora y listo
-      </Titular>
-      <Bajada retraso={9}>
+    }
+    titulo="Fecha, hora y listo"
+    bajada={
+      <>
         El botón se activa cuando eliges
         <br />
         las dos.
-      </Bajada>
-    </div>
-    <Pantalla
-      p={PANTALLAS.fechahora}
-      dura={GUION.fechahora[1]}
-      alto={205}
-      retraso={5}
-    />
-    <div
-      style={{
-        ...useEntrada(58),
-        display: "flex",
-        alignItems: "flex-start",
-        gap: 8,
-        padding: "9px 12px",
-        borderRadius: 13,
-        background: "rgba(70,26,0,0.5)",
-        border: `1px solid ${vy.naranja}66`,
-      }}
-    >
-      <span style={{ fontSize: 12, lineHeight: 1 }}>⚠️</span>
-      <span
-        style={{
-          fontFamily: sans,
-          fontWeight: 600,
-          fontSize: 9.5,
-          lineHeight: 1.35,
-          color: "#FFFFFF",
-        }}
-      >
-        Con más de 48 horas de anticipación, salvo que el detalle de la oferta
-        diga otra cosa.
-      </span>
-    </div>
-  </AbsoluteFill>
+      </>
+    }
+    p={PANTALLAS.fechahora}
+    dura={GUION.fechahora[1]}
+    aviso="Con más de 48 horas de anticipación, salvo que el detalle de la oferta diga otra cosa."
+  />
 );
 
 // ── Act 3 · where it actually is ─────────────────────────────────────────────
@@ -350,67 +312,22 @@ const FechaHora: React.FC = () => (
  * Violet, not orange: nothing goes wrong here. It is a rule about where to look.
  */
 const Direccion: React.FC = () => (
-  <AbsoluteFill
-    style={{
-      padding: "26px 22px 22px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 12,
-    }}
-  >
-    <div
-      style={{
-        alignSelf: "stretch",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        gap: 7,
-      }}
-    >
-      <Chip retraso={2}>¿Y DÓNDE QUEDA?</Chip>
-      <Titular tam={23} retraso={5}>
-        Distrito y provincia
-      </Titular>
-      <Bajada retraso={9}>
+  <BeatAviso
+    etiqueta={<Chip>¿Y DÓNDE QUEDA?</Chip>}
+    titulo="Distrito y provincia"
+    bajada={
+      <>
         En Información general, en el
         <br />
         campo Ubicación.
-      </Bajada>
-    </div>
-    <Pantalla
-      p={PANTALLAS.ubicacion}
-      dura={GUION.direccion[1]}
-      alto={205}
-      anillo={false}
-      retraso={5}
-    />
-    <div
-      style={{
-        ...useEntrada(58),
-        display: "flex",
-        alignItems: "flex-start",
-        gap: 8,
-        padding: "9px 12px",
-        borderRadius: 13,
-        background: "rgba(20,0,70,0.5)",
-        border: "1px solid rgba(174,142,255,0.5)",
-      }}
-    >
-      <span
-        style={{
-          fontFamily: sans,
-          fontWeight: 600,
-          fontSize: 9.5,
-          lineHeight: 1.35,
-          color: "#FFFFFF",
-        }}
-      >
-        La dirección exacta no está en la página: te llega por correo cuando
-        agendas.
-      </span>
-    </div>
-  </AbsoluteFill>
+      </>
+    }
+    p={PANTALLAS.ubicacion}
+    dura={GUION.direccion[1]}
+    anillo={false}
+    tono="regla"
+    aviso="La dirección exacta no está en la página: te llega por correo cuando agendas."
+  />
 );
 
 // ── Act 4 · the day of the visit ─────────────────────────────────────────────
@@ -490,67 +407,43 @@ const Regla: React.FC<{ retraso: number; que: string; detalle: string }> = ({
 );
 
 const ElDia: React.FC = () => (
-  <AbsoluteFill
-    style={{
-      padding: "26px 22px 22px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "flex-start",
-      justifyContent: "center",
-      gap: 10,
-    }}
-  >
-    <Chip retraso={2}>EL DÍA DE LA VISITA</Chip>
-    <Titular tam={23} retraso={5}>
-      Tres reglas
-    </Titular>
-    <div style={{ height: 4 }} />
-    <Regla
-      retraso={12}
-      que="DNI"
-      // Not "el único documento que piden": the article also asks you to check
-      // "las condiciones adicionales estipuladas por el vendedor en el detalle
-      // de la oferta", so claiming the DNI is all of it makes the reel looser
-      // than the source. The DNI is what *VMC* asks for; the seller may ask more.
-      detalle="Vigente. Y revisa qué más pide el vendedor."
-    />
-    <Regla
-      retraso={22}
-      que="1 PERSONA"
-      detalle="Entra el titular de la cuenta, sin acompañantes."
-    />
-    <Regla
-      retraso={32}
-      que="SOLO MIRAR"
-      detalle="La inspección es visual: no se manipula ni se revisa el motor."
-    />
-    <div
-      style={{
-        ...useEntrada(46),
-        alignSelf: "stretch",
-        display: "flex",
-        alignItems: "flex-start",
-        gap: 8,
-        padding: "9px 12px",
-        borderRadius: 13,
-        background: "rgba(70,26,0,0.5)",
-        border: `1px solid ${vy.naranja}66`,
-      }}
-    >
-      <span style={{ fontSize: 12, lineHeight: 1 }}>⚠️</span>
-      <span
+  <BeatAviso
+    etiqueta={<Chip>EL DÍA DE LA VISITA</Chip>}
+    titulo="Tres reglas"
+    dura={GUION.eldia[1]}
+    avisoRetraso={46}
+    aviso="Si el vendedor pide documentos, mándalos al correo indicado un día antes."
+    extra={
+      <div
         style={{
-          fontFamily: sans,
-          fontWeight: 600,
-          fontSize: 9.5,
-          lineHeight: 1.35,
-          color: "#FFFFFF",
+          alignSelf: "stretch",
+          display: "flex",
+          flexDirection: "column",
+          gap: 9,
         }}
       >
-        Si el vendedor pide documentos, mándalos al correo indicado un día antes.
-      </span>
-    </div>
-  </AbsoluteFill>
+        <Regla
+          retraso={12}
+          que="DNI"
+          // Not "el único documento que piden": the article also asks you to
+          // check "las condiciones adicionales estipuladas por el vendedor en el
+          // detalle de la oferta", so claiming the DNI is all of it makes the
+          // reel looser than the source. The DNI is what *VMC* asks for.
+          detalle="Vigente. Y revisa qué más pide el vendedor."
+        />
+        <Regla
+          retraso={22}
+          que="1 PERSONA"
+          detalle="Entra el titular de la cuenta, sin acompañantes."
+        />
+        <Regla
+          retraso={32}
+          que="SOLO MIRAR"
+          detalle="La inspección es visual: no se manipula ni se revisa el motor."
+        />
+      </div>
+    }
+  />
 );
 
 // ── Act 5 · the close ────────────────────────────────────────────────────────
@@ -591,43 +484,10 @@ const Cierre: React.FC<{ d: ReelVisitas }> = ({ d }) => (
         <Button variant="primary">El link está en la bio</Button>
       </DS>
     </Latido>
-    <div
-      style={{
-        ...useEntrada(80),
-        display: "flex",
-        alignItems: "center",
-        gap: 7,
-        padding: "8px 13px",
-        borderRadius: 13,
-        background: "rgba(20,0,70,0.5)",
-        border: "1px solid rgba(174,142,255,0.5)",
-      }}
-    >
-      <span
-        style={{
-          fontFamily: sans,
-          fontWeight: 700,
-          fontSize: 9,
-          letterSpacing: 0.6,
-          color: vy.violeta100,
-          whiteSpace: "nowrap",
-        }}
-      >
-        OJO
-      </span>
-      <span
-        style={{
-          fontFamily: sans,
-          fontWeight: 600,
-          fontSize: 9,
-          lineHeight: 1.35,
-          color: "#FFFFFF",
-        }}
-      >
-        VMC solo coordina la agenda. El vendedor puede reprogramar por fuerza
-        mayor.
-      </span>
-    </div>
+    <Aviso tono="regla" rotulo="OJO" retraso={80}>
+      VMC solo coordina la agenda. El vendedor puede reprogramar por fuerza
+      mayor.
+    </Aviso>
   </AbsoluteFill>
 );
 
@@ -638,8 +498,13 @@ const Cierre: React.FC<{ d: ReelVisitas }> = ({ d }) => (
  * recorded — the block to paste into ElevenLabs is in VOZ-VISITAS.md. When it
  * lands, add the `<Audio>` here and re-measure GUION.
  */
-export const ReelVisitasVideo: React.FC<{ d: ReelVisitas }> = ({ d }) => (
-  <AbsoluteFill>
+export const ReelVisitasVideo: React.FC<{
+  d: ReelVisitas;
+  /** 480×270 for YouTube instead of 270×480 for Instagram. */
+  ancho?: boolean;
+}> = ({ d, ancho = false }) => (
+  <FormatoTutorial ancho={ancho}>
+    <AbsoluteFill>
     <Fondo fondo={d.fondo} />
     <Escena de={GUION.gancho[0]} dura={GUION.gancho[1]}>
       <Gancho />
@@ -662,5 +527,6 @@ export const ReelVisitasVideo: React.FC<{ d: ReelVisitas }> = ({ d }) => (
     <Escena de={GUION.cierre[0]} dura={GUION.cierre[1]}>
       <Cierre d={d} />
     </Escena>
-  </AbsoluteFill>
+    </AbsoluteFill>
+  </FormatoTutorial>
 );

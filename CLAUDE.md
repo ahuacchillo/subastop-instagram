@@ -31,6 +31,12 @@ correspondiente. Van siempre juntos.
 reales del Centro de Ayuda, por el motivo del punto 4 al revés. Y el gancho de un tutorial dice
 **qué enseña el video**, no qué vende el producto.
 
+Cada tutorial se entrega en **dos formas**: 1080×1920 para Instagram (`npm run reel:<n>`) y
+1920×1080 para YouTube (`npm run yt:<n>`), donde los artículos del Centro de Ayuda enlazan sus
+videos. Es una sola composición con un prop `ancho` — mismo copy, mismas capturas, mismos frames,
+misma voz —, así que **una corrección se hace una vez**. Si escribes una versión aparte para
+YouTube, la próxima corrección se olvida en una de las dos.
+
 ## Comandos
 
 ```bash

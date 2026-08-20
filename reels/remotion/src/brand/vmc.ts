@@ -154,3 +154,10 @@ export const vyGradient = {
  * units keeps the numbers identical to the product's Figma.
  */
 export const REEL = { width: 270, height: 480, fps: 30 } as const;
+
+/**
+ * The tutorials' second shape: 16:9 for YouTube, where the three Centro de Ayuda
+ * articles link their videos. Same 270 on the short side as REEL, so every font
+ * size, padding and window height carries over untouched.
+ */
+export const VIDEO = { width: 480, height: 270, fps: 30 } as const;

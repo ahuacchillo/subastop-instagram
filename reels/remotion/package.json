@@ -31,6 +31,9 @@
     "reel:registro": "remotion render Registro out/registro.mp4 --scale=4 --concurrency=6",
     "reel:consignar": "remotion render Consignar out/consignar.mp4 --scale=4 --concurrency=6",
     "reel:visitas": "remotion render Visitas out/visitas.mp4 --scale=4 --concurrency=6",
+    "yt:registro": "remotion render RegistroYT out/yt-registro.mp4 --scale=4 --concurrency=6",
+    "yt:consignar": "remotion render ConsignarYT out/yt-consignar.mp4 --scale=4 --concurrency=6",
+    "yt:visitas": "remotion render VisitasYT out/yt-visitas.mp4 --scale=4 --concurrency=6",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"

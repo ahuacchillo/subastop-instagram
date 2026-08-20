@@ -1,8 +1,14 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { sans, vy } from "../brand/vmc";
 import { Bajada, Chip, DS, Fondo, Latido, Titular, useEntrada } from "./ui";
-import { Captura, Escena, Pantalla, PasoEscena } from "./tutorial";
+import {
+  Aviso,
+  BeatAviso,
+  Captura,
+  Escena,
+  FormatoTutorial,
+  PasoEscena,
+} from "./tutorial";
 import { Logo } from "./Vender";
 import Button from "@/concorde/components/Button";
 
@@ -319,70 +325,26 @@ const Acepto: React.FC = () => (
  * sanctioned for walking away from a room they paid to enter.
  */
 const Bid: React.FC = () => (
-  <AbsoluteFill
-    style={{
-      padding: "26px 22px 22px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 13,
-    }}
-  >
-    <div
-      style={{
-        alignSelf: "stretch",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        gap: 7,
-      }}
-    >
-      {/* A question, not a step label, so the viewer knows this is the same
-          screen being explained rather than a new thing to do. */}
-      <Chip retraso={2}>¿QUÉ ESTÁS ACEPTANDO?</Chip>
-      <Titular tam={23} retraso={5}>
-        Un bid, mínimo
-      </Titular>
-      <Bajada retraso={9}>
+  <BeatAviso
+    /* A question, not a step label, so the viewer knows this is the same screen
+       being explained rather than a new thing to do. */
+    etiqueta={<Chip>¿QUÉ ESTÁS ACEPTANDO?</Chip>}
+    titulo="Un bid, mínimo"
+    bajada={
+      <>
         El compromiso está escrito en el
         <br />
         mismo pop-up que acabas de tocar.
-      </Bajada>
-    </div>
-    <Pantalla
-      p={PANTALLAS.aceptoTexto}
-      dura={GUION.bid[1]}
-      ancho={226}
-      alto={190}
-      anillo={false}
-      retraso={5}
-    />
-    <div
-      style={{
-        ...useEntrada(60),
-        display: "flex",
-        alignItems: "flex-start",
-        gap: 8,
-        padding: "9px 12px",
-        borderRadius: 13,
-        background: "rgba(70,26,0,0.5)",
-        border: `1px solid ${vy.naranja}66`,
-      }}
-    >
-      <span style={{ fontSize: 12, lineHeight: 1 }}>⚠️</span>
-      <span
-        style={{
-          fontFamily: sans,
-          fontWeight: 600,
-          fontSize: 9.5,
-          lineHeight: 1.35,
-          color: "#FFFFFF",
-        }}
-      >
-        Si consignas y no envías ningún bid durante el proceso, serás sancionado.
-      </span>
-    </div>
-  </AbsoluteFill>
+      </>
+    }
+    p={PANTALLAS.aceptoTexto}
+    dura={GUION.bid[1]}
+    ancho={226}
+    alto={190}
+    anillo={false}
+    avisoRetraso={60}
+    aviso="Si consignas y no envías ningún bid durante el proceso, serás sancionado."
+  />
 );
 
 // ── Act 4 · Negociable ───────────────────────────────────────────────────────
@@ -458,67 +420,20 @@ const Propone: React.FC = () => (
  * that way, not as a recommendation of ours.
  */
 const Billetera: React.FC = () => (
-  <AbsoluteFill
-    style={{
-      padding: "26px 22px 22px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 12,
-    }}
-  >
-    <div
-      style={{
-        alignSelf: "stretch",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        gap: 7,
-      }}
-    >
-      <Chip retraso={2}>ANTES DE TODO ESTO</Chip>
-      <Titular tam={23} retraso={5}>
-        Carga tu Billetera
-      </Titular>
-      <Bajada retraso={9}>
+  <BeatAviso
+    etiqueta={<Chip>ANTES DE TODO ESTO</Chip>}
+    titulo="Carga tu Billetera"
+    bajada={
+      <>
         Con SubasCoins o con una recarga.
         <br />
         Sin fondos no puedes consignar.
-      </Bajada>
-    </div>
-    <Pantalla
-      p={PANTALLAS.billetera}
-      dura={GUION.billetera[1]}
-      alto={205}
-      retraso={5}
-    />
-    <div
-      style={{
-        ...useEntrada(58),
-        display: "flex",
-        alignItems: "flex-start",
-        gap: 8,
-        padding: "9px 12px",
-        borderRadius: 13,
-        background: "rgba(70,26,0,0.5)",
-        border: `1px solid ${vy.naranja}66`,
-      }}
-    >
-      <span style={{ fontSize: 12, lineHeight: 1 }}>⚠️</span>
-      <span
-        style={{
-          fontFamily: sans,
-          fontWeight: 600,
-          fontSize: 9.5,
-          lineHeight: 1.35,
-          color: "#FFFFFF",
-        }}
-      >
-        Comprar SubasCoins con tarjeta cobra 3.9%. La recarga es la opción sin
-        ese cobro.
-      </span>
-    </div>
-  </AbsoluteFill>
+      </>
+    }
+    p={PANTALLAS.billetera}
+    dura={GUION.billetera[1]}
+    aviso="Comprar SubasCoins con tarjeta cobra 3.9%. La recarga es la opción sin ese cobro."
+  />
 );
 
 // ── Act 6 · the exception ────────────────────────────────────────────────────
@@ -566,66 +481,21 @@ const Billetera: React.FC = () => (
  * Violet, not orange: it is a condition on a benefit, not a hazard.
  */
 const SubasPass: React.FC = () => (
-  <AbsoluteFill
-    style={{
-      padding: "26px 22px 22px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 12,
-    }}
-  >
-    <div
-      style={{
-        alignSelf: "stretch",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        gap: 7,
-      }}
-    >
-      <Chip retraso={2}>¿PARTICIPAS SEGUIDO?</Chip>
-      <Titular tam={23} retraso={5}>
-        Consignación 0
-      </Titular>
-      <Bajada retraso={9}>
+  <BeatAviso
+    etiqueta={<Chip>¿PARTICIPAS SEGUIDO?</Chip>}
+    titulo="Consignación 0"
+    bajada={
+      <>
         Con SubasPass el paso de consignar
         <br />
         no existe. Desde {">S< 30"} al mes.
-      </Bajada>
-    </div>
-    <Pantalla
-      p={PANTALLAS.subaspass}
-      dura={GUION.subaspass[1]}
-      alto={205}
-      retraso={5}
-    />
-    <div
-      style={{
-        ...useEntrada(58),
-        display: "flex",
-        alignItems: "flex-start",
-        gap: 8,
-        padding: "9px 12px",
-        borderRadius: 13,
-        background: "rgba(20,0,70,0.5)",
-        border: "1px solid rgba(174,142,255,0.5)",
-      }}
-    >
-      <span
-        style={{
-          fontFamily: sans,
-          fontWeight: 600,
-          fontSize: 9.5,
-          lineHeight: 1.35,
-          color: "#FFFFFF",
-        }}
-      >
-        Sirve con la cuenta habilitada y sin deuda. Con deuda, el pase queda
-        inaccesible.
-      </span>
-    </div>
-  </AbsoluteFill>
+      </>
+    }
+    p={PANTALLAS.subaspass}
+    dura={GUION.subaspass[1]}
+    tono="regla"
+    aviso="Sirve con la cuenta habilitada y sin deuda. Con deuda, el pase queda inaccesible."
+  />
 );
 
 // ── Act 7 · the close ────────────────────────────────────────────────────────
@@ -667,42 +537,9 @@ const Cierre: React.FC<{ d: ReelConsignar }> = ({ d }) => (
         <Button variant="primary">El link está en la bio</Button>
       </DS>
     </Latido>
-    <div
-      style={{
-        ...useEntrada(80),
-        display: "flex",
-        alignItems: "center",
-        gap: 7,
-        padding: "8px 13px",
-        borderRadius: 13,
-        background: "rgba(20,0,70,0.5)",
-        border: "1px solid rgba(174,142,255,0.5)",
-      }}
-    >
-      <span
-        style={{
-          fontFamily: sans,
-          fontWeight: 700,
-          fontSize: 9,
-          letterSpacing: 0.6,
-          color: vy.violeta100,
-          whiteSpace: "nowrap",
-        }}
-      >
-        OJO
-      </span>
-      <span
-        style={{
-          fontFamily: sans,
-          fontWeight: 600,
-          fontSize: 9,
-          lineHeight: 1.35,
-          color: "#FFFFFF",
-        }}
-      >
-        Si no cumples como participante, la consignación vuelve como SubasCoins.
-      </span>
-    </div>
+    <Aviso tono="regla" rotulo="OJO" retraso={80}>
+      Si no cumples como participante, la consignación vuelve como SubasCoins.
+    </Aviso>
   </AbsoluteFill>
 );
 
@@ -713,8 +550,13 @@ const Cierre: React.FC<{ d: ReelConsignar }> = ({ d }) => (
  * the block to paste into ElevenLabs is in VOZ-CONSIGNAR.md. When it lands, add
  * the `<Audio>` here and re-measure GUION.
  */
-export const ReelConsignarVideo: React.FC<{ d: ReelConsignar }> = ({ d }) => (
-  <AbsoluteFill>
+export const ReelConsignarVideo: React.FC<{
+  d: ReelConsignar;
+  /** 480×270 for YouTube instead of 270×480 for Instagram. */
+  ancho?: boolean;
+}> = ({ d, ancho = false }) => (
+  <FormatoTutorial ancho={ancho}>
+    <AbsoluteFill>
     <Fondo fondo={d.fondo} />
     <Escena de={GUION.gancho[0]} dura={GUION.gancho[1]}>
       <Gancho />
@@ -743,5 +585,6 @@ export const ReelConsignarVideo: React.FC<{ d: ReelConsignar }> = ({ d }) => (
     <Escena de={GUION.cierre[0]} dura={GUION.cierre[1]}>
       <Cierre d={d} />
     </Escena>
-  </AbsoluteFill>
+    </AbsoluteFill>
+  </FormatoTutorial>
 );
