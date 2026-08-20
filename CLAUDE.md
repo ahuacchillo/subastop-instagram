@@ -83,7 +83,8 @@ verificación: `reels/REELS.md` §0 y `carrusel/README.md`.
 
 ## Skills del repo
 
-`copy-subastas-vmc` (copy de venta), `concorde-ui` (traer componentes del design system),
+`vmc-ig-copy-ficha-tecnica` (copy de venta, en `carrusel/.claude/` porque el estudio
+lo lee), `concorde-ui` (traer componentes del design system),
 `vmc-subastas-content`, `remotion-to-hyperframes`.
 
 ## Idioma

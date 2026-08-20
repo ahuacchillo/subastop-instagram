@@ -94,7 +94,7 @@ claude
 - `CLAUDE.md` en la raíz se carga solo en cada sesión: le dice cuál de los dos productos es cuál y
   las cuatro reglas que no se rompen.
 - Los **skills** del repo se activan solos por contexto: `concorde-ui` para traer componentes del
-  design system, `copy-subastas-vmc` para el copy de una subasta.
+  design system, `vmc-ig-copy-ficha-tecnica` (en `carrusel/.claude/`) para el copy de una subasta.
 - Arranca cada sesión de reel pidiéndole que lea este documento: *"lee reels/REELS.md antes
   de tocar el reel"*. Es lo que evita que improvise el método.
 
