@@ -26,6 +26,11 @@ concreto. Las cuatro que más se rompen:
 Cambiar los frames de `GUION` en un `.tsx` obliga a actualizar la tabla del `VOZ-<reel>.md`
 correspondiente. Van siempre juntos.
 
+**Los tutoriales** (`Registro`, `Consignar`) comparten su formato en
+`reels/remotion/src/reels/tutorial.tsx`, y no usan Concorde para las pantallas: van las capturas
+reales del Centro de Ayuda, por el motivo del punto 4 al revés. Y el gancho de un tutorial dice
+**qué enseña el video**, no qué vende el producto.
+
 ## Comandos
 
 ```bash
@@ -33,6 +38,7 @@ cd reels/remotion
 npm install
 npm run dev                                          # Remotion Studio
 npm run reel:vendesolo                               # render → out/vendesolo.mp4
+npm run reel:consignar                               # los tutoriales, mudos por ahora
 npm run lint                                         # eslint + tsc, antes de commitear
 npx remotion still VendeSolo /tmp/f.png --frame=640 --scale=2   # revisar un frame suelto
 ```

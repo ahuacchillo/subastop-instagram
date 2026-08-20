@@ -13,10 +13,18 @@ import {
   VENDESOLO,
 } from "./reels/VendeSolo";
 import { DURACION_REGISTRO, REGISTRO, ReelRegistroVideo } from "./reels/Registro";
+import {
+  CONSIGNAR,
+  DURACION_CONSIGNAR,
+  ReelConsignarVideo,
+} from "./reels/Consignar";
 
 /**
- * The three brand reels and the first tutorial. Authored at 270×480 and
+ * The three brand reels and the two tutorials. Authored at 270×480 and
  * delivered by `npm run reel:<nombre>` (--scale=4 → 1080×1920).
+
+ * The tutorials share their format — cuts, phone window, tap ring, per-step
+ * layout — through `reels/tutorial.tsx`. The brand reels do not use it.
  *
  * The auction carousel is a project of its own, in `carrusel/remotion/`.
  */
@@ -64,6 +72,19 @@ export const RemotionRoot: React.FC = () => (
       component={ReelRegistroVideo}
       defaultProps={{ d: REGISTRO }}
       durationInFrames={DURACION_REGISTRO}
+      {...REEL}
+    />
+    {/*
+      Second tutorial, and the first to inherit the format from `tutorial.tsx`
+      instead of inventing it. Silent for the same reason as Registro: its take
+      does not exist yet, so GUION is arithmetic off the word count. Read the
+      note on GUION in Consignar.tsx before trusting a frame.
+    */}
+    <Composition
+      id="Consignar"
+      component={ReelConsignarVideo}
+      defaultProps={{ d: CONSIGNAR }}
+      durationInFrames={DURACION_CONSIGNAR}
       {...REEL}
     />
   </>

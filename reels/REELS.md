@@ -102,7 +102,8 @@ claude
 
 ## 1. Qué hay hoy
 
-Cuatro reels, todos verticales 1080×1920 para Instagram, todos hechos con Remotion.
+Cinco reels, todos verticales 1080×1920 para Instagram, todos hechos con Remotion. Tres de marca y
+dos tutoriales.
 
 | Composición | Archivo | Dura | Voz | Estado |
 |---|---|---|---|---|
@@ -110,6 +111,7 @@ Cuatro reels, todos verticales 1080×1920 para Instagram, todos hechos con Remot
 | `Vender` | `src/reels/Vender.tsx` | 42.2 s | Jessica | terminado |
 | `VendeSolo` | `src/reels/VendeSolo.tsx` | 53 s | Jessica | terminado, con un pendiente (§9) |
 | `Registro` | `src/reels/Registro.tsx` | ~42.7 s | **sin grabar** | montado y mudo — le falta la voz (§9) |
+| `Consignar` | `src/reels/Consignar.tsx` | ~45.0 s | **sin grabar** | montado y mudo — le falta la voz (§9) |
 
 Cada uno tiene sus documentos hermanos:
 
@@ -121,13 +123,26 @@ Cada uno tiene sus documentos hermanos:
 `VendeSolo` es la tercera pasada y la más lograda: **reemplaza a `Vender`**, no lo complementa.
 Los tres siguen en el repo porque el material se recicla entre ellos.
 
-**`Registro` es de otra familia.** Los tres primeros son reels de marca: venden una idea y
-reconstruyen el producto con componentes de Concorde para que el reel se mueva cuando el producto
-se mueva. `Registro` es un **tutorial**, y por eso hace lo contrario: reproduce las capturas reales
-del Centro de Ayuda dentro de una ventana de teléfono y se acerca al control que hay que tocar.
-Quien lo ve va a ir a buscar ese botón, y un botón redibujado que está 90% bien manda a alguien a
-buscar un control que no se ve así. La regla de "todo sale de Concorde" (§4) es de los reels de
-marca; no aplica a un tutorial y el motivo largo está en `GUION-REGISTRO.md`.
+**`Registro` y `Consignar` son de otra familia.** Los tres primeros son reels de marca: venden una
+idea y reconstruyen el producto con componentes de Concorde para que el reel se mueva cuando el
+producto se mueva. Los tutoriales hacen lo contrario: reproducen las capturas reales del Centro de
+Ayuda dentro de una ventana de teléfono y se acercan al control que hay que tocar. Quien los ve va a
+ir a buscar ese botón, y un botón redibujado que está 90% bien manda a alguien a buscar un control
+que no se ve así. La regla de "todo sale de Concorde" (§4) es de los reels de marca; no aplica a un
+tutorial y el motivo largo está en `GUION-REGISTRO.md`.
+
+**Los dos tutoriales comparten su formato** en `src/reels/tutorial.tsx`: el corte (no la
+disolvencia), la ventana de teléfono con bordes desenfocados, el anillo de toque y la geometría
+idéntica de los pasos. Se extrajo de `Registro` cuando `Consignar` necesitó las mismas cuatro cosas.
+**No es `ui.tsx`** —ése lo comparten los reels de marca, que están terminados— y cada pieza existe
+*porque* un tutorial se comporta distinto. Un tercer tutorial importa de ahí y escribe sólo su
+`GUION`, sus capturas y sus beats.
+
+Y una regla que salió de `Consignar`: **el gancho de un tutorial dice qué enseña el video.** Costó
+cuatro versiones aprenderlo — dos estrechaban el marketplace nombrando el bien («autos», cuando los
+T&C dicen *activos*), y una tercera, impecablemente citada, leía como publicidad de las modalidades
+y no anunciaba de qué era el video. El titular dice qué enseña, la bajada qué tan ancho es el
+beneficio, y la voz por qué hace falta.
 
 Y trae una regla propia que los de marca no necesitaban: **cada frase se contrasta contra los T&C y
 el Centro de Ayuda antes de entrar**, con el skill `vmc-modelo-negocio`. Un reel de marca que
@@ -166,6 +181,8 @@ npm run dev                # Remotion Studio: previsualizar y mover cosas en viv
 npm run reel               # render Negociable  → out/negociable.mp4
 npm run reel:vender        # render Vender      → out/vender.mp4
 npm run reel:vendesolo     # render VendeSolo   → out/vendesolo.mp4
+npm run reel:registro      # render Registro    → out/registro.mp4   (mudo)
+npm run reel:consignar     # render Consignar   → out/consignar.mp4  (mudo)
 npm run lint               # eslint + tsc, corre esto antes de commitear
 ```
 
@@ -504,10 +521,20 @@ Ordenado por lo que más rinde primero.
   sofá, misma luz— pero no es propio. El prompt para reemplazarlo (T7) está en
   `PROMPTS-VENDESOLO.md`.
 - **`Vender` y `VendeSolo` cuentan lo mismo.** Decidir cuál se publica.
-- **A `Registro` le falta la voz.** Está montado, corre mudo y sus frames son una **estimación** por
-  conteo de palabras, no una medición. El bloque para pegar en ElevenLabs está en `VOZ-REGISTRO.md`;
-  cuando llegue la toma se mide con `silencedetect` y se reemplazan `GUION` y la tabla del `VOZ-`,
-  en el mismo commit.
+- **A los dos tutoriales les falta la voz.** `Registro` y `Consignar` están montados, corren mudos y
+  sus frames son una **estimación** por conteo de palabras, no una medición. Los bloques para pegar
+  en ElevenLabs están en `VOZ-REGISTRO.md` y `VOZ-CONSIGNAR.md`; cuando llegue cada toma se mide con
+  `silencedetect` y se reemplazan `GUION` y la tabla del `VOZ-`, en el mismo commit.
+- **¿El descuento por consignar en SubasCoins es real?** El modal de una oferta Negociable muestra
+  `>S< 60 ó US$ 180` —o sea que en SubasCoins sale menos— y el de una En Vivo muestra un solo monto
+  (`>S< 50`). **Ninguna de las dos fuentes lo dice**, y los T&C fijan el SubasCoin en un valor
+  referencial de US$ 1.00 (IV.2.2.d). `Consignar` muestra la captura y no afirma nada. Si el
+  descuento existe es un beneficio fuerte que el artículo debería decir; si no existe, los dos
+  modales deberían mostrar lo mismo. Es la pregunta de contenido más valiosa que quedó abierta.
+- **El artículo de consignación sigue enlazando su video viejo** (`BArqY0cM39I`), que recorre todo el
+  camino hasta la sala en vivo —favoritos, scroll, cuenta regresiva, sala de espera— y muestra
+  pantallas que ya no están en el artículo, incluida una amarilla de «Ya eres participante». Ese
+  tramo es `[oferta-en-vivo] Es hora de participar`, no consignación.
 - **El artículo de registro se contradice con su propia captura.** Su Paso 1 dice «haz clic en el
   botón **Ingresar**» y la imagen que lo acompaña muestra un botón que dice **Ingresa**. El reel
   sigue la captura, que es lo que el usuario ve; hay que alinear el texto en el repo
