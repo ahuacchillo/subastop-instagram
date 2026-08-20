@@ -42,7 +42,7 @@ los 40 s, está apurada.
 
 La tercera: **la venta vive en las puntas, no en el medio**. El gancho y el cierre son los que
 tienen que convertir; los cuatro pasos del medio convencen siendo claros, no siendo entusiastas.
-Una toma que trata "completa tus datos" con la misma energía que "compras y vendes autos" suena a
+Una toma que trata "completa tus datos" con la misma energía que "En Vivo o Negociable" suena a
 comercial y deja de enseñar.
 
 ## Pronunciación — escríbelo así en el prompt, no como se escribe
@@ -63,7 +63,7 @@ comercial y deja de enseñar.
 igual al final. Pega esto tal cual en ElevenLabs v3:
 
 ```
-[warm, inviting] En ve eme ce compras y vendes autos, y todo empieza en el mismo sitio: tu cuenta. Son cuatro pasos y es muy fácil y rápido.
+[warm, inviting] En ve eme ce compites en una subasta en vivo o negocias directo con el vendedor. Las dos necesitan una cuenta, y crearla son cuatro pasos.
 
 [clear, instructive] Entra a ve eme ce subastas punto com y toca Ingresa.
 
@@ -75,7 +75,7 @@ igual al final. Pega esto tal cual en ElevenLabs v3:
 
 [confident] Marca las casillas de Condiciones y Términos y de la política de privacidad, y toca Sigamos.
 
-[warm, closing] Y listo, ya eres parte de ve eme ce. Ahora entra, elige tu oferta y agenda tu visita para ver el auto en físico.
+[warm, closing] Y listo, ya eres parte de ve eme ce. Ahora entra, elige tu oferta y agenda tu visita para verlo en físico.
 ```
 
 Los saltos de línea dobles son las pausas. Son los cortes de escena: si la voz los come, la toma no
@@ -87,11 +87,13 @@ Ninguna línea es de cosecha propia: todas salen de los Términos y Condiciones 
 Ayuda. La trazabilidad completa —incluido lo que está sólo en pantalla— está en
 `GUION-REGISTRO.md` §Validación. Los dos que conviene tener a mano al dirigir la toma:
 
-- **«compras y vendes autos»** es el gancho entero y no es un adorno: el reel abrió dos versiones
-  con «Cazador de Ofertas» —copy del producto, está en `login.png`— y salió porque es una palabra de
-  comprador y VMC tiene los dos lados. Dilo como una **elección que se le ofrece a quien escucha**,
-  no como una lista: un respiro chico entre «compras» y «vendes», y el peso en «tu cuenta».
-  El motivo largo está en `GUION-REGISTRO.md` §Por qué el gancho no habla de subastas.
+- **«compites en una subasta en vivo o negocias directo con el vendedor»** es el gancho entero, y
+  las dos mitades son los nombres del producto: Oferta «En Vivo» (T&C II.26) y Oferta «Negociable»
+  (T&C IV.6.1.b). Dilo como una **elección que se le ofrece a quien escucha**, con un respiro real en
+  la «o» — no como una lista de features. El peso de la frase cae en «una cuenta», que es el motivo
+  del reel. Es la tercera versión del gancho: las dos anteriores nombraban el bien («Cazador de
+  Ofertas», «compras y vendes autos») y las dos estrechaban el marketplace. El motivo largo está en
+  `GUION-REGISTRO.md` §Por qué el gancho no nombra el bien.
 - **«la cuenta es personal e intransferible»** es la frase literal de los T&C (II.6 y III.1.d). Es
   la única línea del reel con peso contractual: va seria, sin sonrisa, y con un respiro antes.
 
@@ -104,13 +106,17 @@ toma.
 
 | # | Beat (`GUION`) | Frames | Habla (est.) | Palabras | Emoción | Locución |
 |---|---|---|---|---|---|---|
-| 1 | `gancho` | 0–229 | 0.00–7.48 | 24 | cálida, invitando | En VMC compras y vendes autos, y todo empieza en el mismo sitio: tu cuenta. Son cuatro pasos y es muy fácil y rápido. |
+| 1 | `gancho` | 0–229 | 0.00–7.48 | 24 | cálida, invitando | En VMC compites en una subasta en vivo o negocias directo con el vendedor. Las dos necesitan una cuenta, y crearla son cuatro pasos. |
 | 2 | `paso1` | 229–354 | 8.21–11.64 | 11 | clara, instructiva | Entra a vmcsubastas.com y toca Ingresa. |
 | 3 | `paso2` | 354–442 | 12.37–14.55 | 7 | brillante | En la pantalla de bienvenida, toca Regístrate. |
 | 4 | `paso3` | 442–660 | 15.28–21.83 | 21 | firme, guiando | Completa tus datos: nombres, apellidos, DNI, celular, correo y contraseña. Con los tuyos: la cuenta es personal e intransferible. |
 | 5 | `factura` | 660–869 | 22.56–28.79 | 20 | neutra, de dato | ¿Necesitas factura? En Quiero Recibir elige Factura y agrega tu RUC. Si no, quedas como persona natural y recibes boleta. |
 | 6 | `paso4` | 869–1040 | 29.52–34.51 | 16 | segura | Marca las casillas de Condiciones y Términos y de la política de privacidad, y toca Sigamos. |
-| 7 | `cierre` | 1040–1282 | 35.24–42.72 | 24 | cálida, cerrando | Y listo, ya eres parte de VMC. Ahora entra, elige tu oferta y agenda tu visita para ver el auto en físico. |
+| 7 | `cierre` | 1040–1282 | 35.24–42.72 | 20 | cálida, cerrando | Y listo, ya eres parte de VMC. Ahora entra, elige tu oferta y agenda tu visita para verlo en físico. |
+
+El bloque 7 pasó de 24 a 20 palabras al generalizar «ver el auto en físico» → «verlo en físico».
+Los frames no se movieron: es el último bloque, así que la diferencia (~1.2 s) no corre ningún corte
+—sólo deja el cierre respirando un poco más sobre el CTA, que es donde conviene.
 
 **Total estimado: 42.7 s / 1282 frames.** Es una estimación con un error esperable de ±10%: la
 misma voz lee un texto instructivo más lento que uno de marca, así que lo más probable es que la

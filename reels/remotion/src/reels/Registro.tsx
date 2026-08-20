@@ -79,9 +79,9 @@ export const REGISTRO: ReelRegistro = {
  *
  * The estimate, block by block:
  *
- *   gancho    0.00– 7.48  En VMC compras y vendes autos, y todo empieza en el
- *                         mismo sitio: tu cuenta. Son cuatro pasos y es muy
- *                         fácil y rápido.
+ *   gancho    0.00– 7.48  En VMC compites en una subasta en vivo o negocias
+ *                         directo con el vendedor. Las dos necesitan una cuenta,
+ *                         y crearla son cuatro pasos.
  *   paso1     8.21–11.64  Entra a vmcsubastas.com y toca Ingresa.
  *   paso2    12.37–14.55  En la pantalla de bienvenida, toca Regístrate.
  *   paso3    15.28–21.83  Completa tus datos: nombres, apellidos, DNI, celular,
@@ -93,7 +93,7 @@ export const REGISTRO: ReelRegistro = {
  *   paso4    29.52–34.51  Marca las casillas de Condiciones y Términos y de la
  *                         política de privacidad, y toca Sigamos.
  *   cierre   35.24–42.72  Y listo, ya eres parte de VMC. Ahora entra, elige tu
- *                         oferta y agenda tu visita para ver el auto en físico.
+ *                         oferta y agenda tu visita para verlo en físico.
  *
  * **When the take comes back, these numbers get replaced, not adjusted.** The
  * reel re-times to the voice — if the recording lands at 51s the reel is 51s.
@@ -444,21 +444,33 @@ const PasoEscena: React.FC<{
  * frame is the one place it can say what the forty seconds are *for*. A phone
  * on screen at 0.5s would just be the first step arriving early.
  *
- * The hook opened on "Conviértete en Cazador de Ofertas" for two passes. It is
- * the product's own word for its user (it is right there on `login.png`), but it
- * is a *buyer's* word, and it framed the whole reel as a hunt for auctions. VMC
- * is wider than that on both axes: the offer is En Vivo **and** Negociable (T&C
- * IV.5 and IV.6), and the audience is buyers **and** sellers — three of the four
- * reels in this repo sell consignación. A registration tutorial is the one place
- * every one of those people passes through, so narrowing it to auction-hunting
- * threw away half the room. "Compra o vende" is the same length and excludes
- * nobody. The phrase survives on screen two beats from now, where it belongs:
- * as the product's greeting, not as the reel's thesis.
+ * Third pass, and the two before it failed the same way: they named the goods.
  *
- * The bajada then spends its three lines naming that width, and every item is
- * sourced: the two offer types (T&C IV.5, IV.6), the physical visit (Centro de
- * Ayuda [visitas] — "solo debes estar registrado"), and selling your own vehicle
- * (T&C IV.4, consignación). All four need the same account and nothing else.
+ * "Conviértete en Cazador de Ofertas" narrowed it by *audience* — the product's
+ * own word for its user, but a buyer's word, and it framed the reel as a hunt for
+ * auctions. "Compra o vende autos" then narrowed it by *category*, and that one
+ * the contract contradicts outright: the T&C never write "auto". The word is
+ * **activo** (II.17 — "nuevos o seminuevos, operativos o inoperativos … bajo la
+ * condición siniestrado, salvamento o chatarra"), the service is defined over
+ * "negociación de activos de propiedad de terceros" (I), and "vehículos" appears
+ * exactly once in the whole document, as a style note about writing listings.
+ * Cars are what the marketplace sells most of today; they are not its scope.
+ *
+ * So this hook does not name the goods at all. It names the pair of ways you get
+ * them, which is the distinctive half anyway and is sourced twice over: Oferta
+ * "En Vivo" (T&C II.26 — "compiten en tiempo real, enviando sus bids en sala")
+ * and Oferta "Negociable" (T&C IV.6.1.b and Centro de Ayuda
+ * [oferta-negociable] — "negociación directamente con el vendedor", and no
+ * Precio Base). Naming them also hands the viewer the two words they are about
+ * to meet on the site.
+ *
+ * Two lines instead of three, because volume was the other half of the problem:
+ * three big lines plus a two-line bajada plus a chip is not a hook, it is a
+ * slide.
+ *
+ * ponytail: "activo" is the correct word and unusable here — it is contract
+ * vocabulary. Sidestepping the noun is the fix, not a hole in the copy. Do not
+ * fill it with a friendlier synonym; the sources do not have one.
  */
 const Gancho: React.FC = () => (
   <AbsoluteFill
@@ -475,21 +487,20 @@ const Gancho: React.FC = () => (
       <Logo ancho={128} />
     </div>
     <div style={{ textAlign: "center" }}>
-      {/* Three lines, broken by hand: at this size the frame holds ~16
-          characters, and the break has to fall after the colon or "Compra o
-          vende:" splits across lines and stops reading as one choice. */}
+      {/* Two lines, broken by hand so each offer type gets its own. The frame
+          holds ~16 characters at this size and "o Negociable" is 12, so letting
+          it wrap would break "Negociable" itself — the one word the viewer is
+          meant to carry to the site. */}
       <Titular tam={26} retraso={14}>
-        Compra o vende:
+        En Vivo
         <br />
-        todo empieza
-        <br />
-        con tu cuenta.
+        o Negociable
       </Titular>
     </div>
     <div style={{ textAlign: "center", maxWidth: 208 }}>
       <Bajada retraso={30}>
-        Ofertas En Vivo y Negociables, visitas para ver el auto en físico, y
-        vender el tuyo.
+        Compites en sala, o negocias directo con el vendedor. Las dos, con tu
+        cuenta.
       </Bajada>
     </div>
     {/* The brevity promise, and the only reason anyone stays past second three. */}

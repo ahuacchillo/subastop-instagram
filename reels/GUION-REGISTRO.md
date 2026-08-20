@@ -81,20 +81,36 @@ Y toda la venta se hace con material verificable: los dos tipos de oferta que ex
 Negociable), dos cosas que la cuenta habilita de verdad (agendar visitas, consignar tu vehículo) y
 una fecha límite que es una cláusula (los 14 días). Nada de adjetivos.
 
-## Por qué el gancho no habla de subastas
+## Por qué el gancho no nombra el bien
 
-El gancho abrió dos versiones con **«Conviértete en Cazador de Ofertas»**. Es copy del producto —está
-en `login.png`, la pantalla de bienvenida llama así al usuario— y por eso parecía la apertura
-gratis: vendedora y sin inventar nada.
+Tres versiones, y las dos primeras fallaron por lo mismo: nombrar la cosa que se vende.
 
-El problema no era la exactitud, era el encuadre. «Cazador de Ofertas» es una palabra de
-**comprador**, y VMC es más ancho que eso en los dos ejes: la oferta es En Vivo **y** Negociable
-(T&C **IV.5** y **IV.6**), y el público es comprador **y** vendedor —tres de los cuatro reels de
-este repo venden consignación—. El registro es el único sitio por donde pasan todos, así que
-estrecharlo a cazar subastas tiraba media sala. «Compra o vende» mide lo mismo y no excluye a nadie.
+**«Conviértete en Cazador de Ofertas»** lo estrechó por **público**. Es copy del producto —está en
+`login.png`, la pantalla de bienvenida llama así al usuario— pero es una palabra de comprador, y
+encuadraba el reel entero como una cacería de subastas. El público de VMC es comprador **y**
+vendedor: tres de los cuatro reels de este repo venden consignación. El registro es el único sitio
+por donde pasan todos.
 
-La frase no se perdió: sigue en pantalla dos beats después, donde le toca — como el saludo del
-producto, no como la tesis del reel.
+**«Compra o vende autos»** lo estrechó por **categoría**, y ésa la contradice el contrato. Los T&C
+no escriben «auto» en ninguna parte. La palabra es **activo** (**II.17**: «pueden ser nuevos o
+seminuevos (usados), operativos o inoperativos y encontrarse bajo la condición siniestrado(s),
+salvamento o chatarra»), el servicio se define sobre «procesos electrónicos de oferta y/o
+negociación de **activos** de propiedad de terceros» (**I**), y «vehículos» aparece **una sola vez**
+en todo el documento —en **III.b**, como recomendación de estilo para redactar publicaciones—. Que
+hoy predominen los autos es la realidad comercial, no el alcance del servicio.
+
+Así que este gancho **no nombra el bien**. Nombra las dos formas de conseguirlo, que además es la
+mitad distintiva y está citada dos veces: Oferta **«En Vivo»** (T&C **II.26** — «compiten en tiempo
+real, enviando sus bids en sala») y Oferta **«Negociable»** (T&C **IV.6.1.b** y CA
+**[oferta-negociable]** — «negociación directamente con el vendedor», y sin Precio Base). Y de paso
+le entrega al espectador las dos palabras que va a encontrarse en el sitio.
+
+Dos líneas en vez de tres, porque el volumen era la otra mitad del problema: tres líneas grandes más
+una bajada de dos líneas más un chip no es un gancho, es una diapositiva.
+
+**«Activo» es la palabra correcta y es inusable acá:** es vocabulario de contrato. El gancho esquiva
+el sustantivo en vez de inventarle un sinónimo simpático que las fuentes no tienen. Si alguien
+vuelve a poner «autos» ahí, está afirmando algo que los T&C no dicen.
 
 ---
 
@@ -107,22 +123,23 @@ siguen; una pantalla acá sería el paso 1 llegando temprano.
 
 | | |
 |---|---|
-| **VOZ** | En VMC compras y vendes autos, y todo empieza en el mismo sitio: tu cuenta. Son cuatro pasos y es muy fácil y rápido. |
+| **VOZ** | En VMC compites en una subasta en vivo o negocias directo con el vendedor. Las dos necesitan una cuenta, y crearla son cuatro pasos. |
 | **Logo** | *[logo VMC]* |
-| **Titular** | Compra o vende:<br>todo empieza<br>con tu cuenta. |
-| **Bajada** | Ofertas En Vivo y Negociables, visitas para ver el auto en físico, y vender el tuyo. |
+| **Titular** | En Vivo<br>o Negociable |
+| **Bajada** | Compites en sala, o negocias directo con el vendedor. Las dos, con tu cuenta. |
 | **Chip** | TEN TU DNI A MANO |
 
-El titular y la voz dicen lo mismo con otras palabras —«compras y vendes» / «Compra o vende»—, y es
-la excepción de `REELS.md` §4: en el primer acto el titular va casi palabra por palabra a propósito.
+El titular y la voz dicen lo mismo con otras palabras, y es la excepción de `REELS.md` §4: en el
+primer acto el titular va casi palabra por palabra a propósito.
 
-Va en **tres líneas rotas a mano**. A tamaño 26 el cuadro aguanta ~16 caracteres, y el corte tiene
-que caer después de los dos puntos: si «Compra o vende:» se parte, deja de leerse como una elección
-y el gancho pierde justo lo que lo hace general.
+Va en **dos líneas rotas a mano**, una por tipo de oferta. A tamaño 26 el cuadro aguanta ~16
+caracteres y «o Negociable» son 12, así que dejarlo envolver partiría **«Negociable»** por la mitad
+— justo la palabra que el espectador tiene que llevarse al sitio.
 
-La bajada es la lista de lo que esa cuenta abre, y las cuatro cosas están en las fuentes: los dos
-tipos de oferta (T&C **IV.5** y **IV.6**), la visita física (CA **[visitas]**) y consignar el propio
-vehículo (T&C **IV.4**). Ninguna necesita nada más que la cuenta.
+La bajada dice qué es cada una en seis palabras, y las dos salen de las fuentes: competir en sala es
+la definición literal de En Vivo (T&C **II.26**) y negociar directo con el vendedor la de Negociable
+(T&C **IV.6.1.b**, CA **[oferta-negociable]**). El remate —«las dos, con tu cuenta»— es lo único que
+el gancho tiene que dejar clavado, porque es el motivo del reel.
 
 El chip decía **SON 4 PASOS** y era la promesa de brevedad. Salió porque la voz ya dice «son cuatro
 pasos» en ese mismo segundo, así que el chip estaba repitiendo en pantalla lo que se oía —justo lo
@@ -259,7 +276,7 @@ La voz sigue diciendo qué se marca.
 
 | | |
 |---|---|
-| **VOZ** | Y listo, ya eres parte de VMC. Ahora entra, elige tu oferta y agenda tu visita para ver el auto en físico. |
+| **VOZ** | Y listo, ya eres parte de VMC. Ahora entra, elige tu oferta y agenda tu visita para verlo en físico. |
 | | *[logo VMC]* |
 | **Chip** | VMCSUBASTAS.COM |
 | **Botón** | El link está en la bio |
@@ -293,6 +310,11 @@ Y el llamado es **agendar una visita**, no «a cazar ofertas», porque es lo ún
 recién creada puede hacer de verdad: ofertar necesita consignación, agendar una visita no necesita
 más que estar registrado.
 
+La voz dice **«verlo en físico»** y no «ver el auto en físico», por lo mismo que el gancho no nombra
+el bien: los T&C hablan de visitar «los **bienes o activos**» (**II.23**), no autos. Son dos palabras
+menos en el bloque más largo del reel, así que el cierre respira un poco más sobre el CTA — que es
+donde conviene que respire.
+
 ---
 
 ## Cómo se ve — las tres decisiones que no son de copy
@@ -322,14 +344,14 @@ con su cita.
 
 | Dónde | Afirmación | Fuente |
 |---|---|---|
-| Gancho, voz | «compras y vendes autos» | T&C **I** (participar en el Marketplace) y **IV.4** (consignación) |
-| Gancho, voz | «es muy fácil y rápido» | CA **[registro]** — literal |
+| Gancho, voz | «compites en una subasta en vivo» | T&C **II.26** — «compiten en tiempo real, enviando sus bids en sala» |
+| Gancho, voz | «negocias directo con el vendedor» | T&C **IV.6.1.b** y CA **[oferta-negociable]** — literal |
 | Gancho, voz | «son cuatro pasos» | CA **[registro]** — Paso 1 a Paso 4 |
 | Gancho, chip | «ten tu DNI a mano» | T&C **IV.1.1.a.i** — el DNI es dato obligatorio del registro |
-| Gancho, titular | «compra o vende» | T&C **I** (acceder y participar con Cuenta activa) y **IV.4** (consignar) |
-| Gancho, bajada | «ofertas En Vivo y Negociables» | T&C **IV.5** y **IV.6** — son los dos nombres del producto |
-| Gancho, bajada | «visitas para ver el auto en físico» | CA **[visitas]** — «solo debes estar registrado como usuario de nuestro servicio» |
-| Gancho, bajada | «vender el tuyo» | T&C **IV.4** — consignación |
+| Gancho, titular | «En Vivo» · «Negociable» | T&C **II.26** y **IV.6** — son los dos nombres del producto |
+| Gancho, bajada | «compites en sala» | T&C **II.26** y **II.29** (Sala) |
+| Gancho, bajada | «negocias directo con el vendedor» | CA **[oferta-negociable]** — literal |
+| Gancho, bajada | «las dos, con tu cuenta» | T&C **I** — «podrán acceder y participar … los que mantengan una Cuenta activa» |
 | Paso 1 | «Entra a vmcsubastas.com» · «toca Ingresa» | CA **[registro]** Paso 1 · rótulo del botón en `home-ingresar.png` |
 | Paso 1, bajada | «un solo botón para todo»: crear cuenta y entrar | Las dos capturas del propio reel |
 | Paso 2 | «pantalla de bienvenida» · «toca Regístrate» | CA **[registro]** Paso 2 |
