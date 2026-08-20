@@ -79,9 +79,9 @@ export const REGISTRO: ReelRegistro = {
  *
  * The estimate, block by block:
  *
- *   gancho    0.00– 7.48  En VMC compites en una subasta en vivo o negocias
- *                         directo con el vendedor. Las dos necesitan una cuenta,
- *                         y crearla son cuatro pasos.
+ *   gancho    0.00– 7.48  Vamos a crear tu cuenta en VMC. La necesitas para
+ *                         competir en vivo o negociar directo con el vendedor.
+ *                         Son cuatro pasos nada más.
  *   paso1     8.21–11.64  Entra a vmcsubastas.com y toca Ingresa.
  *   paso2    12.37–14.55  En la pantalla de bienvenida, toca Regístrate.
  *   paso3    15.28–21.83  Completa tus datos: nombres, apellidos, DNI, celular,
@@ -464,13 +464,28 @@ const PasoEscena: React.FC<{
  * Precio Base). Naming them also hands the viewer the two words they are about
  * to meet on the site.
  *
- * Two lines instead of three, because volume was the other half of the problem:
- * three big lines plus a two-line bajada plus a chip is not a hook, it is a
- * slide.
+ * And then the fourth pass had to undo half of that, because avoiding the noun
+ * went too far: "En Vivo o Negociable" as the headline reads as an ad for the two
+ * offer formats. Someone scrolling learns that VMC has two of them and never
+ * learns that this reel is a how-to about signing up — which is the one thing the
+ * hook of a tutorial exists to say.
+ *
+ * So the three jobs are split across the three elements instead of fought over:
+ *
+ *   Titular  what the reel teaches      Crea tu cuenta en 4 pasos
+ *   Bajada   how wide the account is    sirve para comprar y para vender
+ *   Voz      why you need one           competir En Vivo, o negociar directo
+ *
+ * The offer types moved to the voice, where they are the *reason* rather than the
+ * subject. The bajada carries the width the second pass got wrong (T&C I to
+ * participate, IV.4 to consign) without naming a category. And "4 pasos" on
+ * screen while the voice says "cuatro pasos" is the documented §4 exception: in
+ * the first act the titular tracks the voice on purpose.
  *
  * ponytail: "activo" is the correct word and unusable here — it is contract
- * vocabulary. Sidestepping the noun is the fix, not a hole in the copy. Do not
- * fill it with a friendlier synonym; the sources do not have one.
+ * vocabulary. Sidestepping the noun is right; making the hook *about* the
+ * sidestep was not. Do not put a category back in the titular, and do not put
+ * the offer types back either.
  */
 const Gancho: React.FC = () => (
   <AbsoluteFill
@@ -487,20 +502,23 @@ const Gancho: React.FC = () => (
       <Logo ancho={128} />
     </div>
     <div style={{ textAlign: "center" }}>
-      {/* Two lines, broken by hand so each offer type gets its own. The frame
-          holds ~16 characters at this size and "o Negociable" is 12, so letting
-          it wrap would break "Negociable" itself — the one word the viewer is
-          meant to carry to the site. */}
+      {/* Two lines, broken by hand: the frame holds ~16 characters at this size
+          and the break has to fall before "en 4 pasos" so the number lands on a
+          line of its own weight.
+
+          No full stop, and that is typographic, not stylistic: at letterSpacing
+          -0.5 the "s"+"." pair leaves a visible gap ("en 4 pasos ."), which reads
+          as a typo in the largest type of the reel. The four step headlines carry
+          no full stop either, so dropping it also makes them consistent. */}
       <Titular tam={26} retraso={14}>
-        En Vivo
+        Crea tu cuenta
         <br />
-        o Negociable
+        en 4 pasos
       </Titular>
     </div>
     <div style={{ textAlign: "center", maxWidth: 208 }}>
       <Bajada retraso={30}>
-        Compites en sala, o negocias directo con el vendedor. Las dos, con tu
-        cuenta.
+        La misma cuenta sirve para comprar y para vender.
       </Bajada>
     </div>
     {/* The brevity promise, and the only reason anyone stays past second three. */}

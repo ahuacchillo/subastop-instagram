@@ -81,9 +81,10 @@ Y toda la venta se hace con material verificable: los dos tipos de oferta que ex
 Negociable), dos cosas que la cuenta habilita de verdad (agendar visitas, consignar tu vehículo) y
 una fecha límite que es una cláusula (los 14 días). Nada de adjetivos.
 
-## Por qué el gancho no nombra el bien
+## Por qué el gancho dice «crea tu cuenta» y nada más
 
-Tres versiones, y las dos primeras fallaron por lo mismo: nombrar la cosa que se vende.
+Cuatro versiones. Las dos primeras fallaron por nombrar la cosa que se vende; la tercera, por no
+nombrar de qué era el video.
 
 **«Conviértete en Cazador de Ofertas»** lo estrechó por **público**. Es copy del producto —está en
 `login.png`, la pantalla de bienvenida llama así al usuario— pero es una palabra de comprador, y
@@ -99,18 +100,22 @@ negociación de **activos** de propiedad de terceros» (**I**), y «vehículos»
 en todo el documento —en **III.b**, como recomendación de estilo para redactar publicaciones—. Que
 hoy predominen los autos es la realidad comercial, no el alcance del servicio.
 
-Así que este gancho **no nombra el bien**. Nombra las dos formas de conseguirlo, que además es la
-mitad distintiva y está citada dos veces: Oferta **«En Vivo»** (T&C **II.26** — «compiten en tiempo
-real, enviando sus bids en sala») y Oferta **«Negociable»** (T&C **IV.6.1.b** y CA
-**[oferta-negociable]** — «negociación directamente con el vendedor», y sin Precio Base). Y de paso
-le entrega al espectador las dos palabras que va a encontrarse en el sitio.
+**«En Vivo o Negociable»** fue la tercera, y esquivar el sustantivo funcionó — pero se pasó de largo
+en la otra dirección. Como titular, los nombres de las dos modalidades leen como **publicidad de los
+formatos**: quien scrollea se entera de que VMC tiene dos y no se entera de que este reel es un
+cómo-se-hace para registrarse, que es lo único que el gancho de un tutorial existe para decir. Un
+gancho impecablemente citado que no dice de qué es el video es un gancho roto.
 
-Dos líneas en vez de tres, porque el volumen era la otra mitad del problema: tres líneas grandes más
-una bajada de dos líneas más un chip no es un gancho, es una diapositiva.
+**La cuarta reparte los tres trabajos en vez de que se peleen el mismo lugar.** El titular dice qué
+enseña el reel, la bajada dice qué tan ancha es la cuenta —comprar y vender, que es la anchura que
+la segunda versión buscaba y erró— y las dos modalidades se mudan a la voz, donde son el **motivo**
+y no el sujeto.
 
 **«Activo» es la palabra correcta y es inusable acá:** es vocabulario de contrato. El gancho esquiva
-el sustantivo en vez de inventarle un sinónimo simpático que las fuentes no tienen. Si alguien
-vuelve a poner «autos» ahí, está afirmando algo que los T&C no dicen.
+el sustantivo en vez de inventarle un sinónimo simpático que las fuentes no tienen. Dos avisos para
+el próximo que abra esto: **no le vuelvas a poner una categoría al titular** —«autos» afirma algo que
+los T&C no dicen— y **tampoco le vuelvas a poner las modalidades**, que es de qué es el video lo que
+tiene que decir.
 
 ---
 
@@ -123,23 +128,27 @@ siguen; una pantalla acá sería el paso 1 llegando temprano.
 
 | | |
 |---|---|
-| **VOZ** | En VMC compites en una subasta en vivo o negocias directo con el vendedor. Las dos necesitan una cuenta, y crearla son cuatro pasos. |
+| **VOZ** | Vamos a crear tu cuenta en VMC. La necesitas para competir en vivo o negociar directo con el vendedor. Son cuatro pasos nada más. |
 | **Logo** | *[logo VMC]* |
-| **Titular** | En Vivo<br>o Negociable |
-| **Bajada** | Compites en sala, o negocias directo con el vendedor. Las dos, con tu cuenta. |
+| **Titular** | Crea tu cuenta<br>en 4 pasos |
+| **Bajada** | La misma cuenta sirve para comprar y para vender. |
 | **Chip** | TE LO MUESTRO |
 
-El titular y la voz dicen lo mismo con otras palabras, y es la excepción de `REELS.md` §4: en el
-primer acto el titular va casi palabra por palabra a propósito.
+Los tres elementos se reparten tres trabajos distintos, en vez de pelearse el mismo:
 
-Va en **dos líneas rotas a mano**, una por tipo de oferta. A tamaño 26 el cuadro aguanta ~16
-caracteres y «o Negociable» son 12, así que dejarlo envolver partiría **«Negociable»** por la mitad
-— justo la palabra que el espectador tiene que llevarse al sitio.
+| Elemento | Su trabajo | Lo que dice |
+|---|---|---|
+| **Titular** | qué enseña el reel | Crea tu cuenta en 4 pasos |
+| **Bajada** | qué tan ancha es la cuenta | sirve para comprar y para vender |
+| **Voz** | por qué te hace falta | competir en vivo, o negociar directo |
 
-La bajada dice qué es cada una en seis palabras, y las dos salen de las fuentes: competir en sala es
-la definición literal de En Vivo (T&C **II.26**) y negociar directo con el vendedor la de Negociable
-(T&C **IV.6.1.b**, CA **[oferta-negociable]**). El remate —«las dos, con tu cuenta»— es lo único que
-el gancho tiene que dejar clavado, porque es el motivo del reel.
+Que «4 pasos» esté en pantalla mientras la voz dice «cuatro pasos» es la excepción de `REELS.md` §4:
+en el primer acto el titular sigue a la voz a propósito.
+
+El titular va en **dos líneas rotas a mano** —a tamaño 26 el cuadro aguanta ~16 caracteres— y
+**sin punto final**. Eso último es tipográfico, no de estilo: con el tracking en −0.5 el par «s»+«.»
+deja un hueco visible («en 4 pasos .») que se lee como error de tipeo en la tipografía más grande
+del reel. Los cuatro titulares de los pasos tampoco llevan punto, así que de paso quedan iguales.
 
 El chip es el único elemento que sostiene la retención en el segundo tres, y pasó por tres versiones
 buscando el trabajo que le queda libre.
@@ -353,14 +362,13 @@ con su cita.
 
 | Dónde | Afirmación | Fuente |
 |---|---|---|
-| Gancho, voz | «compites en una subasta en vivo» | T&C **II.26** — «compiten en tiempo real, enviando sus bids en sala» |
-| Gancho, voz | «negocias directo con el vendedor» | T&C **IV.6.1.b** y CA **[oferta-negociable]** — literal |
+| Gancho, voz | «competir en vivo» | T&C **II.26** — «compiten en tiempo real, enviando sus bids en sala» |
+| Gancho, voz | «negociar directo con el vendedor» | T&C **IV.6.1.b** y CA **[oferta-negociable]** — literal |
 | Gancho, voz | «son cuatro pasos» | CA **[registro]** — Paso 1 a Paso 4 |
 | Gancho, chip | «te lo muestro» | No lleva fuente: no afirma nada del producto, es el reel hablando de sí mismo |
-| Gancho, titular | «En Vivo» · «Negociable» | T&C **II.26** y **IV.6** — son los dos nombres del producto |
-| Gancho, bajada | «compites en sala» | T&C **II.26** y **II.29** (Sala) |
-| Gancho, bajada | «negocias directo con el vendedor» | CA **[oferta-negociable]** — literal |
-| Gancho, bajada | «las dos, con tu cuenta» | T&C **I** — «podrán acceder y participar … los que mantengan una Cuenta activa» |
+| Gancho, titular | «crea tu cuenta en 4 pasos» | CA **[registro]** — Paso 1 a Paso 4 |
+| Gancho, bajada | «sirve para comprar» | T&C **I** — «podrán acceder y participar … los que mantengan una Cuenta activa» |
+| Gancho, bajada | «y para vender» | T&C **IV.4** (consignación) y **IV.11** (publicación) |
 | Paso 1 | «Entra a vmcsubastas.com» · «toca Ingresa» | CA **[registro]** Paso 1 · rótulo del botón en `home-ingresar.png` |
 | Paso 1, bajada | «un solo botón para todo»: crear cuenta y entrar | Las dos capturas del propio reel |
 | Paso 2 | «pantalla de bienvenida» · «toca Regístrate» | CA **[registro]** Paso 2 |

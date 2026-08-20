@@ -42,7 +42,7 @@ los 40 s, está apurada.
 
 La tercera: **la venta vive en las puntas, no en el medio**. El gancho y el cierre son los que
 tienen que convertir; los cuatro pasos del medio convencen siendo claros, no siendo entusiastas.
-Una toma que trata "completa tus datos" con la misma energía que "En Vivo o Negociable" suena a
+Una toma que trata "completa tus datos" con la misma energía que "vamos a crear tu cuenta" suena a
 comercial y deja de enseñar.
 
 ## Pronunciación — escríbelo así en el prompt, no como se escribe
@@ -63,7 +63,7 @@ comercial y deja de enseñar.
 igual al final. Pega esto tal cual en ElevenLabs v3:
 
 ```
-[warm, inviting] En ve eme ce compites en una subasta en vivo o negocias directo con el vendedor. Las dos necesitan una cuenta, y crearla son cuatro pasos.
+[warm, inviting] Vamos a crear tu cuenta en ve eme ce. La necesitas para competir en vivo o negociar directo con el vendedor. Son cuatro pasos nada más.
 
 [clear, instructive] Entra a ve eme ce subastas punto com y toca Ingresa.
 
@@ -87,13 +87,15 @@ Ninguna línea es de cosecha propia: todas salen de los Términos y Condiciones 
 Ayuda. La trazabilidad completa —incluido lo que está sólo en pantalla— está en
 `GUION-REGISTRO.md` §Validación. Los dos que conviene tener a mano al dirigir la toma:
 
-- **«compites en una subasta en vivo o negocias directo con el vendedor»** es el gancho entero, y
-  las dos mitades son los nombres del producto: Oferta «En Vivo» (T&C II.26) y Oferta «Negociable»
-  (T&C IV.6.1.b). Dilo como una **elección que se le ofrece a quien escucha**, con un respiro real en
-  la «o» — no como una lista de features. El peso de la frase cae en «una cuenta», que es el motivo
-  del reel. Es la tercera versión del gancho: las dos anteriores nombraban el bien («Cazador de
-  Ofertas», «compras y vendes autos») y las dos estrechaban el marketplace. El motivo largo está en
-  `GUION-REGISTRO.md` §Por qué el gancho no nombra el bien.
+- **«Vamos a crear tu cuenta en VMC»** abre el reel y es una **invitación, no un claim**: dilo como
+  quien se sienta al lado, no como quien presenta. Es la frase que le dice al que scrollea de qué es
+  el video, así que va clara antes que cálida.
+- **«competir en vivo o negociar directo con el vendedor»** son los nombres del producto (Oferta
+  «En Vivo», T&C II.26; Oferta «Negociable», T&C IV.6.1.b) y acá son el **motivo**, no el tema. Un
+  respiro real en la «o»: son dos caminos, no una lista de features. Cuarta versión del gancho — las
+  dos primeras nombraban el bien y estrechaban el marketplace, la tercera puso estas dos modalidades
+  en el titular y el reel dejó de anunciar de qué era. El motivo largo está en `GUION-REGISTRO.md`
+  §Por qué el gancho dice «crea tu cuenta» y nada más.
 - **«la cuenta es personal e intransferible»** es la frase literal de los T&C (II.6 y III.1.d). Es
   la única línea del reel con peso contractual: va seria, sin sonrisa, y con un respiro antes.
 
@@ -106,7 +108,7 @@ toma.
 
 | # | Beat (`GUION`) | Frames | Habla (est.) | Palabras | Emoción | Locución |
 |---|---|---|---|---|---|---|
-| 1 | `gancho` | 0–229 | 0.00–7.48 | 24 | cálida, invitando | En VMC compites en una subasta en vivo o negocias directo con el vendedor. Las dos necesitan una cuenta, y crearla son cuatro pasos. |
+| 1 | `gancho` | 0–229 | 0.00–7.48 | 24 | cálida, invitando | Vamos a crear tu cuenta en VMC. La necesitas para competir en vivo o negociar directo con el vendedor. Son cuatro pasos nada más. |
 | 2 | `paso1` | 229–354 | 8.21–11.64 | 11 | clara, instructiva | Entra a vmcsubastas.com y toca Ingresa. |
 | 3 | `paso2` | 354–442 | 12.37–14.55 | 7 | brillante | En la pantalla de bienvenida, toca Regístrate. |
 | 4 | `paso3` | 442–660 | 15.28–21.83 | 21 | firme, guiando | Completa tus datos: nombres, apellidos, DNI, celular, correo y contraseña. Con los tuyos: la cuenta es personal e intransferible. |
